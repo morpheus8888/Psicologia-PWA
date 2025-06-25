@@ -29,7 +29,11 @@ const Login = () => {
           id='container'
           className={`container ${active === 'signUp' ? 'right-panel-active' : ''}`}
         >
-          <div className='form-container sign-up-container'>
+          <div
+            className={`form-container sign-up-container ${
+              active !== 'signUp' ? 'hidden sm:block' : ''
+            }`}
+          >
             <form action='#'>
               <h1>
                 <Trans id='Create Account' />
@@ -54,9 +58,20 @@ const Login = () => {
               <button>
                 <Trans id='Sign Up' />
               </button>
+              <button
+                type='button'
+                className='ghost mt-4 sm:hidden'
+                onClick={() => setActive('signIn')}
+              >
+                <Trans id='Sign In' />
+              </button>
             </form>
           </div>
-          <div className='form-container sign-in-container'>
+          <div
+            className={`form-container sign-in-container ${
+              active !== 'signIn' ? 'hidden sm:block' : ''
+            }`}
+          >
             <form action='#'>
               <h1>
                 <Trans id='Sign in' />
@@ -82,6 +97,13 @@ const Login = () => {
               </a>
               <button>
                 <Trans id='Sign In' />
+              </button>
+              <button
+                type='button'
+                className='ghost mt-4 sm:hidden'
+                onClick={() => setActive('signUp')}
+              >
+                <Trans id='Sign Up' />
               </button>
             </form>
           </div>
