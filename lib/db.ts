@@ -1,7 +1,12 @@
 import Database from 'better-sqlite3'
 import path from 'path'
 
-const dbFile = path.join(process.cwd(), 'data.sqlite')
+// On platforms like Vercel the filesystem is read-only except for `/tmp`.
+// Use a temporary location when running in those environments so the database
+// can be created at runtime.
+const dbFile = process.env.VERCEL
+  ? path.join('/tmp', 'data.sqlite')
+  : path.join(process.cwd(), 'data.sqlite')
 const db = new Database(dbFile)
 
 db.exec(`

@@ -18,7 +18,8 @@ const Login = () => {
       body: JSON.stringify({ email, password, name }),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error)
+        const data = await r.json().catch(() => null)
+        if (!r.ok) throw new Error(data?.error || r.statusText)
         setActive('signIn')
       })
       .catch((err) => {
@@ -38,7 +39,8 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error)
+        const data = await r.json().catch(() => null)
+        if (!r.ok) throw new Error(data?.error || r.statusText)
         alert('Logged in')
       })
       .catch((err) => {
