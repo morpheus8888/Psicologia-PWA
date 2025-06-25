@@ -5,6 +5,47 @@ import { useEffect, useState } from 'react'
 
 const Login = () => {
   const [active, setActive] = useState<'signIn' | 'signUp'>('signIn')
+
+  const register = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value
+    const password = (form.elements.namedItem('password') as HTMLInputElement).value
+    const name = (form.elements.namedItem('name') as HTMLInputElement).value
+    await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, name }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json()).error)
+        setActive('signIn')
+      })
+      .catch((err) => {
+        console.error(err)
+        alert(err.message)
+      })
+  }
+
+  const login = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value
+    const password = (form.elements.namedItem('password') as HTMLInputElement).value
+    await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json()).error)
+        alert('Logged in')
+      })
+      .catch((err) => {
+        console.error(err)
+        alert(err.message)
+      })
+  }
   useEffect(() => {
     document.body.classList.add('login-page')
     return () => {
@@ -32,7 +73,7 @@ const Login = () => {
           }`}
         >
           <div className='form-container sign-up-container'>
-            <form action='#'>
+            <form onSubmit={register}>
               <h1>
                 <Trans id='Create Account' />
               </h1>
@@ -50,9 +91,9 @@ const Login = () => {
               <span>
                 <Trans id='or use your email for registration' />
               </span>
-              <input type='text' placeholder='Name' />
-              <input type='email' placeholder='Email' />
-              <input type='password' placeholder='Password' />
+              <input name='name' type='text' placeholder='Name' />
+              <input name='email' type='email' placeholder='Email' />
+              <input name='password' type='password' placeholder='Password' />
               <button>
                 <Trans id='Sign Up' />
               </button>
@@ -66,7 +107,7 @@ const Login = () => {
             </form>
           </div>
           <div className='form-container sign-in-container'>
-            <form action='#'>
+            <form onSubmit={login}>
               <h1>
                 <Trans id='Sign in' />
               </h1>
@@ -84,8 +125,8 @@ const Login = () => {
               <span>
                 <Trans id='or use your account' />
               </span>
-              <input type='email' placeholder='Email' />
-              <input type='password' placeholder='Password' />
+              <input name='email' type='email' placeholder='Email' />
+              <input name='password' type='password' placeholder='Password' />
               <a href='#'>
                 <Trans id='Forgot your password?' />
               </a>
