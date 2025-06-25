@@ -37,7 +37,7 @@ const ProfileMenu = () => {
       </button>
 
       {open && (
-        <div className='absolute right-0 mt-2 w-48 rounded-lg bg-white p-2 shadow-lg dark:bg-zinc-800'>
+        <div className='absolute right-0 mt-2 w-48 rounded-lg bg-white p-2 shadow-lg dark:bg-zinc-800 z-[250]'>
           <ul className='text-sm text-zinc-600 dark:text-zinc-300'>
             {loggedIn ? (
               <>

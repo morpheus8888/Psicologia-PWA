@@ -256,3 +256,45 @@ footer a {
   color: #3c97bf;
   text-decoration: none;
 }
+
+@media (max-width: 640px) {
+  body.login-page {
+    margin: 0;
+  }
+
+  .container {
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .form-container {
+    width: 100%;
+  }
+
+  .sign-in-container,
+  .sign-up-container {
+    left: 0;
+    width: 100%;
+    padding: 0 30px;
+  }
+
+  .sign-up-container {
+    opacity: 1;
+    z-index: 5;
+    transform: translateX(100%);
+  }
+
+  .container.right-panel-active .sign-in-container {
+    transform: translateX(-100%);
+  }
+
+  .container.right-panel-active .sign-up-container {
+    transform: translateX(0);
+  }
+
+  .overlay-container {
+    display: none;
+  }
+}
