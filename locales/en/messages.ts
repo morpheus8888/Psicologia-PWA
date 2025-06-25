@@ -14,6 +14,16 @@ export const messages = {
   'for lovely icons': 'for lovely icons',
   '"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you."': '"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you."',
   'Vision': 'Vision',
-  ', a two sentence story': ', a two sentence story'
+  ', a two sentence story': ', a two sentence story',
+  'My profile': 'My profile',
+  'Edit profile': 'Edit profile',
+  'Inbox': 'Inbox',
+  'Settings': 'Settings',
+  'Help': 'Help',
+  'Logout': 'Logout',
+  'Login': 'Login',
+  'Language': 'Language',
+  'Dark mode': 'Dark mode',
+  'Light mode': 'Light mode'
 }
 export default messages

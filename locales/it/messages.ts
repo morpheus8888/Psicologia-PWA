@@ -14,6 +14,16 @@ export const messages = {
   'for lovely icons': 'per le icone graziose',
   '"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you."': '"Confesso che quando tutto \u00e8 iniziato, eri come un\'immagine fuori fuoco per me. Ci \u00e8 voluto tempo perch\u00e9 i miei occhi si abituassero a te, per capire chi fossi, per riconoscerti davvero."',
   'Vision': 'Visione',
-  ', a two sentence story': ', una storia di due frasi'
+  ', a two sentence story': ', una storia di due frasi',
+  'My profile': 'Il mio profilo',
+  'Edit profile': 'Modifica profilo',
+  'Inbox': 'Messaggi',
+  'Settings': 'Impostazioni',
+  'Help': 'Aiuto',
+  'Logout': 'Logout',
+  'Login': 'Accedi',
+  'Language': 'Lingua',
+  'Dark mode': 'Modalità scura',
+  'Light mode': 'Modalità chiara'
 }
 export default messages

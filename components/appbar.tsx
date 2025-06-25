@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useLingui, Trans } from '@lingui/react'
-import { locales } from '@/lib/i18n'
+import { Trans } from '@lingui/react'
+import ProfileMenu from '@/components/profile-menu'
 
 const links = [
         { id: 'Story', href: '/story' },
@@ -9,8 +9,7 @@ const links = [
 ]
 
 const Appbar = () => {
-        const router = useRouter()
-        const { i18n } = useLingui()
+       const router = useRouter()
 
 	return (
 		<div className='fixed top-0 left-0 z-20 w-full bg-zinc-900 pt-safe'>
@@ -41,26 +40,7 @@ const Appbar = () => {
                                                         </div>
                                                 </div>
 
-                                                <select
-                                                        value={router.locale}
-                                                        onChange={(e) => router.push(router.pathname, router.asPath, { locale: e.target.value })}
-                                                        className='rounded border bg-transparent p-1 text-sm dark:border-zinc-600'
-                                                >
-                                                        {Object.entries(locales).map(([loc, { label }]) => (
-                                                                <option key={loc} value={loc}>
-                                                                        {label}
-                                                                </option>
-                                                        ))}
-                                                </select>
-
-                                                <div
-                                                        title={i18n._('Gluten Free')}
-                                                        className='h-10 w-10 rounded-full bg-zinc-200 bg-cover bg-center shadow-inner dark:bg-zinc-800'
-                                                        style={{
-                                                                backgroundImage:
-									'url(https://images.unsplash.com/photo-1612480797665-c96d261eae09?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80)',
-							}}
-						/>
+                                               <ProfileMenu />
 					</nav>
 				</div>
 			</header>
