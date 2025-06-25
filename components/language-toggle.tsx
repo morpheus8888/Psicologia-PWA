@@ -22,7 +22,7 @@ const LanguageToggle = ({ onChange }: Props) => {
     const isChecked = current === locB
     return (
       <div className='flex justify-center'>
-        <div className='switch'>
+        <div className='switch switch-lg'>
           <input
             id='language-toggle'
             type='checkbox'

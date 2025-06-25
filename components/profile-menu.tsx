@@ -12,10 +12,6 @@ const ProfileMenu = () => {
   const { i18n } = useLingui()
 
   const toggle = () => setOpen((o) => !o)
-  const login = () => {
-    setLoggedIn(true)
-    setOpen(false)
-  }
   const logout = () => {
     setLoggedIn(false)
     setOpen(false)
@@ -101,13 +97,22 @@ const ProfileMenu = () => {
               </>
             ) : (
               <li>
-                <button onClick={login} className='group flex w-full items-center rounded px-2 py-1 hover:text-indigo-500'>
-                  <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
+                <Link
+                  href='/login'
+                  onClick={() => setOpen(false)}
+                  className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'
+                >
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                    className={iconClass}
+                  >
                     <path d='M8 7l-5 5m0 0l5 5m-5-5h12' stroke='currentColor' />
                     <path d='M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-2' stroke='currentColor' />
                   </svg>
                   <Trans id='Login' />
-                </button>
+                </Link>
               </li>
             )}
             <li className='border-t border-zinc-200 pt-2 dark:border-zinc-700'>

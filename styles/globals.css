@@ -28,6 +28,11 @@ body {
   width: 64px;
   height: 28px;
 }
+
+.switch-lg {
+  width: 65px;
+  height: 29px;
+}
 .switch > span {
   position: absolute;
   top: 7px;
@@ -75,6 +80,11 @@ input.check-toggle-round-flat + label {
   background-color: var(--switch-off);
   border-radius: 40px;
 }
+
+.switch-lg input.check-toggle-round-flat + label {
+  width: 65px;
+  height: 29px;
+}
 input.check-toggle-round-flat + label:before,
 input.check-toggle-round-flat + label:after {
   display: block;
@@ -99,9 +109,17 @@ input.check-toggle-round-flat + label:after {
   border-radius: 24px;
   transition: margin 0.2s;
 }
+
+.switch-lg input.check-toggle-round-flat + label:after {
+  width: 25px;
+}
 input.check-toggle-round-flat:checked + label:before {
   background-color: var(--switch-on);
 }
 input.check-toggle-round-flat:checked + label:after {
   margin-left: 32px;
+}
+
+.switch-lg input.check-toggle-round-flat:checked + label:after {
+  margin-left: 33px;
 }

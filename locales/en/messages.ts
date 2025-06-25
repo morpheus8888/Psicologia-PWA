@@ -24,6 +24,19 @@ export const messages = {
   'Login': 'Login',
   'Language': 'Language',
   'Dark mode': 'Dark mode',
-  'Light mode': 'Light mode'
+  'Light mode': 'Light mode',
+  'Create Account': 'Create Account',
+  'or use your email for registration': 'or use your email for registration',
+  'Name': 'Name',
+  'Password': 'Password',
+  'Sign Up': 'Sign Up',
+  'Sign in': 'Sign in',
+  'or use your account': 'or use your account',
+  'Forgot your password?': 'Forgot your password?',
+  'Sign In': 'Sign In',
+  'Welcome Back!': 'Welcome Back!',
+  'To keep connected with us please login with your personal info': 'To keep connected with us please login with your personal info',
+  'Hello, Friend!': 'Hello, Friend!',
+  'Enter your personal details and start journey with us': 'Enter your personal details and start journey with us'
 }
 export default messages
