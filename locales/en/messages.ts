@@ -1,0 +1,19 @@
+export const messages = {
+  'Story': 'Story',
+  'Recipes': 'Recipes',
+  'Rice Bowl': 'Rice Bowl',
+  'Gluten Free': 'Gluten Free',
+  'Home': 'Home',
+  'We grow a lot of rice.': 'We grow a lot of rice.',
+  'You love rice, and so does the rest of the world. In the crop year 2008/2009, the milled rice production volume amounted to over <0>448 million tons</0> worldwide.': 'You love rice, and so does the rest of the world. In the crop year 2008/2009, the milled rice production volume amounted to over <0>448 million tons</0> worldwide.',
+  'Source': 'Source',
+  'Ingredients': 'Ingredients',
+  'Like any good recipe, we appreciate community offerings to cultivate a delicous dish.': 'Like any good recipe, we appreciate community offerings to cultivate a delicous dish.',
+  'Thanks to': 'Thanks to',
+  'for high quality images': 'for high quality images',
+  'for lovely icons': 'for lovely icons',
+  '"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you."': '"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you."',
+  'Vision': 'Vision',
+  ', a two sentence story': ', a two sentence story'
+}
+export default messages

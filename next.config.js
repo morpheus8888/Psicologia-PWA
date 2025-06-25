@@ -7,5 +7,9 @@ const withPWA = require('next-pwa')({
 })
 
 module.exports = withPWA({
-	reactStrictMode: true,
+        reactStrictMode: true,
+        i18n: {
+                locales: ['it', 'en'],
+                defaultLocale: 'it',
+        },
 })

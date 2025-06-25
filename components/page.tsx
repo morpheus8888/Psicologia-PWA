@@ -1,19 +1,21 @@
 import Head from 'next/head'
 import Appbar from '@/components/appbar'
 import BottomNav from '@/components/bottom-nav'
+import { useLingui } from '@lingui/react'
 
 interface Props {
 	title?: string
 	children: React.ReactNode
 }
 
-const Page = ({ title, children }: Props) => (
-	<>
-		{title ? (
-			<Head>
-				<title>Rice Bowl | {title}</title>
-			</Head>
-		) : null}
+const Page = ({ title, children }: Props) => {
+        const { i18n } = useLingui()
+
+        return (
+                <>
+                        <Head>
+                                <title>{i18n._('Rice Bowl')}</title>
+                        </Head>
 
 		<Appbar />
 
@@ -27,8 +29,9 @@ const Page = ({ title, children }: Props) => (
 			<div className='p-6'>{children}</div>
 		</main>
 
-		<BottomNav />
-	</>
-)
+                <BottomNav />
+                </>
+        )
+}
 
 export default Page
