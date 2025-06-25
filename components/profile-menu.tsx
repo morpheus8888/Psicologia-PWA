@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useLingui, Trans } from '@lingui/react'
-import { useTheme } from 'next-themes'
 import LanguageToggle from '@/components/language-toggle'
+import ThemeToggle from '@/components/theme-toggle'
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
-  const { setTheme, resolvedTheme } = useTheme()
   const { i18n } = useLingui()
 
   const toggle = () => setOpen((o) => !o)
@@ -22,10 +21,6 @@ const ProfileMenu = () => {
     setOpen(false)
   }
 
-
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  }
 
   return (
     <div className='relative'>
@@ -116,21 +111,11 @@ const ProfileMenu = () => {
               </li>
             )}
             <li className='border-t border-zinc-200 pt-2 dark:border-zinc-700'>
-              <span className='mb-1 block px-2 text-xs font-medium uppercase text-zinc-500 dark:text-zinc-400'>
-                <Trans id='Language' />
-              </span>
               <LanguageToggle onChange={() => setOpen(false)} />
             </li>
-            {loggedIn && (
-              <li className='mt-2 border-t border-zinc-200 pt-2 dark:border-zinc-700'>
-                <button onClick={toggleTheme} className='group flex w-full items-center rounded px-2 py-1 hover:text-indigo-500'>
-                  <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
-                    <path d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z' stroke='currentColor' />
-                  </svg>
-                  {resolvedTheme === 'dark' ? <Trans id='Light mode' /> : <Trans id='Dark mode' />}
-                </button>
-              </li>
-            )}
+            <li className='mt-2 border-t border-zinc-200 pt-2 dark:border-zinc-700'>
+              <ThemeToggle onChange={() => setOpen(false)} />
+            </li>
           </ul>
         </div>
       )}
