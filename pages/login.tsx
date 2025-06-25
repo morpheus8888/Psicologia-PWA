@@ -2,7 +2,6 @@ import Page from '@/components/page'
 import Head from 'next/head'
 import { Trans } from '@lingui/react'
 import { useEffect, useState } from 'react'
-import '@/styles/login.css'
 
 const Login = () => {
   const [active, setActive] = useState<'signIn' | 'signUp'>('signIn')
