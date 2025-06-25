@@ -271,27 +271,19 @@ footer a {
 
   .form-container {
     width: 100%;
+    left: 0;
+    padding: 0 30px;
+    transition: none;
   }
 
   .sign-in-container,
   .sign-up-container {
-    left: 0;
-    width: 100%;
-    padding: 0 30px;
+    display: none;
   }
 
-  .sign-up-container {
-    opacity: 1;
-    z-index: 5;
-    transform: translateX(100%);
-  }
-
-  .container.right-panel-active .sign-in-container {
-    transform: translateX(-100%);
-  }
-
-  .container.right-panel-active .sign-up-container {
-    transform: translateX(0);
+  .mobile-signin .sign-in-container,
+  .mobile-signup .sign-up-container {
+    display: block;
   }
 
   .overlay-container {

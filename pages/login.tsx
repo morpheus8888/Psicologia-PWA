@@ -27,13 +27,11 @@ const Login = () => {
       <div className='flex flex-col items-center'>
         <div
           id='container'
-          className={`container ${active === 'signUp' ? 'right-panel-active' : ''}`}
+          className={`container ${
+            active === 'signUp' ? 'right-panel-active mobile-signup' : 'mobile-signin'
+          }`}
         >
-          <div
-            className={`form-container sign-up-container ${
-              active !== 'signUp' ? 'hidden sm:block' : ''
-            }`}
-          >
+          <div className='form-container sign-up-container'>
             <form action='#'>
               <h1>
                 <Trans id='Create Account' />
@@ -67,11 +65,7 @@ const Login = () => {
               </button>
             </form>
           </div>
-          <div
-            className={`form-container sign-in-container ${
-              active !== 'signIn' ? 'hidden sm:block' : ''
-            }`}
-          >
+          <div className='form-container sign-in-container'>
             <form action='#'>
               <h1>
                 <Trans id='Sign in' />
