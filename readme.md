@@ -54,3 +54,20 @@ Fluffless doesn't mean "start with nothing". The goal of this template is to be 
 <img width="360" alt="Rice Bowl PWA on iOS in light mode" src="https://github.com/mvllow/next-pwa-template/assets/1474821/1f0fa36e-23c7-4bcf-aa6e-f447559cae62" />
 
 <img width="360" alt="Rice Bowl PWA on iOS in dark mode" src="https://github.com/mvllow/next-pwa-template/assets/1474821/2fac61d0-dc29-4022-8b39-003306f80fb4" />
+
+## Authentication Setup
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Run the Prisma migrations:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string and a JWT secret before running the commands.
