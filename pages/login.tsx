@@ -20,6 +20,10 @@ const Login = () => {
           rel='stylesheet'
           href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'
         />
+        <link
+          rel='stylesheet'
+          href='https://fonts.googleapis.com/css?family=Montserrat:400,800'
+        />
       </Head>
       <div className='flex flex-col items-center'>
         <div
