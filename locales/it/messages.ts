@@ -28,6 +28,7 @@ export const messages = {
   'Create Account': 'Crea account',
   'or use your email for registration': 'oppure usa la tua email per registrarti',
   'Name': 'Nome',
+  'Email': 'Email',
   'Password': 'Password',
   'Sign Up': 'Registrati',
   'Sign in': 'Accedi',
