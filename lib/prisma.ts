@@ -1,10 +1,14 @@
-import type { PrismaClient } from '@prisma/client'
+// don't import types directly so builds succeed even if the Prisma client
+// hasn't been generated yet
+let PrismaClientConstructor: any
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  PrismaClientConstructor = require('@prisma/client').PrismaClient
+} catch {
+  PrismaClientConstructor = class {}
+}
 
-// use require so build succeeds even if the Prisma client isn't generated yet
-const PrismaClientConstructor =
-  (require('@prisma/client') as typeof import('@prisma/client')).PrismaClient
-
-const globalForPrisma = global as unknown as { prisma?: PrismaClient }
+const globalForPrisma = global as unknown as { prisma?: any }
 
 export const prisma =
   globalForPrisma.prisma ||
