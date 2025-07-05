@@ -2,7 +2,8 @@
 // hasn't been generated yet
 let PrismaClientConstructor: any
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // use dynamic require so builds succeed even if the client isn't generated
+  // eslint-disable-next-line
   PrismaClientConstructor = require('@prisma/client').PrismaClient
 } catch {
   PrismaClientConstructor = class {}
