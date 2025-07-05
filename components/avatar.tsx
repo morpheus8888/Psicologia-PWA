@@ -7,7 +7,7 @@ interface Props {
   animate?: boolean
 }
 
-export const Avatar: React.FC<Props> = ({ type, animate }) => {
+export const Avatar: React.FC<Props> = ({ type, animate = true }) => {
   if (type === 'dog') return <Dog animate={animate} />
   return <Cat animate={animate} />
 }

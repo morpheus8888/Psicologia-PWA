@@ -56,7 +56,12 @@ export default function EditProfile() {
 		form.reset()
 	}
 
-	if (!profile) return <Page title='Profile'></Page>
+  if (!profile)
+    return (
+      <Page title='Profile'>
+        <p className='text-center'>Loading...</p>
+      </Page>
+    )
 
 	return (
 		<Page title='Profile'>

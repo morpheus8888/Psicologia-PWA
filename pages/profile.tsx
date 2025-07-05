@@ -18,7 +18,12 @@ export default function Profile() {
 			.then(setData)
 	}, [])
 
-	if (!data) return <Page title='Profile'></Page>
+  if (!data)
+    return (
+      <Page title='Profile'>
+        <p className='text-center'>Loading...</p>
+      </Page>
+    )
 
 	return (
 		<Page title='Profile'>
