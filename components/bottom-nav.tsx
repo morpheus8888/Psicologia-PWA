@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { Trans } from '@lingui/react'
 
 const BottomNav = () => {
 	const router = useRouter()
@@ -8,22 +9,22 @@ const BottomNav = () => {
 		<div className='sm:hidden'>
 			<nav className='fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900'>
 				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
-					{links.map(({ href, label, icon }) => (
-						<Link
-							key={label}
-							href={href}
-							className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
-								router.pathname === href
+                                        {links.map(({ href, id, icon }) => (
+                                                <Link
+                                                        key={id}
+                                                        href={href}
+                                                        className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
+                                                                router.pathname === href
 									? 'text-indigo-500 dark:text-indigo-400'
 									: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
 							}`}
 						>
 							{icon}
-							<span className='text-xs text-zinc-600 dark:text-zinc-400'>
-								{label}
-							</span>
-						</Link>
-					))}
+                                                        <span className='text-xs text-zinc-600 dark:text-zinc-400'>
+                                                                <Trans id={id} />
+                                                        </span>
+                                                </Link>
+                                        ))}
 				</div>
 			</nav>
 		</div>
@@ -33,10 +34,10 @@ const BottomNav = () => {
 export default BottomNav
 
 const links = [
-	{
-		label: 'Home',
-		href: '/',
-		icon: (
+        {
+                id: 'Home',
+                href: '/',
+                icon: (
 			<svg
 				viewBox='0 0 15 15'
 				fill='none'
@@ -51,10 +52,10 @@ const links = [
 			</svg>
 		),
 	},
-	{
-		label: 'Story',
-		href: '/story',
-		icon: (
+        {
+                id: 'Story',
+                href: '/story',
+                icon: (
 			<svg
 				viewBox='0 0 15 15'
 				fill='none'
@@ -69,10 +70,10 @@ const links = [
 			</svg>
 		),
 	},
-	{
-		label: 'Recipes',
-		href: '/recipes',
-		icon: (
+        {
+                id: 'Recipes',
+                href: '/recipes',
+                icon: (
 			<svg
 				viewBox='0 0 15 15'
 				fill='none'
