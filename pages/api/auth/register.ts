@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end('Method Not Allowed')
   }
 
-  const { email, password } = req.body as { email?: string; password?: string }
+  const { email, password, name } = req.body as { email?: string; password?: string; name?: string }
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Missing fields' })
@@ -16,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const hashed = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({ data: { email, password: hashed } })
+    const color = `hsl(${Math.floor(Math.random() * 360)},70%,50%)`
+    const user = await prisma.user.create({ data: { email, password: hashed, name, avatar: 'cat', color } })
     return res.status(201).json({ success: true, user: { id: user.id, email: user.email } })
   } catch (err: any) {
     return res.status(400).json({ error: err.message })
