@@ -61,11 +61,15 @@ Fluffless doesn't mean "start with nothing". The goal of this template is to be 
    ```bash
    npm install
    ```
-2. Run the Prisma migrations:
+2. Generate the Prisma client:
+   ```bash
+   npx prisma generate
+   ```
+3. Run the Prisma migrations:
    ```bash
    npx prisma migrate dev --name init
    ```
-3. Start the development server:
+4. Start the development server:
    ```bash
    npm run dev
    ```
