@@ -1,31 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import prisma from '@/lib/prisma'
+import { getToken } from '@/lib/getToken'
 
 const secret = process.env.JWT_SECRET || 'secret'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST')
-    return res.status(405).end('Method Not Allowed')
-  }
-  const auth = req.headers.authorization
-  if (!auth) return res.status(401).json({ error: 'Unauthorized' })
-  const token = auth.split(' ')[1]
-  try {
-    const payload = jwt.verify(token, secret) as { sub: string }
-    const { name, description, avatar, color } = req.body as {
-      name?: string
-      description?: string
-      avatar?: string
-      color?: string
-    }
-    await prisma.user.update({
-      where: { id: payload.sub },
-      data: { name, description, avatar, color },
-    })
-    return res.status(200).json({ success: true })
-  } catch (err: any) {
-    return res.status(400).json({ error: err.message })
-  }
+export default async function handler(
+	req: NextApiRequest,
+	res: NextApiResponse,
+) {
+	if (req.method !== 'POST') {
+		res.setHeader('Allow', 'POST')
+		return res.status(405).end('Method Not Allowed')
+	}
+	const token = getToken(req)
+	if (!token) return res.status(401).json({ error: 'Unauthorized' })
+	try {
+		const payload = jwt.verify(token, secret) as { sub: string }
+		const { name, description, avatar, color } = req.body as {
+			name?: string
+			description?: string
+			avatar?: string
+			color?: string
+		}
+		await prisma.user.update({
+			where: { id: payload.sub },
+			data: { name, description, avatar, color },
+		})
+		return res.status(200).json({ success: true })
+	} catch (err: any) {
+		return res.status(400).json({ error: err.message })
+	}
 }
