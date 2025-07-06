@@ -5,53 +5,71 @@
 }
 
 /* Cat avatar */
-#box {
+.avatar-cat {
   display: block;
   height: 100%;
   width: 100%;
 }
-.cat * {
+.avatar-cat * {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
-.cat, .ears, .eyes, .muzzle, .body, .paw, .tail, .tail-segment {position: relative;}
-.head, .body, .paw, .tail-segment {background-color: #000000;}
-.left {float: left;}
-.right {float: right;}
-.cat {
-  margin-top: 50px;
-  animation: purr 5s 2 cubic-bezier(0,.75,1,.25);
+.avatar-cat,
+.avatar-cat .ears,
+.avatar-cat .eyes,
+.avatar-cat .muzzle,
+.avatar-cat .body,
+.avatar-cat .paw,
+.avatar-cat .tail,
+.avatar-cat .tail-segment {
+  position: relative;
 }
-.head {
+.avatar-cat .head,
+.avatar-cat .body,
+.avatar-cat .paw,
+.avatar-cat .tail-segment {
+  background-color: #000000;
+}
+.avatar-cat .left {
+  float: left;
+}
+.avatar-cat .right {
+  float: right;
+}
+.avatar-cat .cat {
+  margin-top: 50px;
+  animation: purr 5s 2 cubic-bezier(0, 0.75, 1, 0.25);
+}
+.avatar-cat .head {
   width: 100px;
   height: 90px;
   border-radius: 50%;
   z-index: 100;
   animation: head-bob 5s 2 ease-in-out;
 }
-.ears {
+.avatar-cat .ears {
   top: -20px;
   z-index: -100;
 }
-.ear {
+.avatar-cat .ear {
   width: 0;
   height: 0;
   border-left: 25px solid transparent;
   border-right: 25px solid transparent;
   border-bottom: 50px solid #000000;
 }
-.ear.left {
+.avatar-cat .ear.left {
   transform: rotate(-20deg) translateX(-10px);
 }
-.ear.right {
+.avatar-cat .ear.right {
   transform: rotate(20deg) translateX(10px);
 }
-.eyes {
+.avatar-cat .eyes {
   top: -18px;
   width: 60%;
 }
-.eye {
+.avatar-cat .eye {
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -59,18 +77,17 @@
   animation: eye-blink 5s 2;
   text-align: center;
 }
-
-.muzzle {
+.avatar-cat .muzzle {
   top: 50px;
 }
-.nose {
+.avatar-cat .nose {
   width: 0;
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-top: 10px solid #666666;
 }
-.body {
+.avatar-cat .body {
   width: 200px;
   height: 120px;
   border-top-left-radius: 200px;
@@ -79,26 +96,25 @@
   left: 90px;
   z-index: -10;
 }
-.paw {
+.avatar-cat .paw {
   height: 30px;
   width: 50px;
   border-radius: 25px;
   left: -100px;
   top: 90px;
 }
-.tail {
+.avatar-cat .tail {
   left: 180px;
   top: -100px;
   transform: rotate(90deg);
-  }
-
-.tail-segment {
+}
+.avatar-cat .tail-segment {
   height: 20px;
   width: 30px;
   border-radius: 25px;
   top: 0px;
   left: 10px;
-  animation: tail-swish 5s 2 cubic-bezier(.8,0,.2,1);
+  animation: tail-swish 5s 2 cubic-bezier(.8, 0, .2, 1);
 }
 
 @keyframes tail-swish {
@@ -164,36 +180,36 @@
 }
 
 /* Dog avatar */
-.box {
+.avatar-dog {
   position: relative;
   display: block;
   margin: auto;
   width: 400px;
   height: 280px;
 }
-.head { position:absolute; top:16.5%; left:25%; width:50%; height:67%; border-radius:50%; }
-.ear { position:absolute; background:#b3b3b3; border-radius:50%; z-index:1; }
-.ear-left { width:43%; height:63%; top:3%; left:-2%; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; background:#e0e0e0; transform:rotate(35deg); }
-.ear-right { width:43%; height:63%; top:3%; right:-2%; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; background:#e0e0e0; transform:rotate(-35deg); }
-.inner-ear { position:absolute; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; width:70%; height:80%; top:15%; background:#b3b3b3; }
-.inner-ear-left { left:5%; }
-.inner-ear-right { right:5%; }
-.face { position:absolute; background:#e0e0e0; border-radius:50%; z-index:3; }
-.face-left { width:50%; height:72%; top:16%; left:6%; }
-.face-mid { width:68%; height:72%; top:-7%; left:17%; }
-.face-right{ width:50%; height:72%; top:15%; right:4%; }
-.dot { position:absolute; border-radius:50%; background:#27354a; }
-.face-left .dot-1{ width:3%; height:3%; top:78%; left:66%; }
-.face-left .dot-2{ width:3%; height:3%; top:83%; left:60%; }
-.face-left .dot-3{ width:3%; height:3%; top:83%; left:70%; }
-.face-right .dot-1{ width:3%; height:3%; top:78%; right:66%; }
-.face-right .dot-2{ width:3%; height:3%; top:83%; right:60%; }
-.face-right .dot-3{ width:3%; height:3%; top:83%; right:70%; }
-.eye { position:absolute; background:#27354a; height:14.5%; width:9.5%; border-radius:50%; z-index:4; }
-.eye-left { top:20%; left:55%; }
-.eye-right{ top:20%; right:55%; }
-.nose{ position:absolute; background:#27354a; width:21%; height:15.5%; left:40%; top:55%; border-radius:36px; z-index:5; }
-.nose .dot{ position:absolute; background:#808080; width:21%; height:15.5%; left:30%; top:22%; border-radius:36px; }
-.mounth{ position:absolute; border-bottom:50px solid #e0e0e0; border-radius:70px; left:33%; top:60%; width:36%; height:33.5%; z-index:1; }
-.tongue{ position:absolute; border-bottom:50px solid #ff8087; border-radius:74px; left:43%; top:36%; width:16%; height:49.5%; z-index:1; animation:tongue 2s 2; }
+.avatar-dog .head { position:absolute; top:16.5%; left:25%; width:50%; height:67%; border-radius:50%; }
+.avatar-dog .ear { position:absolute; background:#b3b3b3; border-radius:50%; z-index:1; }
+.avatar-dog .ear-left { width:43%; height:63%; top:3%; left:-2%; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; background:#e0e0e0; transform:rotate(35deg); }
+.avatar-dog .ear-right { width:43%; height:63%; top:3%; right:-2%; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; background:#e0e0e0; transform:rotate(-35deg); }
+.avatar-dog .inner-ear { position:absolute; border-radius:60% 60% 15% 15%/85% 85% 15% 15%; width:70%; height:80%; top:15%; background:#b3b3b3; }
+.avatar-dog .inner-ear-left { left:5%; }
+.avatar-dog .inner-ear-right { right:5%; }
+.avatar-dog .face { position:absolute; background:#e0e0e0; border-radius:50%; z-index:3; }
+.avatar-dog .face-left { width:50%; height:72%; top:16%; left:6%; }
+.avatar-dog .face-mid { width:68%; height:72%; top:-7%; left:17%; }
+.avatar-dog .face-right{ width:50%; height:72%; top:15%; right:4%; }
+.avatar-dog .dot { position:absolute; border-radius:50%; background:#27354a; }
+.avatar-dog .face-left .dot-1{ width:3%; height:3%; top:78%; left:66%; }
+.avatar-dog .face-left .dot-2{ width:3%; height:3%; top:83%; left:60%; }
+.avatar-dog .face-left .dot-3{ width:3%; height:3%; top:83%; left:70%; }
+.avatar-dog .face-right .dot-1{ width:3%; height:3%; top:78%; right:66%; }
+.avatar-dog .face-right .dot-2{ width:3%; height:3%; top:83%; right:60%; }
+.avatar-dog .face-right .dot-3{ width:3%; height:3%; top:83%; right:70%; }
+.avatar-dog .eye { position:absolute; background:#27354a; height:14.5%; width:9.5%; border-radius:50%; z-index:4; }
+.avatar-dog .eye-left { top:20%; left:55%; }
+.avatar-dog .eye-right{ top:20%; right:55%; }
+.avatar-dog .nose{ position:absolute; background:#27354a; width:21%; height:15.5%; left:40%; top:55%; border-radius:36px; z-index:5; }
+.avatar-dog .nose .dot{ position:absolute; background:#808080; width:21%; height:15.5%; left:30%; top:22%; border-radius:36px; }
+.avatar-dog .mounth{ position:absolute; border-bottom:50px solid #e0e0e0; border-radius:70px; left:33%; top:60%; width:36%; height:33.5%; z-index:1; }
+.avatar-dog .tongue{ position:absolute; border-bottom:50px solid #ff8087; border-radius:74px; left:43%; top:36%; width:16%; height:49.5%; z-index:1; animation:tongue 2s 2; }
 @keyframes tongue { 0% {top:40%;} 50% {top:42%;} 100% {top:36%;} }

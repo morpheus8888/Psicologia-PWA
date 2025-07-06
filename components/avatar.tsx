@@ -13,7 +13,8 @@ export const Avatar: React.FC<Props> = ({ type, animate = true }) => {
 }
 
 const Cat: React.FC<{ animate?: boolean }> = ({ animate }) => (
-  <div className={`cat${animate ? '' : ' no-animation'}`}>
+  <div className={`avatar-cat${animate ? '' : ' no-animation'}`}>
+    <div className='cat'>
     <div className='head'>
       <div className='ears'>
         <div className='ear left'></div>
@@ -59,11 +60,12 @@ const Cat: React.FC<{ animate?: boolean }> = ({ animate }) => (
         </div>
       </div>
     </div>
+    </div>
   </div>
 )
 
 const Dog: React.FC<{ animate?: boolean }> = ({ animate }) => (
-  <div className={`box${animate ? '' : ' no-animation'}`}>
+  <div className={`avatar-dog${animate ? '' : ' no-animation'}`}>
     <div className='head'>
       <div className='ear ear-left'>
         <div className='inner-ear inner-ear-left'></div>
