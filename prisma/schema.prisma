@@ -13,5 +13,9 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  name       String?
+  description String?
+  avatar     String?
+  color      String   @default("#888888")
   createdAt DateTime @default(now())
 }

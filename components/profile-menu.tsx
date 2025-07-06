@@ -1,19 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useLingui, Trans } from '@lingui/react'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
+import Avatar from '@/components/avatar'
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [user, setUser] = useState<{
+    id: string
+    email: string
+    name?: string
+    description?: string
+    avatar?: string
+    color: string
+  } | null>(null)
   const { i18n } = useLingui()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((u) => setUser(u))
+      .catch(() => {})
+  }, [])
 
   const toggle = () => setOpen((o) => !o)
   const logout = () => {
-    setLoggedIn(false)
+    setUser(null)
     setOpen(false)
   }
 
@@ -23,23 +40,23 @@ const ProfileMenu = () => {
       <button
         onClick={toggle}
         className={`relative h-10 w-10 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-700 ${
-          loggedIn ? '' : 'bg-zinc-400'
+          user ? '' : 'bg-zinc-400'
         }`}
-        aria-label={i18n._('My profile')}
+        aria-label={i18n._('My page')}
       >
-        {loggedIn && (
-          <img
-            src='https://images.unsplash.com/photo-1612480797665-c96d261eae09?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-            alt=''
-            className='h-full w-full object-cover'
-          />
+        {user && (
+          user.avatar ? (
+            <Avatar type={user.avatar as any} animate={false} />
+          ) : (
+            <div className='h-full w-full' style={{ backgroundColor: user.color }} />
+          )
         )}
       </button>
 
       {open && (
         <div className='absolute right-0 mt-2 w-48 rounded-lg bg-white p-2 shadow-lg dark:bg-zinc-800 z-[250]'>
           <ul className='text-sm text-zinc-600 dark:text-zinc-300'>
-            {loggedIn ? (
+            {user ? (
               <>
                 <li>
                   <Link href='/profile' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
@@ -47,7 +64,7 @@ const ProfileMenu = () => {
                       <path d='M5 20a7 7 0 1114 0H5z' stroke='currentColor' />
                       <circle cx='12' cy='7' r='3' stroke='currentColor' />
                     </svg>
-                    <Trans id='My profile' />
+                  <Trans id='My page' />
                   </Link>
                 </li>
                 <li>
