@@ -87,25 +87,6 @@ const ProfileMenu = () => {
 								</li>
 								<li>
 									<Link
-										href='/profile/edit'
-										className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'
-									>
-										<svg
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'
-											className={iconClass}
-										>
-											<path
-												d='M5 20h14M4 16l10-10a2 2 0 112 2L6 18H4v-2z'
-												stroke='currentColor'
-											/>
-										</svg>
-										<Trans id='Edit profile' />
-									</Link>
-								</li>
-								<li>
-									<Link
 										href='/inbox'
 										className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'
 									>
