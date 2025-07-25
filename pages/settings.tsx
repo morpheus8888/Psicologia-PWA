@@ -11,7 +11,7 @@ interface Profile {
 	color: string
 }
 
-export default function EditProfile() {
+export default function SettingsPage() {
 	const [profile, setProfile] = useState<Profile | null>(null)
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
@@ -107,11 +107,11 @@ export default function EditProfile() {
 					</div>
 					<div>
 						<label className='block text-sm'>Email</label>
-						<input
-							className='w-full border p-2 bg-zinc-100'
-							value={profile.email}
-							readOnly
-						/>
+                                                <input
+                                                        className='w-full border p-2 bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50'
+                                                        value={profile.email}
+                                                        readOnly
+                                                />
 					</div>
 					<div>
 						<label className='block text-sm'>Description</label>
