@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "vercel-post-build": "prisma migrate deploy",
-    "vercel-build": "npx prisma generate && npx prisma migrate resolve --applied 20250726212156_add_user_fields && npx prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && prisma migrate resolve --applied 20250726212156_add_user_fields && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate"
