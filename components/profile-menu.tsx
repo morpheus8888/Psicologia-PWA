@@ -79,6 +79,14 @@ const ProfileMenu = () => {
                       <Trans id='Admin Panel' />
                     </Link>
                   </li>
+                  <li>
+                    <Link href='/admin/create-dictionary' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
+                      <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
+                        <path d='M12 4v16m8-8H4' stroke='currentColor'/>
+                      </svg>
+                      <Trans id='Create Dictionary' />
+                    </Link>
+                  </li>
                 )}
                 <li>
                   <button onClick={handleLogout} className='group flex w-full items-center rounded px-2 py-1 hover:text-indigo-500'>

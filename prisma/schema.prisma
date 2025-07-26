@@ -45,3 +45,11 @@ model Message {
 
   @@index([userId, createdAt])
 }
+
+model VocabularyEntry {
+  id         String   @id @default(cuid())
+  term       String   @unique
+  definition String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

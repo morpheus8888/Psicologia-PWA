@@ -187,6 +187,18 @@ export const messages = {
   'Fear': 'Paura',
   'Surprise': 'Sorpresa',
   'Disgust': 'Disgusto',
+  'Vocabolario Psicologico': 'Vocabolario Psicologico',
+  'A glossary of relevant psychological terms': 'Un glossario di termini rilevanti in ambito psicologico',
+  'Create Dictionary': 'Crea dizionario',
+  'Create dictionary entry': 'Crea voce dizionario',
+  'Word': 'Parola',
+  'Definition': 'Definizione',
+  'Saved': 'Salvato',
+  'Please provide term and definition': 'Inserisci termine e definizione',
+  'Access denied': 'Accesso negato',
+  'Search': 'Cerca',
+  'Saving...': 'Salvataggio...',
+  'Save': 'Salva',
   // Emotion selector
   'How do you feel today?': 'Come ti senti oggi?',
   'Select the emoji that best represents how you feel today:': 'Seleziona l\'emoticon che rappresenta meglio come ti senti oggi:'
