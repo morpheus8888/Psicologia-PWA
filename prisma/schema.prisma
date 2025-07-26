@@ -14,4 +14,8 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  name       String?
+  description String?
+  avatar     String   @default("cat")
+  color      String
 }
