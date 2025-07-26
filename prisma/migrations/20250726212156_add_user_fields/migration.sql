@@ -1,10 +1,10 @@
 ALTER TABLE "User"
-  ADD COLUMN "phone" TEXT,
-  ADD COLUMN "nickname" TEXT DEFAULT 'leone',
-  ADD COLUMN "avatar" TEXT DEFAULT 'leone',
-  ADD COLUMN "isAdmin" BOOLEAN NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS "phone" TEXT,
+  ADD COLUMN IF NOT EXISTS "nickname" TEXT DEFAULT 'leone',
+  ADD COLUMN IF NOT EXISTS "avatar" TEXT DEFAULT 'leone',
+  ADD COLUMN IF NOT EXISTS "isAdmin" BOOLEAN NOT NULL DEFAULT false;
 
-CREATE TABLE "DiaryEntry" (
+CREATE TABLE IF NOT EXISTS "DiaryEntry" (
   "id" TEXT NOT NULL,
   "userId" TEXT NOT NULL,
   "date" DATE NOT NULL,
@@ -16,9 +16,9 @@ CREATE TABLE "DiaryEntry" (
   CONSTRAINT "DiaryEntry_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX "DiaryEntry_userId_date_key" ON "DiaryEntry"("userId", "date");
+CREATE UNIQUE INDEX IF NOT EXISTS "DiaryEntry_userId_date_key" ON "DiaryEntry"("userId", "date");
 
-CREATE TABLE "Message" (
+CREATE TABLE IF NOT EXISTS "Message" (
   "id" TEXT NOT NULL,
   "title" TEXT NOT NULL,
   "content" TEXT NOT NULL,
@@ -29,4 +29,4 @@ CREATE TABLE "Message" (
   CONSTRAINT "Message_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
 );
 
-CREATE INDEX "Message_userId_createdAt_idx" ON "Message"("userId", "createdAt");
+CREATE INDEX IF NOT EXISTS "Message_userId_createdAt_idx" ON "Message"("userId", "createdAt");
