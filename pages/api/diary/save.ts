@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
-import { getJwtSecret } from '@/lib/get-jwt-secret'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('📥 API Save called:', { method: req.method, body: req.body })
@@ -19,11 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Token mancante' })
     }
 
-    const secret = getJwtSecret()
-    if (!secret) {
-      return res.status(500).json({ error: 'JWT secret not configured' })
-    }
-    const decoded = jwt.verify(token, secret) as { sub: string }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
     console.log('👤 Token decoded:', { userId: decoded.sub })
     
     const { date, freeText, mood } = req.body

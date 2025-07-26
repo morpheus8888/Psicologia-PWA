@@ -2,9 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
-import { getJwtSecret } from '@/lib/get-jwt-secret'
-
-const secret = getJwtSecret() || 'secret'
+const secret = process.env.JWT_SECRET || 'secret'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
