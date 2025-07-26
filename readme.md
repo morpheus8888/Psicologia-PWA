@@ -95,3 +95,4 @@ Create a `.env` file from `.env.example` and provide your Vercel Postgres connec
    `PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1` in Vercel to use this mirror.
 7. As a last resort, copy those binaries into `prisma/binaries/`, commit them
    and ensure `schema-engine-*` is executable with `chmod +x`.
+Authentication now uses a simple cookie set on login instead of JWT tokens.
