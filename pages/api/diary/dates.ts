@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,16 +7,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '')
-    
-    if (!token) {
-      return res.status(401).json({ error: 'Token mancante' })
-    }
+    const userId = req.cookies.userId
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
+    if (!userId) {
+      return res.status(401).json({ error: 'Not authenticated' })
+    }
     
     const entries = await prisma.diaryEntry.findMany({
-      where: { userId: decoded.sub },
+      where: { userId },
       select: { date: true, mood: true }
     })
 

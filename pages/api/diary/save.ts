@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -10,16 +9,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '')
-    console.log('🔑 Token check:', { hasToken: !!token })
-    
-    if (!token) {
-      console.log('❌ No token provided')
-      return res.status(401).json({ error: 'Token mancante' })
+    const userId = req.cookies.userId
+    console.log('🔑 Token check:', { hasUser: !!userId })
+
+    if (!userId) {
+      console.log('❌ No user cookie')
+      return res.status(401).json({ error: 'Not authenticated' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
-    console.log('👤 Token decoded:', { userId: decoded.sub })
+    console.log('👤 User id:', { userId })
     
     const { date, freeText, mood } = req.body
     console.log('📝 Request data:', { date, freeTextLength: freeText?.length, mood })
@@ -43,18 +41,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const dataToSave = { freeText, mood }
     console.log('💾 Data to save:', dataToSave)
     
-    console.log('🔍 Attempting upsert with:', { userId: decoded.sub, date: entryDate.toISOString() })
+    console.log('🔍 Attempting upsert with:', { userId, date: entryDate.toISOString() })
     
     const entry = await prisma.diaryEntry.upsert({
       where: {
         userId_date: {
-          userId: decoded.sub,
+          userId: userId,
           date: entryDate
         }
       },
       update: dataToSave,
       create: {
-        userId: decoded.sub,
+        userId: userId,
         date: entryDate,
         ...dataToSave
       }

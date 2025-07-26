@@ -74,12 +74,12 @@ Fluffless doesn't mean "start with nothing". The goal of this template is to be 
    npm run dev
    ```
 
-Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string and a JWT secret before running the commands.
+Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string before running the commands.
 
 ## Deploy to Vercel
 
 1. Push your code to GitHub and import the project on Vercel.
-2. Add the required environment variables `DATABASE_URL` and `JWT_SECRET`.
+2. Add the required environment variable `DATABASE_URL`.
    If you vendor Prisma binaries also set `PRISMA_QUERY_ENGINE_LIBRARY` and
    `PRISMA_SCHEMA_ENGINE_BINARY`.
 3. Vercel runs the `vercel-build` script which generates the Prisma client and
