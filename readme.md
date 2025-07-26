@@ -82,7 +82,8 @@ Create a `.env` file from `.env.example` and provide your Vercel Postgres connec
 2. Add the required environment variables `DATABASE_URL` and `JWT_SECRET`.
    If you vendor Prisma binaries also set `PRISMA_QUERY_ENGINE_LIBRARY` and
    `PRISMA_SCHEMA_ENGINE_BINARY`.
-3. Vercel runs the `vercel-build` script. In the build logs look for
+3. Vercel runs the `vercel-build` script which generates the Prisma client and
+   applies any pending migrations. In the build logs look for
    `Prisma schema loaded` and `Generating Prisma Client`.
 4. Check the Node.js version used by Vercel in *Project Settings > General* or
    by logging `process.versions.node`.
