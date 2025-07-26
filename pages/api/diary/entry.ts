@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
+import { getJwtSecret } from '@/lib/get-jwt-secret'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -14,7 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Token mancante' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
+    const secret = getJwtSecret()
+    if (!secret) {
+      return res.status(500).json({ error: 'JWT secret not configured' })
+    }
+    const decoded = jwt.verify(token, secret) as { sub: string }
     const { date } = req.query
 
     if (!date || typeof date !== 'string') {
