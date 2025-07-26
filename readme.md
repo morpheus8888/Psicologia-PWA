@@ -74,4 +74,4 @@ Fluffless doesn't mean "start with nothing". The goal of this template is to be 
    npm run dev
    ```
 
-Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string and a JWT secret before running the commands.
+Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string and a `JWT_SECRET` value before running the commands. If `JWT_SECRET` is not set, a default value of `"secret"` will be used during development.
