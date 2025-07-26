@@ -75,3 +75,22 @@ Fluffless doesn't mean "start with nothing". The goal of this template is to be 
    ```
 
 Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string and a JWT secret before running the commands.
+
+## Deploy to Vercel
+
+1. Push your code to GitHub and import the project on Vercel.
+2. Add the required environment variables `DATABASE_URL` and `JWT_SECRET`.
+   If you vendor Prisma binaries also set `PRISMA_QUERY_ENGINE_LIBRARY` and
+   `PRISMA_SCHEMA_ENGINE_BINARY`.
+3. Vercel runs the `vercel-build` script. In the build logs look for
+   `Prisma schema loaded` and `Generating Prisma Client`.
+4. Check the Node.js version used by Vercel in *Project Settings > General* or
+   by logging `process.versions.node`.
+5. With Node 20 use `rhel-openssl-3.0.x` in `binaryTargets`. For Node 18 use
+   `rhel-openssl-1.0.x` instead.
+6. If the build fails with a `403` fetching Prisma binaries, generate them on a
+   machine with internet and upload `libquery_engine-*` and `schema-engine-*`
+   somewhere public. Set `PRISMA_ENGINES_MIRROR` and
+   `PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1` in Vercel to use this mirror.
+7. As a last resort, copy those binaries into `prisma/binaries/`, commit them
+   and ensure `schema-engine-*` is executable with `chmod +x`.

@@ -6,9 +6,10 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "vercel-post-build": "prisma migrate deploy",
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@lingui/core": "^5.3.2",
