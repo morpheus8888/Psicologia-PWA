@@ -23,6 +23,7 @@ export interface User {
   email: string
   password: string
   name?: string
+  isAdmin?: boolean
 }
 
 export const createUser = (email: string, password: string, name?: string) => {

@@ -29,7 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: true,
         avatar: true,
         nickname: true,
-        phone: true
+        phone: true,
+        isAdmin: true
       }
     })
 

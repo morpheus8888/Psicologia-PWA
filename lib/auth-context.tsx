@@ -6,6 +6,7 @@ interface User {
   avatar: string
   nickname: string
   phone?: string
+  isAdmin?: boolean
 }
 
 interface AuthContextType {

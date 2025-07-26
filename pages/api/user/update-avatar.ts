@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = await prisma.user.update({
       where: { id: userId },
       data: { avatar, nickname: avatar },
-      select: { id: true, email: true, avatar: true, nickname: true, phone: true }
+      select: { id: true, email: true, avatar: true, nickname: true, phone: true, isAdmin: true }
     })
 
     return res.status(200).json({ success: true, user })

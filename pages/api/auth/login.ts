@@ -24,13 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' })
 
   const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' })
-  return res.status(200).json({ 
-    token, 
-    user: { 
-      id: user.id, 
-      email: user.email, 
-      avatar: user.avatar, 
-      nickname: user.nickname 
-    } 
+  return res.status(200).json({
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      avatar: user.avatar,
+      nickname: user.nickname,
+      isAdmin: user.isAdmin
+    }
   })
 }
