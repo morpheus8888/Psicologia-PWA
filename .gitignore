@@ -8,3 +8,11 @@ node_modules
 **/public/workbox**
 **/public/sw**
 .vercel
+
+# Environment variables
+.env*.local
+.env.local
+.env
+
+# Keep .env.example
+!.env.example

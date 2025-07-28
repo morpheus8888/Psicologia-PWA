@@ -1,17 +1,47 @@
-// Prisma schema
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  password     String
+  phone        String?
+  nickname     String?      @default("leone")
+  avatar       String?      @default("leone")
+  isAdmin      Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  diaryEntries DiaryEntry[]
+  messages     Message[]
 }
 
-model User {
+model DiaryEntry {
   id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
+  userId    String
+  date      DateTime @db.Date
+  freeText  String?  // Combined text from questions or free writing
+  mood      String?  // Emoji representing daily mood
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  userId    String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
