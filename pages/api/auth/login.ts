@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import prisma from '@/lib/prisma'
-
-const secret = process.env.JWT_SECRET || 'secret'
+import { prisma } from '@/lib/prisma'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -23,6 +20,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const valid = await bcrypt.compare(password, user.password)
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' })
 
-  const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' })
-  return res.status(200).json({ token })
+  // TODO: replace with a real session mechanism
+  res.setHeader('Set-Cookie', `userId=${user.id}; Path=/; HttpOnly; SameSite=Lax`)
+  return res.status(200).json({
+    user: {
+      id: user.id,
+      email: user.email,
+      avatar: user.avatar,
+      nickname: user.nickname,
+      isAdmin: user.isAdmin
+    }
+  })
 }

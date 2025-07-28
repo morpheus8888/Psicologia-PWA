@@ -3,17 +3,19 @@ import Link from 'next/link'
 import { useLingui, Trans } from '@lingui/react'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
+import { useAuth } from '@/lib/auth-context'
+import UserAvatar from '@/components/user-avatar'
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
+  const { user, isLoggedIn, logout: authLogout } = useAuth()
   const { i18n } = useLingui()
 
   const toggle = () => setOpen((o) => !o)
-  const logout = () => {
-    setLoggedIn(false)
+  const handleLogout = () => {
+    authLogout()
     setOpen(false)
   }
 
@@ -23,23 +25,25 @@ const ProfileMenu = () => {
       <button
         onClick={toggle}
         className={`relative h-10 w-10 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-700 ${
-          loggedIn ? '' : 'bg-zinc-400'
+          isLoggedIn ? '' : 'bg-zinc-400'
         }`}
         aria-label={i18n._('My profile')}
       >
-        {loggedIn && (
-          <img
-            src='https://images.unsplash.com/photo-1612480797665-c96d261eae09?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-            alt=''
-            className='h-full w-full object-cover'
-          />
+        {isLoggedIn && user ? (
+          <UserAvatar animal={user.avatar} size="sm" className="w-full h-full border-0 rounded-full" />
+        ) : (
+          <div className="w-full h-full bg-zinc-400 flex items-center justify-center">
+            <svg className="w-6 h-6 text-zinc-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+          </div>
         )}
       </button>
 
       {open && (
         <div className='absolute right-0 mt-2 w-48 rounded-lg bg-white p-2 shadow-lg dark:bg-zinc-800 z-[250]'>
           <ul className='text-sm text-zinc-600 dark:text-zinc-300'>
-            {loggedIn ? (
+            {isLoggedIn ? (
               <>
                 <li>
                   <Link href='/profile' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
@@ -51,42 +55,33 @@ const ProfileMenu = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href='/profile/edit' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
+                  <Link href='/diary' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
-                      <path d='M5 20h14M4 16l10-10a2 2 0 112 2L6 18H4v-2z' stroke='currentColor' />
+                      <path d='M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' stroke='currentColor' />
                     </svg>
-                    <Trans id='Edit profile' />
+                    <Trans id='Diary' />
                   </Link>
                 </li>
                 <li>
-                  <Link href='/inbox' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
+                  <Link href='/messages' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                       <path d='M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' stroke='currentColor' />
                     </svg>
-                    <Trans id='Inbox' />
+                    <Trans id='Messages' />
                   </Link>
                 </li>
+                {user?.isAdmin && (
+                  <li>
+                    <Link href='/admin' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
+                      <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
+                        <path d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' stroke='currentColor' />
+                      </svg>
+                      <Trans id='Admin Panel' />
+                    </Link>
+                  </li>
+                )}
                 <li>
-                  <Link href='/settings' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
-                    <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
-                      <path d='M12 15a3 3 0 100-6 3 3 0 000 6z' stroke='currentColor' />
-                      <path d='M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 005 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 005 9.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 5a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 5a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019 9c0 .7.4 1.3 1 1.51H21a2 2 0 010 4h-.09A1.65 1.65 0 0019 15.4z' stroke='currentColor' />
-                    </svg>
-                    <Trans id='Settings' />
-                  </Link>
-                </li>
-                <li>
-                  <Link href='/help' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
-                    <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
-                      <path d='M12 18h.01' stroke='currentColor' />
-                      <path d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' stroke='currentColor' />
-                      <path d='M9.09 9a3 3 0 115.83 1c-.75 1-1.5 1.5-1.5 2.5v.5' stroke='currentColor' />
-                    </svg>
-                    <Trans id='Help' />
-                  </Link>
-                </li>
-                <li>
-                  <button onClick={logout} className='group flex w-full items-center rounded px-2 py-1 hover:text-indigo-500'>
+                  <button onClick={handleLogout} className='group flex w-full items-center rounded px-2 py-1 hover:text-indigo-500'>
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                       <path d='M16 17l5-5m0 0l-5-5m5 5H9' stroke='currentColor' />
                       <path d='M13 22H5a2 2 0 01-2-2V4a2 2 0 012-2h8' stroke='currentColor' />

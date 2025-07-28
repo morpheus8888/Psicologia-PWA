@@ -123,3 +123,7 @@ input.check-toggle-round-flat:checked + label:after {
 .switch-lg input.check-toggle-round-flat:checked + label:after {
   margin-left: 33px;
 }
+
+.scale-130 {
+  transform: scale(1.3);
+}

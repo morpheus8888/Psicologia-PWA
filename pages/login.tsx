@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react'
 import { Trans } from '@lingui/react'
 import Page from '@/components/page'
+import { useAuth } from '@/lib/auth-context'
+import { useRouter } from 'next/router'
 
 export default function Login() {
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<'login' | 'register'>('login')
   const [message, setMessage] = useState('')
+  const { login, isLoggedIn } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
+    // Redirect se già loggato
+    if (isLoggedIn) {
+      router.push('/')
+      return
+    }
+
     const onScroll = () => {
       if (window.scrollY > window.innerHeight / 3) {
         setOpen(true)
@@ -22,7 +32,7 @@ export default function Login() {
       window.removeEventListener('scroll', onScroll)
       document.removeEventListener('keydown', onKey)
     }
-  }, [])
+  }, [isLoggedIn, router])
 
   const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -36,8 +46,10 @@ export default function Login() {
     })
     const data = await res.json()
     if (res.ok) {
-      localStorage.setItem('token', data.token)
+      login(data.token, data.user)
       setMessage('Logged in')
+      setOpen(false)
+      router.push('/')
     } else {
       setMessage(data.error || 'Error')
     }
