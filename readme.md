@@ -1,98 +1,49 @@
-<p align="center">
-	<img alt="Rice Bowl" src="public/images/icon-512.png" width="90">
-	<h2 align="center">Next PWA Template</h2>
-</p>
+# Psicologia PWA
 
-<p align="center">Fluffless app template to inspire less</p>
+Prototipo di applicazione web a tema psicologico realizzata con Next.js e Prisma. Il progetto nasce dal template "Next PWA Template" ma include una serie di funzioni pensate per offrire un percorso di self‑help con la possibilità di interazione con una psicologa.
 
-<p align="center">
-	<a href="https://next-pwa-template.now.sh">Live demo</a>
-</p>
+## Funzioni attualmente implementate
 
-<p align="center">
-	<a href="https://web.dev/measure">
-		<img alt="100% lighthouse scores" src="https://img.shields.io/badge/lighthouse-100%25-845EF7.svg?logo=lighthouse&logoColor=white&style=flat-square" />
-	</a>
-</p>
+- **Registrazione e login**: gli utenti possono creare un account tramite email e password (non è ancora prevista la conferma tramite email).
+- **Profilo personale**: ogni utente può scegliere il proprio avatar tra dieci animali disponibili e impostare un nickname. Dal profilo è possibile modificare telefono, email e password.
+- **Diario guidato**: ogni giorno vengono proposte dieci domande casuali prese da `lib/diary-questions.ts`. È possibile rispondere o saltare una domanda. Alla fine l’utente seleziona il proprio umore (emoji) e salva l’entrata.
+  - Le voci del diario sono modificabili solo nel giorno di creazione.
+  - Le entrate salvate sono consultabili da un calendario.
+  - È disponibile anche un editor di testo ricco per modificare liberamente il contenuto.
+- **Pannello admin**: gli account con permesso `isAdmin` possono inviare messaggi a tutti gli utenti e vedere alcune statistiche.
+- **Messaggi**: ogni utente ha una pagina dedicata dove leggere le comunicazioni ricevute dall’amministratore.
+- **PWA e tema scuro/chiaro**: l’app è ottimizzata per dispositivi mobili ed è installabile come Progressive Web App.
 
-## Features
+## Funzioni ancora da sviluppare
 
-- ✨ Fluffless PWA using Next 13
-- 🌗 Lovely night/day themes
-- 🦄 Easily removable [nice-to-haves](#use-only-what-you-need)
-- 📱 Native-like mobile experience
-- 📦 Neatly wrapped like that avocado you got for christmas
+- **Blog e vocabolario psicologico** scritti dalla psicologa con editor integrato e parola casuale del giorno.
+- **Pagina curriculum** con le informazioni professionali.
+- **Pagina contatti** con prenotazione di appuntamenti a pagamento.
+- Migliorie grafiche e navigazione dedicata alle sezioni sopra indicate.
 
-## Getting started
+## Avvio del progetto
 
-1. [Use this template](https://github.com/mvllow/next-pwa-template/generate)
-2. Replace `public/images` with your own
-3. Enjoy ✨
-
-## Use only what you need
-
-Fluffless doesn't mean "start with nothing". The goal of this template is to be an entry into maintainable apps.
-
-**The essentials**
-
-- Typescript, made easy with Next.js
-- [tailwindcss](https://github.com/tailwindlabs/tailwindcss) for utility-first styling
-- [next-pwa](https://github.com/shadowwalker/next-pwa) for offline support
-
-**Nice to haves**
-
-- [next-themes](https://github.com/pacocoursey/next-themes) or similar for low stress theming
-
-## Gallery
-
-### Desktop
-
-<img width="1728" alt="Rice Bowl PWA on macOS in dark mode" src="https://github.com/mvllow/next-pwa-template/assets/1474821/889bef1b-af58-4efa-b1f3-3ea021ec9760">
-
-### Mobile
-
-<img width="360" alt="Rice Bowl PWA on iOS in light mode" src="https://github.com/mvllow/next-pwa-template/assets/1474821/1f0fa36e-23c7-4bcf-aa6e-f447559cae62" />
-
-<img width="360" alt="Rice Bowl PWA on iOS in dark mode" src="https://github.com/mvllow/next-pwa-template/assets/1474821/2fac61d0-dc29-4022-8b39-003306f80fb4" />
-
-## Authentication Setup
-
-1. Install dependencies:
+1. Installare le dipendenze:
    ```bash
    npm install
    ```
-2. Generate the Prisma client:
+2. Generare il client Prisma:
    ```bash
    npx prisma generate
    ```
-3. Run the Prisma migrations:
+3. Applicare le migrazioni:
    ```bash
    npx prisma migrate dev --name init
    ```
-4. Start the development server:
+4. Avviare l’ambiente di sviluppo:
    ```bash
    npm run dev
    ```
 
-Create a `.env` file from `.env.example` and provide your Vercel Postgres connection string before running the commands.
+Compilare un file `.env` partendo da `.env.example` e impostare la variabile `DATABASE_URL` per la propria istanza Postgres.
 
-## Deploy to Vercel
+## Deploy su Vercel
 
-1. Push your code to GitHub and import the project on Vercel.
-2. Add the required environment variable `DATABASE_URL`.
-   If you vendor Prisma binaries also set `PRISMA_QUERY_ENGINE_LIBRARY` and
-   `PRISMA_SCHEMA_ENGINE_BINARY`.
-3. Vercel runs the `vercel-build` script which generates the Prisma client and
-   applies any pending migrations. In the build logs look for
-   `Prisma schema loaded` and `Generating Prisma Client`.
-4. Check the Node.js version used by Vercel in *Project Settings > General* or
-   by logging `process.versions.node`.
-5. With Node 20 use `rhel-openssl-3.0.x` in `binaryTargets`. For Node 18 use
-   `rhel-openssl-1.0.x` instead.
-6. If the build fails with a `403` fetching Prisma binaries, generate them on a
-   machine with internet and upload `libquery_engine-*` and `schema-engine-*`
-   somewhere public. Set `PRISMA_ENGINES_MIRROR` and
-   `PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1` in Vercel to use this mirror.
-7. As a last resort, copy those binaries into `prisma/binaries/`, commit them
-   and ensure `schema-engine-*` is executable with `chmod +x`.
-Authentication now uses a simple cookie set on login instead of JWT tokens.
+1. Effettuare il push su GitHub e importare il progetto su Vercel.
+2. Impostare `DATABASE_URL` (e le eventuali variabili per i binari Prisma).
+3. Vercel eseguirà lo script `vercel-build` che genera il client Prisma ed applica le migrazioni.
