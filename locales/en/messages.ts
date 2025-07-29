@@ -188,6 +188,18 @@ export const messages = {
   'Angry': 'Angry',
   'Fear': 'Fear',
   'Surprise': 'Surprise',
-  'Disgust': 'Disgust'
+  'Disgust': 'Disgust',
+  'Vocabolario Psicologico': 'Psychological Vocabulary',
+  'A glossary of relevant psychological terms': 'A glossary of relevant psychological terms',
+  'Create Dictionary': 'Create Dictionary',
+  'Create dictionary entry': 'Create dictionary entry',
+  'Word': 'Word',
+  'Definition': 'Definition',
+  'Saved': 'Saved',
+  'Please provide term and definition': 'Please provide term and definition',
+  'Access denied': 'Access denied',
+  'Search': 'Search',
+  'Saving...': 'Saving...',
+  'Save': 'Save'
 }
 export default messages
