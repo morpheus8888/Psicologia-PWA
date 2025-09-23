@@ -14,6 +14,9 @@ const ProfileMenu = () => {
   const { i18n } = useLingui()
   const isAdmin = !!user && (user.role === 'ADMIN' || user.isAdmin)
 
+  const ariaLabel = i18n._('Profile menu')
+  const ariaLabelText = typeof ariaLabel === 'string' ? ariaLabel : 'Profile menu'
+
   const toggle = () => setOpen((o) => !o)
   const handleLogout = () => {
     authLogout()
@@ -28,7 +31,7 @@ const ProfileMenu = () => {
         className={`relative h-10 w-10 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-700 ${
           isLoggedIn ? '' : 'bg-zinc-400'
         }`}
-        aria-label={i18n._('Profile menu') || 'Profile menu'}
+        aria-label={ariaLabelText}
       >
         {isLoggedIn && user ? (
           <UserAvatar animal={user.avatar} size="sm" className="w-full h-full border-0 rounded-full" />

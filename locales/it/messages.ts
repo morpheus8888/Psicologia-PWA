@@ -222,6 +222,7 @@ export const messages = {
   'Fear': 'Paura',
   'Surprise': 'Sorpresa',
   'Disgust': 'Disgusto',
+  'Profile menu': 'Menu profilo',
   // Emotion selector
   'How do you feel today?': 'Come ti senti oggi?',
   'Select the emoji that best represents how you feel today:': 'Seleziona l\'emoticon che rappresenta meglio come ti senti oggi:',
