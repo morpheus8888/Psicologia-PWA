@@ -60,6 +60,14 @@ npm run lint
 npm run build
 ```
 
+### Localizzazione
+
+Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che utilizza dizionari TypeScript (`locales/en/messages.ts`, `locales/it/messages.ts`).
+
+- Aggiungi nuove stringhe traducibili aggiornando entrambi i file di dizionario.
+- Per usare il toggle lingua importa `useLingui`/`Trans` da `@/lib/i18n`.
+- Le route Next.js mantengono il locale sincronizzato con il contesto, quindi il deploy su Vercel funziona senza passaggi extra.
+
 ## Deployment su Vercel
 
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
