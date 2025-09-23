@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import compileMessage from '@lingui/message-utils/compileMessage'
+import { compileMessage } from '@lingui/message-utils/compileMessage'
 
 import itMessages from '@/locales/it/messages'
 import enMessages from '@/locales/en/messages'
-import { resolvePhrase, PhraseKey } from '@/lib/i18n-phrases'
+import { resolvePhrase } from '@/lib/i18n-phrases'
 
 export const locales = {
   it: { label: 'IT', loader: () => import('@/locales/it/messages') },
@@ -92,7 +92,7 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
   return (
     <I18nProvider
       i18n={i18n}
-      defaultComponent={({ id }) => <>{resolvePhrase(activeLocale, id as PhraseKey)}</>}
+      defaultComponent={({ id }) => <>{resolvePhrase(activeLocale, id)}</>}
     >
       {children}
     </I18nProvider>
