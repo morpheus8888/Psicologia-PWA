@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { Trans, useLingui } from '@lingui/react'
@@ -62,6 +62,35 @@ const Profile = () => {
       setDiaryVisibility(user.diaryVisibility)
     }
   }, [isLoggedIn, user, router])
+
+  useEffect(() => {
+    if (!router.isReady) return
+    const tab = router.query.tab
+    if (typeof tab === 'string') {
+      const found = tabs.find((item) => item.id === tab)
+      if (found) {
+        setActiveTab(found.id)
+      }
+    }
+  }, [router.isReady, router.query.tab])
+
+  const handleTabChange = useCallback(
+    (tabId: (typeof tabs)[number]['id']) => {
+      setActiveTab(tabId)
+      const nextQuery = { ...router.query }
+      if (tabId === 'profile') {
+        delete nextQuery.tab
+      } else {
+        nextQuery.tab = tabId
+      }
+      void router.replace(
+        { pathname: router.pathname, query: nextQuery },
+        undefined,
+        { shallow: true, scroll: false }
+      )
+    },
+    [router]
+  )
 
   const handleSaveAvatar = async () => {
     if (!token) return
@@ -259,7 +288,7 @@ const Profile = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`rounded-full px-3 py-1 text-sm transition-colors ${
                   activeTab === tab.id
                     ? 'bg-white text-indigo-600 shadow dark:bg-zinc-700 dark:text-indigo-300'

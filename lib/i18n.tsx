@@ -4,6 +4,9 @@ import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
 import { en, it } from 'make-plural/plurals'
 
+import itMessages from '@/locales/it/messages'
+import enMessages from '@/locales/en/messages'
+
 export const locales = {
   it: { label: 'IT', loader: () => import('@/locales/it/messages') },
   en: { label: 'EN', loader: () => import('@/locales/en/messages') },
@@ -21,6 +24,17 @@ i18n.loadLocaleData({
   it: { plurals: pluralRules.it },
 })
 
+const buildCatalog = (locale: keyof typeof pluralRules, messages: Record<string, string>) => ({
+  messages,
+  locale,
+  languageData: { plurals: pluralRules[locale] },
+  _compiled: true,
+})
+
+i18n.load('it', buildCatalog('it', itMessages))
+i18n.load('en', buildCatalog('en', enMessages))
+i18n.activate(defaultLocale)
+
 export const LocalizationProvider = ({ children }: { children: React.ReactNode }) => {
   const { locale } = useRouter()
   const [ready, setReady] = useState(false)
@@ -37,12 +51,7 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
         const localeModule = await locales[targetLocale].loader()
         const messages: Record<string, string> = (localeModule as any).default ?? (localeModule as any).messages ?? {}
 
-        const catalog = {
-          messages,
-          locale: targetLocale,
-          languageData: { plurals: pluralRules[targetLocale] ?? pluralRules[defaultLocale] },
-          _compiled: true,
-        }
+        const catalog = buildCatalog(targetLocale, messages)
 
         i18n.load(targetLocale, catalog)
         i18n.activate(targetLocale)
@@ -54,12 +63,7 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
           const defaultModule = await locales[defaultLocale].loader()
           const messages: Record<string, string> =
             (defaultModule as any).default ?? (defaultModule as any).messages ?? {}
-          const catalog = {
-            messages,
-            locale: defaultLocale,
-            languageData: { plurals: pluralRules[defaultLocale] },
-            _compiled: true,
-          }
+          const catalog = buildCatalog(defaultLocale, messages)
 
           i18n.load(defaultLocale, catalog)
           i18n.activate(defaultLocale)
