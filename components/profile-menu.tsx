@@ -28,7 +28,7 @@ const ProfileMenu = () => {
         className={`relative h-10 w-10 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-700 ${
           isLoggedIn ? '' : 'bg-zinc-400'
         }`}
-        aria-label={i18n._('My profile')}
+        aria-label={i18n._('Profile menu')}
       >
         {isLoggedIn && user ? (
           <UserAvatar animal={user.avatar} size="sm" className="w-full h-full border-0 rounded-full" />
@@ -52,7 +52,15 @@ const ProfileMenu = () => {
                       <path d='M5 20a7 7 0 1114 0H5z' stroke='currentColor' />
                       <circle cx='12' cy='7' r='3' stroke='currentColor' />
                     </svg>
-                    <Trans id='My profile' />
+                    <Trans id='Profile' />
+                  </Link>
+                </li>
+                <li>
+                  <Link href='/profile?tab=settings' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
+                    <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
+                      <path d='M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09A1.65 1.65 0 0010 3.09V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51h.09a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z' stroke='currentColor' />
+                    </svg>
+                    <Trans id='Settings' />
                   </Link>
                 </li>
                 <li>
