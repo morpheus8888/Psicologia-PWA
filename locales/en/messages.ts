@@ -312,6 +312,8 @@ export const messages = {
   'The requested article is no longer available.': 'The requested article is no longer available.',
   'This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.': 'This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.',
   'Open messages': 'Open messages',
+  'You have one unread message': 'You have one unread message',
+  'You have {count} unread messages': 'You have {count} unread messages',
   '{count, plural, one {You have # unread message} other {You have # unread messages}}': '{count, plural, one {You have # unread message} other {You have # unread messages}}',
   'All caught up!': 'All caught up!'
 }

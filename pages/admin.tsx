@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { Trans, useLingui } from '@lingui/react'
@@ -684,7 +684,7 @@ const UserDetailPanel = ({
 }) => {
   const { i18n } = useLingui()
 
-  const infoPairs = useMemo(() => {
+  const infoPairs = useMemo<Array<{ label: string; value: ReactNode }>>(() => {
     const roleMap: Record<UserDetails['role'], string> = {
       ADMIN: i18n._('Administrator'),
       PROFESSIONAL: i18n._('Professional'),

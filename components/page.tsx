@@ -40,19 +40,24 @@ const Page = ({ title, children }: Props) => {
 			className='mx-auto max-w-screen-md pt-20 pb-16 px-safe sm:pb-0'
 		>
 		<div className='space-y-4 p-6'>
-			{unreadCount > 0 && (
-				<div className='flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700 shadow-sm dark:border-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-100'>
-					<span>
-						{ i18n._('{count, plural, one {You have # unread message} other {You have # unread messages}}', { count: unreadCount }) }
+		{unreadCount > 0 && (
+			<div className='flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700 shadow-sm dark:border-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-100'>
+				<span>
+					{unreadCount === 1
+						? i18n._('You have one unread message')
+						: i18n._('You have {count} unread messages', { count: unreadCount })}
+				</span>
+				<Link
+					href='/messages'
+					className='relative inline-flex items-center gap-2 rounded-full border border-indigo-500 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-500 transition hover:bg-indigo-500 hover:text-white'
+				>
+					<Trans id='Open messages' />
+					<span className='inline-flex min-w-[1.5rem] justify-center rounded-full bg-indigo-500 px-2 py-0.5 text-[10px] font-bold text-white'>
+						{unreadCount > 99 ? '99+' : unreadCount}
 					</span>
-					<Link
-						href='/messages'
-						className='rounded-full border border-indigo-500 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-500 hover:bg-indigo-500 hover:text-white'
-					>
-						<Trans id='Open messages' />
-					</Link>
-				</div>
-			)}
+				</Link>
+			</div>
+		)}
 			{children}
 		</div>
 		</main>

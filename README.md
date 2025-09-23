@@ -39,6 +39,7 @@ DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 - Prisma tiene traccia della struttura del database con le migrazioni in `prisma/migrations/`. Ogni volta che aggiungiamo colonne o nuove tabelle viene creata una cartella con gli script SQL da applicare.
 - In locale usa `npx prisma migrate dev --name <nome>` per creare le nuove migrazioni e aggiornare il database di sviluppo.
 - In ambienti remoti (es. Vercel) le migrazioni vengono applicate automaticamente grazie allo script `scripts/run-migrations.js`, eseguito sia durante `npm run build` sia nel post-build di Vercel. Nessuna azione manuale è richiesta.
+- Se il database non è raggiungibile (es. P1001) lo script segnala l'errore ma lascia proseguire il build; al deploy successivo, quando il DB torna disponibile, le migrazioni vengono applicate.
 - Se vedi errori del tipo `column "user.role" does not exist` significa che il database era privo di migrazioni e l'ambiente è ripartito senza `DATABASE_URL`. Appena la variabile è presente, il successivo build applicherà automaticamente gli script pendenti.
 
 ## Setup locale
