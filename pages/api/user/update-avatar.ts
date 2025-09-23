@@ -35,10 +35,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = await prisma.user.update({
       where: { id: userId },
       data: { avatar, nickname: avatar },
-      select: { id: true, email: true, avatar: true, nickname: true, phone: true, role: true, diaryVisibility: true }
+      select: { id: true, email: true, avatar: true, nickname: true, phone: true, role: true, diaryVisibility: true, diaryPasswordHash: true }
     })
 
-    return res.status(200).json({ success: true, user: { ...user, isAdmin: user.role === 'ADMIN' } })
+    const { diaryPasswordHash, ...safeUser } = user
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        ...safeUser,
+        isAdmin: user.role === 'ADMIN',
+        hasDiaryPassword: !!diaryPasswordHash,
+      }
+    })
   } catch (err: any) {
     if (err instanceof Error && err.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })

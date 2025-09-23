@@ -1,32 +1,55 @@
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+import { Trans, useLingui } from '@lingui/react'
+
 import Page from '@/components/page'
 import Section from '@/components/section'
 import UserAvatar from '@/components/user-avatar'
 import NicknameSelector from '@/components/nickname-selector'
-import { Trans } from '@lingui/react'
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/lib/auth-context'
-import type { DiaryVisibility } from '@/lib/auth-context'
-import { useRouter } from 'next/router'
+import { useAuth, DiaryVisibility } from '@/lib/auth-context'
+
+const tabs = [
+  { id: 'profile', label: 'Profile' },
+  { id: 'settings', label: 'Settings' },
+] as const
+
+const DiaryVisibilityOptions: Array<{ value: DiaryVisibility; label: string; description: string }> = [
+  { value: 'PRIVATE', label: 'Only me', description: 'Diary entries stay encrypted and are accessible only to you.' },
+  { value: 'PUBLIC', label: 'Everyone', description: 'Entries marked public can be viewed by administrators and appear in compliance reporting.' },
+  { value: 'PROFESSIONALS', label: 'Professionals only', description: 'Licensed professionals attached to your account can review your diary.' },
+]
 
 const Profile = () => {
   const { user, token, isLoggedIn, updateUser } = useAuth()
   const router = useRouter()
-  const [isEditing, setIsEditing] = useState(false)
+  const { i18n } = useLingui()
+
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['id']>('profile')
+
+  const [isEditingAvatar, setIsEditingAvatar] = useState(false)
   const [selectedAnimal, setSelectedAnimal] = useState('leone')
-  const [saving, setSaving] = useState(false)
+  const [savingAvatar, setSavingAvatar] = useState(false)
+
   const [editingPhone, setEditingPhone] = useState(false)
   const [editingEmail, setEditingEmail] = useState(false)
   const [editingPassword, setEditingPassword] = useState(false)
+
   const [phoneValue, setPhoneValue] = useState('')
   const [emailValue, setEmailValue] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
   const [diaryVisibility, setDiaryVisibility] = useState<DiaryVisibility>('PRIVATE')
-  const [savingVisibility, setSavingVisibility] = useState(false)
+  const [updatingVisibility, setUpdatingVisibility] = useState(false)
+
+  const [currentDiaryPassword, setCurrentDiaryPassword] = useState('')
+  const [newDiaryPassword, setNewDiaryPassword] = useState('')
+  const [confirmDiaryPassword, setConfirmDiaryPassword] = useState('')
+  const [updatingDiaryPassword, setUpdatingDiaryPassword] = useState(false)
 
   useEffect(() => {
-    // Redirect se non loggato
     if (!isLoggedIn) {
       router.push('/login')
       return
@@ -36,127 +59,93 @@ const Profile = () => {
       setSelectedAnimal(user.avatar)
       setPhoneValue(user.phone || '')
       setEmailValue(user.email)
-      setDiaryVisibility(user.diaryVisibility || 'PRIVATE')
+      setDiaryVisibility(user.diaryVisibility)
     }
   }, [isLoggedIn, user, router])
 
-  const handleSavePhone = async () => {
-    setSaving(true)
-    
-    if (!token) {
-      alert('Non sei autenticato')
-      setSaving(false)
-      return
-    }
+  const handleSaveAvatar = async () => {
+    if (!token) return
+    setSavingAvatar(true)
+    try {
+      const res = await fetch('/api/user/update-avatar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ avatar: selectedAnimal }),
+      })
 
+      const data = await res.json()
+      if (res.ok) {
+        updateUser(data.user)
+        setIsEditingAvatar(false)
+        alert(i18n._('Avatar updated successfully!'))
+      } else {
+        alert(data.error || 'Errore durante l\'aggiornamento')
+      }
+    } catch (error) {
+      alert('Errore di connessione')
+    }
+    setSavingAvatar(false)
+  }
+
+  const handleSavePhone = async () => {
+    if (!token) return
     try {
       const res = await fetch('/api/user/update-phone', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ phone: phoneValue })
+        body: JSON.stringify({ phone: phoneValue }),
       })
-
       const data = await res.json()
-      
       if (res.ok) {
         updateUser(data.user)
         setEditingPhone(false)
-        alert('Telefono aggiornato con successo!')
+        alert(i18n._('Phone updated successfully'))
       } else {
-        alert(data.error || 'Errore durante l\'aggiornamento')
+        alert(data.error || 'Errore durante l\'aggiornamento del telefono')
       }
     } catch (error) {
       alert('Errore di connessione')
     }
-    
-    setSaving(false)
-  }
-
-  const handleUpdateDiaryVisibility = async (visibility: DiaryVisibility) => {
-    if (!token) {
-      alert('Non sei autenticato')
-      return
-    }
-
-    setDiaryVisibility(visibility)
-    setSavingVisibility(true)
-
-    try {
-      const res = await fetch('/api/user/update-visibility', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ visibility })
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        updateUser(data.user)
-      } else {
-        alert(data.error || 'Errore durante l\'aggiornamento della visibilità')
-        setDiaryVisibility(user?.diaryVisibility || 'PRIVATE')
-      }
-    } catch (error) {
-      alert('Errore di connessione')
-      setDiaryVisibility(user?.diaryVisibility || 'PRIVATE')
-    }
-
-    setSavingVisibility(false)
   }
 
   const handleSaveEmail = async () => {
-    setSaving(true)
-    
-    if (!token) {
-      alert('Non sei autenticato')
-      setSaving(false)
-      return
-    }
-
+    if (!token) return
     try {
       const res = await fetch('/api/user/update-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ email: emailValue })
+        body: JSON.stringify({ email: emailValue }),
       })
-
       const data = await res.json()
-      
       if (res.ok) {
         updateUser(data.user)
         setEditingEmail(false)
-        alert('Email aggiornata con successo!')
+        alert(i18n._('Email updated successfully'))
       } else {
-        alert(data.error || 'Errore durante l\'aggiornamento')
+        alert(data.error || 'Errore durante l\'aggiornamento dell\'email')
       }
     } catch (error) {
       alert('Errore di connessione')
     }
-    
-    setSaving(false)
   }
 
   const handleSavePassword = async () => {
-    setSaving(true)
-    
-    if (!token) {
-      alert('Non sei autenticato')
-      setSaving(false)
+    if (!token) return
+    if (newPassword !== confirmPassword) {
+      alert(i18n._('Passwords do not match'))
       return
     }
-
-    if (newPassword !== confirmPassword) {
-      alert('Le nuove password non coincidono')
-      setSaving(false)
+    if (newPassword.length < 6) {
+      alert(i18n._('Password must be at least 6 characters'))
       return
     }
 
@@ -165,76 +154,94 @@ const Profile = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
-          currentPassword, 
-          newPassword, 
-          confirmPassword 
-        })
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
       })
-
       const data = await res.json()
-      
       if (res.ok) {
         setEditingPassword(false)
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
-        alert('Password aggiornata con successo!')
+        alert(i18n._('Password updated successfully'))
       } else {
-        alert(data.error || 'Errore durante l\'aggiornamento')
+        alert(data.error || 'Errore durante l\'aggiornamento della password')
       }
     } catch (error) {
       alert('Errore di connessione')
     }
-    
-    setSaving(false)
   }
 
-  const handleSaveAvatar = async () => {
-    setSaving(true)
-    
-    if (!token) {
-      alert('Non sei autenticato')
-      setSaving(false)
-      return
-    }
-
+  const handleUpdateVisibility = async (visibility: DiaryVisibility) => {
+    if (!token) return
+    setUpdatingVisibility(true)
+    setDiaryVisibility(visibility)
     try {
-      const res = await fetch('/api/user/update-avatar', {
+      const res = await fetch('/api/user/update-visibility', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ avatar: selectedAnimal })
+        body: JSON.stringify({ visibility }),
       })
-
       const data = await res.json()
-      
       if (res.ok) {
         updateUser(data.user)
-        setIsEditing(false)
-        alert('Avatar aggiornato con successo!')
       } else {
-        alert(data.error || 'Errore durante l\'aggiornamento')
+        alert(data.error || 'Errore durante l\'aggiornamento della visibilità')
+        setDiaryVisibility(user?.diaryVisibility ?? 'PRIVATE')
+      }
+    } catch (error) {
+      alert('Errore di connessione')
+      setDiaryVisibility(user?.diaryVisibility ?? 'PRIVATE')
+    }
+    setUpdatingVisibility(false)
+  }
+
+  const handleUpdateDiaryPassword = async () => {
+    if (!token) return
+    if (newDiaryPassword !== confirmDiaryPassword) {
+      alert(i18n._('Passwords do not match'))
+      return
+    }
+    if (newDiaryPassword.length < 8) {
+      alert(i18n._('Diary password must be at least 8 characters'))
+      return
+    }
+    setUpdatingDiaryPassword(true)
+    try {
+      const res = await fetch('/api/user/update-diary-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword: currentDiaryPassword, newPassword: newDiaryPassword, confirmPassword: confirmDiaryPassword }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        updateUser(data.user)
+        setCurrentDiaryPassword('')
+        setNewDiaryPassword('')
+        setConfirmDiaryPassword('')
+        alert(i18n._('Diary password updated successfully'))
+      } else {
+        alert(data.error || 'Errore durante l\'aggiornamento della password del diario')
       }
     } catch (error) {
       alert('Errore di connessione')
     }
-    
-    setSaving(false)
+    setUpdatingDiaryPassword(false)
   }
 
   if (!isLoggedIn || !user) {
     return (
       <Page title='Profile'>
         <Section>
-          <div className="text-center">
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Caricamento...
-            </p>
+          <div className='text-center'>
+            <p className='text-zinc-600 dark:text-zinc-400'>Caricamento...</p>
           </div>
         </Section>
       </Page>
@@ -244,267 +251,339 @@ const Profile = () => {
   return (
     <Page title='Profile'>
       <Section>
-        <div className="flex items-center gap-4 mb-6">
-          <UserAvatar animal={user.avatar} size="lg" />
-          <div className="flex-1">
-            <h2 className='text-xl font-semibold text-zinc-800 dark:text-zinc-200'>
-              <Trans id='My profile' />
-            </h2>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-2">
-              {user.email}
-            </p>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-              Avatar: <Trans id={user.avatar} />
-            </p>
-          </div>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            {isEditing ? <Trans id="Annulla" /> : <Trans id="Modifica Avatar" />}
-          </button>
-        </div>
-
-        {isEditing && (
-          <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
-            <NicknameSelector 
-              selectedAnimal={selectedAnimal}
-              onAnimalSelect={setSelectedAnimal}
-              className="mb-4"
-            />
-            <div className="flex gap-3 justify-center">
+        <div className='flex justify-between items-center border-b border-zinc-200 pb-4 dark:border-zinc-700'>
+          <h1 className='text-2xl font-semibold text-zinc-800 dark:text-zinc-100'>
+            <Trans id='My profile' />
+          </h1>
+          <div className='flex gap-2 rounded-full bg-zinc-100 p-1 dark:bg-zinc-800'>
+            {tabs.map((tab) => (
               <button
-                onClick={handleSaveAvatar}
-                disabled={saving}
-                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors"
-              >
-                {saving ? <Trans id="Salvando..." /> : <Trans id="Salva Avatar" />}
-              </button>
-              <button
-                onClick={() => {
-                  setIsEditing(false)
-                  setSelectedAnimal(user.avatar)
-                }}
-                className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                <Trans id="Annulla" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Phone Editor */}
-        <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                <Trans id="Phone" />
-              </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                {user.phone || 'Non impostato'}
-              </p>
-            </div>
-            <button
-              onClick={() => setEditingPhone(!editingPhone)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              {editingPhone ? <Trans id="Annulla" /> : <Trans id="Edit Phone" />}
-            </button>
-          </div>
-          
-          {editingPhone && (
-            <div className="space-y-4">
-              <input
-                type="tel"
-                value={phoneValue}
-                onChange={(e) => setPhoneValue(e.target.value)}
-                placeholder="+39 123 456 7890"
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-              />
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={handleSavePhone}
-                  disabled={saving}
-                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors"
-                >
-                  {saving ? <Trans id="Salvando..." /> : <Trans id="Save Phone" />}
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingPhone(false)
-                    setPhoneValue(user.phone || '')
-                  }}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <Trans id="Annulla" />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Email Editor */}
-        <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                <Trans id="Email" />
-              </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                {user.email}
-              </p>
-            </div>
-            <button
-              onClick={() => setEditingEmail(!editingEmail)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              {editingEmail ? <Trans id="Annulla" /> : <Trans id="Edit Email" />}
-            </button>
-          </div>
-          
-          {editingEmail && (
-            <div className="space-y-4">
-              <input
-                type="email"
-                value={emailValue}
-                onChange={(e) => setEmailValue(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-              />
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={handleSaveEmail}
-                  disabled={saving}
-                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors"
-                >
-                  {saving ? <Trans id="Salvando..." /> : <Trans id="Save Email" />}
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingEmail(false)
-                    setEmailValue(user.email)
-                  }}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <Trans id="Annulla" />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Password Editor */}
-        <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                <Trans id="Password" />
-              </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                ••••••••
-              </p>
-            </div>
-            <button
-              onClick={() => setEditingPassword(!editingPassword)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              {editingPassword ? <Trans id="Annulla" /> : <Trans id="Edit Password" />}
-            </button>
-          </div>
-          
-          {editingPassword && (
-            <div className="space-y-4">
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Password attuale"
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-              />
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nuova password"
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-              />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Conferma nuova password"
-                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-              />
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={handleSavePassword}
-                  disabled={saving}
-                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors"
-                >
-                  {saving ? <Trans id="Salvando..." /> : <Trans id="Save Password" />}
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingPassword(false)
-                    setCurrentPassword('')
-                    setNewPassword('')
-                    setConfirmPassword('')
-                  }}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  <Trans id="Annulla" />
-                </button>
-              </div>
-            </div>
-        )}
-      </div>
-
-        {/* Diary visibility */}
-        <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
-          <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">
-            <Trans id="Who can read my diary?" />
-          </h3>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-            <Trans id="Choose who can access your journal entries." />
-          </p>
-
-          <div className="space-y-3">
-            {[
-              { value: 'PRIVATE', label: 'Only me' },
-              { value: 'PUBLIC', label: 'Everyone' },
-              { value: 'PROFESSIONALS', label: 'Professionals only' }
-            ].map((option) => (
-              <label
-                key={option.value}
-                className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors ${
-                  diaryVisibility === option.value
-                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/30'
-                    : 'border-zinc-300 dark:border-zinc-600'
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`rounded-full px-3 py-1 text-sm transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-white text-indigo-600 shadow dark:bg-zinc-700 dark:text-indigo-300'
+                    : 'text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="diary-visibility"
-                    value={option.value}
-                    checked={diaryVisibility === option.value}
-                    disabled={savingVisibility}
-                    onChange={() => handleUpdateDiaryVisibility(option.value as DiaryVisibility)}
-                    className="h-4 w-4 text-blue-500 focus:ring-blue-500"
-                  />
-                  <span className="text-zinc-700 dark:text-zinc-200">
-                    <Trans id={option.label} />
-                  </span>
-                </div>
-                {savingVisibility && diaryVisibility === option.value && (
-                  <span className="text-xs text-blue-500">
-                    <Trans id="Saving preference..." />
-                  </span>
-                )}
-              </label>
+                <Trans id={tab.label} />
+              </button>
             ))}
           </div>
         </div>
 
+        {activeTab === 'profile' && (
+          <div className='mt-6 space-y-6'>
+            <div className='flex items-center gap-4 rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+              <UserAvatar animal={user.avatar} size='lg' />
+              <div className='flex-1'>
+                <p className='text-lg font-medium text-zinc-900 dark:text-zinc-100'>{user.email}</p>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                  <Trans id='Avatar' />: <Trans id={user.avatar} />
+                </p>
+              </div>
+              <button
+                onClick={() => setIsEditingAvatar(!isEditingAvatar)}
+                className='rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600'
+              >
+                {isEditingAvatar ? <Trans id='Cancel' /> : <Trans id='Edit Avatar' />}
+              </button>
+            </div>
+
+            {isEditingAvatar && (
+              <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+                <NicknameSelector selectedAnimal={selectedAnimal} onAnimalSelect={setSelectedAnimal} className='mb-4' />
+                <div className='flex justify-end gap-2'>
+                  <button
+                    onClick={() => {
+                      setIsEditingAvatar(false)
+                      setSelectedAnimal(user.avatar)
+                    }}
+                    className='rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300'
+                  >
+                    <Trans id='Cancel' />
+                  </button>
+                  <button
+                    onClick={handleSaveAvatar}
+                    disabled={savingAvatar}
+                    className='rounded-lg bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600 disabled:opacity-50'
+                  >
+                    {savingAvatar ? <Trans id='Saving...' /> : <Trans id='Save Avatar' />}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className='grid gap-6 md:grid-cols-2'>
+              <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h3 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
+                      <Trans id='Phone' />
+                    </h3>
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>{user.phone || i18n._('Not set')}</p>
+                  </div>
+                  <button
+                    onClick={() => setEditingPhone(!editingPhone)}
+                    className='rounded-lg bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600'
+                  >
+                    {editingPhone ? <Trans id='Cancel' /> : <Trans id='Edit Phone' />}
+                  </button>
+                </div>
+                {editingPhone && (
+                  <div className='mt-4 space-y-3'>
+                    <input
+                      type='tel'
+                      value={phoneValue}
+                      onChange={(event) => setPhoneValue(event.target.value)}
+                      className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                      placeholder='+39 123 456 7890'
+                    />
+                    <div className='flex justify-end gap-2'>
+                      <button
+                        onClick={() => {
+                          setEditingPhone(false)
+                          setPhoneValue(user.phone || '')
+                        }}
+                        className='rounded border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300'
+                      >
+                        <Trans id='Cancel' />
+                      </button>
+                      <button
+                        onClick={handleSavePhone}
+                        className='rounded bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600'
+                      >
+                        <Trans id='Save Phone' />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h3 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
+                      <Trans id='Email' />
+                    </h3>
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>{user.email}</p>
+                  </div>
+                  <button
+                    onClick={() => setEditingEmail(!editingEmail)}
+                    className='rounded-lg bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600'
+                  >
+                    {editingEmail ? <Trans id='Cancel' /> : <Trans id='Edit Email' />}
+                  </button>
+                </div>
+                {editingEmail && (
+                  <div className='mt-4 space-y-3'>
+                    <input
+                      type='email'
+                      value={emailValue}
+                      onChange={(event) => setEmailValue(event.target.value)}
+                      className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                    />
+                    <div className='flex justify-end gap-2'>
+                      <button
+                        onClick={() => {
+                          setEditingEmail(false)
+                          setEmailValue(user.email)
+                        }}
+                        className='rounded border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300'
+                      >
+                        <Trans id='Cancel' />
+                      </button>
+                      <button
+                        onClick={handleSaveEmail}
+                        className='rounded bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600'
+                      >
+                        <Trans id='Save Email' />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <h3 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
+                    <Trans id='Password' />
+                  </h3>
+                  <p className='text-sm text-zinc-500 dark:text-zinc-400'>••••••••</p>
+                </div>
+                <button
+                  onClick={() => setEditingPassword(!editingPassword)}
+                  className='rounded-lg bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600'
+                >
+                  {editingPassword ? <Trans id='Cancel' /> : <Trans id='Edit Password' />}
+                </button>
+              </div>
+              {editingPassword && (
+                <div className='mt-4 space-y-3'>
+                  <input
+                    type='password'
+                    value={currentPassword}
+                    onChange={(event) => setCurrentPassword(event.target.value)}
+                    placeholder={i18n._('Current Password')}
+                    className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                  />
+                  <input
+                    type='password'
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    placeholder={i18n._('New Password')}
+                    className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                  />
+                  <input
+                    type='password'
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder={i18n._('Confirm Password')}
+                    className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                  />
+                  <div className='flex justify-end gap-2'>
+                    <button
+                      onClick={() => {
+                        setEditingPassword(false)
+                        setCurrentPassword('')
+                        setNewPassword('')
+                        setConfirmPassword('')
+                      }}
+                      className='rounded border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300'
+                    >
+                      <Trans id='Cancel' />
+                    </button>
+                    <button
+                      onClick={handleSavePassword}
+                      className='rounded bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600'
+                    >
+                      <Trans id='Save Password' />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className='mt-6 space-y-6'>
+            <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+              <h2 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
+                <Trans id='Who can read my diary?' />
+              </h2>
+              <p className='mt-2 text-sm text-zinc-500 dark:text-zinc-400'>
+                <Trans id='Choose who can access your journal entries.' />
+              </p>
+
+              <div className='mt-4 space-y-3'>
+                {DiaryVisibilityOptions.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors ${
+                      diaryVisibility === option.value
+                        ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/30'
+                        : 'border-zinc-300 dark:border-zinc-600'
+                    }`}
+                  >
+                    <div className='flex items-center gap-3'>
+                      <input
+                        type='radio'
+                        name='diary-visibility'
+                        value={option.value}
+                        checked={diaryVisibility === option.value}
+                        disabled={updatingVisibility}
+                        onChange={() => handleUpdateVisibility(option.value)}
+                        className='h-4 w-4 text-blue-500 focus:ring-blue-500'
+                      />
+                      <div>
+                        <p className='font-medium text-zinc-700 dark:text-zinc-200'>
+                          <Trans id={option.label} />
+                        </p>
+                        <p className='text-xs text-zinc-500 dark:text-zinc-400'>
+                          <Trans id={option.description} />
+                        </p>
+                      </div>
+                    </div>
+                    {updatingVisibility && diaryVisibility === option.value && (
+                      <span className='text-xs text-blue-500'>
+                        <Trans id='Saving preference...' />
+                      </span>
+                    )}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <h2 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
+                    <Trans id='Diary access password' />
+                  </h2>
+                  <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                    {user.hasDiaryPassword ? (
+                      <Trans id='Your diary is protected. Update the password below if needed.' />
+                    ) : (
+                      <Trans id='Set a password to unlock, read and write your diary entries.' />
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className='mt-4 grid gap-3 md:grid-cols-2'>
+                {user.hasDiaryPassword && (
+                  <input
+                    type='password'
+                    value={currentDiaryPassword}
+                    onChange={(event) => setCurrentDiaryPassword(event.target.value)}
+                    placeholder={i18n._('Current diary password')}
+                    className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                  />
+                )}
+                <input
+                  type='password'
+                  value={newDiaryPassword}
+                  onChange={(event) => setNewDiaryPassword(event.target.value)}
+                  placeholder={i18n._('New diary password (min 8 characters)')}
+                  className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                />
+                <input
+                  type='password'
+                  value={confirmDiaryPassword}
+                  onChange={(event) => setConfirmDiaryPassword(event.target.value)}
+                  placeholder={i18n._('Confirm diary password')}
+                  className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
+                />
+              </div>
+              <div className='mt-4 flex justify-end gap-2'>
+                <button
+                  onClick={() => {
+                    setCurrentDiaryPassword('')
+                    setNewDiaryPassword('')
+                    setConfirmDiaryPassword('')
+                  }}
+                  disabled={updatingDiaryPassword}
+                  className='rounded border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-600 dark:text-zinc-300'
+                >
+                  <Trans id='Cancel' />
+                </button>
+                <button
+                  onClick={handleUpdateDiaryPassword}
+                  disabled={updatingDiaryPassword}
+                  className='rounded bg-indigo-500 px-4 py-2 text-sm text-white hover:bg-indigo-600 disabled:opacity-50'
+                >
+                  {updatingDiaryPassword ? <Trans id='Saving...' /> : user.hasDiaryPassword ? <Trans id='Update' /> : <Trans id='Set password' />}
+                </button>
+              </div>
+              <p className='mt-3 text-xs text-zinc-500 dark:text-zinc-400'>
+                <Trans id='Diary entries are encrypted per account. Keep this password safe: without it you cannot recover past notes.' />
+              </p>
+            </div>
+          </div>
+        )}
       </Section>
     </Page>
   )

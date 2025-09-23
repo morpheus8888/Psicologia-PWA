@@ -23,7 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'JWT secret is not configured on the server' })
   }
 
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await prisma.user.findUnique({
+    where: { email },
+  })
   if (!user) return res.status(401).json({ error: 'Invalid credentials' })
 
   const valid = await bcrypt.compare(password, user.password)
@@ -41,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       role: user.role,
       diaryVisibility: user.diaryVisibility,
       isAdmin: user.role === 'ADMIN',
+      hasDiaryPassword: !!user.diaryPasswordHash,
     },
   })
 }

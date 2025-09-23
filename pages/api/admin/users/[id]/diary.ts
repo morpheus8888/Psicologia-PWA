@@ -81,8 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (error?.message === 'FORBIDDEN') {
       return res.status(403).json({ error: 'Accesso negato' })
     }
-    if (error instanceof Error && error.message.includes('DIARY_ENCRYPTION_KEY')) {
-      return res.status(500).json({ error: 'DIARY_ENCRYPTION_KEY non configurata sul server' })
+    if (error instanceof Error && error.message.includes('DIARY_MASTER_KEY')) {
+      return res.status(500).json({ error: 'DIARY_MASTER_KEY non configurata sul server' })
     }
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })

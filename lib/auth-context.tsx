@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 
 export type UserRole = 'ADMIN' | 'PROFESSIONAL' | 'CLIENT'
 export type DiaryVisibility = 'PRIVATE' | 'PROFESSIONALS' | 'PUBLIC'
@@ -12,6 +12,7 @@ interface User {
   role: UserRole
   diaryVisibility: DiaryVisibility
   isAdmin: boolean
+  hasDiaryPassword: boolean
 }
 
 interface AuthContextType {
@@ -21,6 +22,8 @@ interface AuthContextType {
   logout: () => void
   isLoggedIn: boolean
   updateUser: (user: User) => void
+  unreadCount: number
+  refreshUnreadCount: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -38,12 +41,41 @@ const normalizeUser = (raw: any): User => {
     role,
     diaryVisibility,
     isAdmin: raw?.isAdmin ?? role === 'ADMIN',
+    hasDiaryPassword: !!raw?.hasDiaryPassword,
   }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const fetchUnreadCount = useCallback(
+    async (authToken: string) => {
+      try {
+        const res = await fetch('/api/messages/unread-count', {
+          headers: { Authorization: `Bearer ${authToken}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadCount(data.count ?? 0)
+        } else if (res.status === 401) {
+          setUnreadCount(0)
+        }
+      } catch (error) {
+        console.error('Error fetching unread count:', error)
+      }
+    },
+    []
+  )
+
+  const refreshUnreadCount = useCallback(async () => {
+    if (!token) {
+      setUnreadCount(0)
+      return
+    }
+    await fetchUnreadCount(token)
+  }, [fetchUnreadCount, token])
 
   useEffect(() => {
     // Controlla se c'è un token salvato al caricamento
@@ -55,12 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userData = JSON.parse(savedUser)
         setToken(savedToken)
         setUser(normalizeUser(userData))
+        void fetchUnreadCount(savedToken)
       } catch (error) {
         // Se i dati sono corrotti, pulisci
         localStorage.removeItem('token')
         localStorage.removeItem('user')
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const login = (newToken: string, newUser: User) => {
@@ -69,11 +103,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(normalized)
     localStorage.setItem('token', newToken)
     localStorage.setItem('user', JSON.stringify(normalized))
+    void fetchUnreadCount(newToken)
   }
 
   const logout = () => {
     setToken(null)
     setUser(null)
+    setUnreadCount(0)
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
@@ -89,13 +125,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  useEffect(() => {
+    if (!token || !user) {
+      setUnreadCount(0)
+      return
+    }
+    void fetchUnreadCount(token)
+  }, [token, user, fetchUnreadCount])
+
   const value = {
     user,
     token,
     login,
     logout,
     isLoggedIn: !!token && !!user,
-    updateUser
+    updateUser,
+    unreadCount,
+    refreshUnreadCount,
   }
 
   return (

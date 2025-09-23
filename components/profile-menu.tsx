@@ -10,7 +10,7 @@ const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
-  const { user, isLoggedIn, logout: authLogout } = useAuth()
+  const { user, isLoggedIn, logout: authLogout, unreadCount } = useAuth()
   const { i18n } = useLingui()
   const isAdmin = !!user && (user.role === 'ADMIN' || user.isAdmin)
 
@@ -68,7 +68,14 @@ const ProfileMenu = () => {
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                       <path d='M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' stroke='currentColor' />
                     </svg>
-                    <Trans id='Messages' />
+                    <span className='flex items-center gap-2'>
+                      <Trans id='Messages' />
+                      {unreadCount > 0 && (
+                        <span className='rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white'>
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </li>
                 {isAdmin && (

@@ -35,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         role: user.role,
         diaryVisibility: user.diaryVisibility,
         isAdmin: user.role === 'ADMIN',
+        hasDiaryPassword: false,
         phone: user.phone ?? null,
       },
     })

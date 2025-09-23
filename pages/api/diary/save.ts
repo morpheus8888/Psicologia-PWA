@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
-import { encryptDiaryText } from '@/lib/diary-encryption'
+import { encryptDiaryText, verifyDiaryPassword } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -19,10 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const secret = getJwtSecret()
     const decoded = jwt.verify(token, secret) as { sub: string }
 
-    const { date, freeText, mood } = req.body as {
+    const { date, freeText, mood, diaryPassword } = req.body as {
       date?: string
       freeText?: string
       mood?: string
+      diaryPassword?: string
     }
 
     if (!date) {
@@ -32,6 +33,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Parse the entry date - handle timezone issues by parsing as local date
     const [year, month, day] = date.split('-').map(Number)
     const entryDate = new Date(year, month - 1, day)
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.sub },
+      select: {
+        diaryPasswordHash: true,
+        diaryPasswordSalt: true,
+      }
+    })
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utente non trovato' })
+    }
+
+    if (!user.diaryPasswordHash) {
+      return res.status(400).json({ error: 'Imposta prima una password per il diario nelle impostazioni' })
+    }
+
+    if (!diaryPassword) {
+      return res.status(400).json({ error: 'Password diario richiesta' })
+    }
+
+    const passwordValid = await verifyDiaryPassword(diaryPassword, user.diaryPasswordSalt, user.diaryPasswordHash)
+
+    if (!passwordValid) {
+      return res.status(400).json({ error: 'Password diario non corretta' })
+    }
 
     const sanitizedFreeText = freeText && freeText.trim().length > 0
       ? sanitizeHtml(freeText, {
@@ -79,8 +106,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
     }
-    if (error instanceof Error && error.message.includes('DIARY_ENCRYPTION_KEY')) {
-      return res.status(500).json({ error: 'DIARY_ENCRYPTION_KEY non configurata sul server' })
+    if (error instanceof Error && error.message.includes('DIARY_MASTER_KEY')) {
+      return res.status(500).json({ error: 'DIARY_MASTER_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il salvataggio della voce' })
   }

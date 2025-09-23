@@ -26,11 +26,11 @@ b) Imposta almeno:
 ```
 DATABASE_URL="postgres://user:password@host:port/db"
 JWT_SECRET="string casuale lunga e complessa"
-DIARY_ENCRYPTION_KEY="chiave AES-256 di 32 caratteri alfanumerici"
+DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 ```
 
 > ⚠️ **Obbligatorio:** `JWT_SECRET` deve essere valorizzata sia in locale sia sui progetti Vercel, altrimenti le API rifiutano login/aggiornamenti profilo.
-> 🔐 **Sicurezza diario:** `DIARY_ENCRYPTION_KEY` è usata per cifrare le voci del diario prima di salvarle nel database. Genera una stringa di almeno 32 caratteri casuali e conservala al sicuro.
+> 🔐 **Sicurezza diario:** `DIARY_MASTER_KEY` viene usata per derivare le chiavi di cifratura dei diari utente. Genera una stringa robusta di almeno 32 caratteri, conservala al sicuro e non condividerla.
 
 ## Setup locale
 
@@ -63,19 +63,37 @@ npm run build # esegue anche prisma generate
 - Il primo account creato nella piattaforma viene promosso automaticamente a `ADMIN`.
 - Gli amministratori possono promuovere/demansionare gli utenti tra `ADMIN`, `PROFESSIONAL` e `CLIENT` dal pannello `/admin`.
 - Puoi verificare chi possiede privilegi elevati con la query: `SELECT email, role FROM "User" WHERE "role" = 'ADMIN';`.
-- Gli admin accedono al pannello `/admin` per inviare messaggi broadcast, gestire le statistiche utenti, amministrare i profili e visionare (solo se pubblici) i diari cifrati.
+- Gli admin accedono al pannello `/admin` per inviare messaggi broadcast, gestire gli articoli del blog, amministrare i profili, resettare password e (solo se pubblici) visionare i diari cifrati.
+
+## Diario e privacy
+- Ogni utente deve impostare una **password del diario** (sezione `Profilo → Impostazioni`). Senza quella password non è possibile leggere o scrivere nuove voci.
+- Le voci vengono cifrate per-account usando `DIARY_MASTER_KEY` come chiave primaria + una chiave derivata per utente.
+- La visibilità può essere `Solo io`, `Solo professionisti`, `Tutti`. Solo in modalità `Tutti` gli amministratori possono consultare i diari, sempre in versione depurata/HTML sanitizzato.
+- La password del diario non viene mai salvata in chiaro: la verifica avviene tramite hash + salt dedicati (PBKDF scrypt) memorizzati nel profilo.
+
+## Blog amministrativo
+- Gli amministratori possono creare, modificare e pubblicare articoli dal pannello `/admin`.
+- Gli articoli pubblicati vengono mostrati in homepage come blog, con dettaglio dedicato in `/blog/[slug]`.
+- I contenuti vengono sanitizzati lato server (whitelist HTML) prima di essere salvati ed esposti.
+
+## Notifiche e messaggistica
+- Gli utenti ricevono notifiche badge per i messaggi non letti (banner in alto a sinistra e contatori nel menu profilo).
+- Gli admin dispongono di un broadcast verso tutti gli account e di messaggi individuali con relativo log negli ultimi invii.
+- Il conteggio dei messaggi non letti è esposto via `/api/messages/unread-count` e viene aggiornato automaticamente dopo ogni lettura.
 
 ## Flussi principali
 - **Autenticazione**: registrazione/login utente, token JWT salvato in `localStorage` e condiviso via `AuthProvider`.
-- **Diario**: domande giornaliere seed-based, editor WYSIWYG e mood tracker con salvataggio versionato.
-- **Messaggi**: inbox utente + marcatore letto.
-- **Profilo**: avatar animale, email, telefono e password aggiornabili.
-- **Admin**: invio broadcast messaggi e statistiche utenti (richiede flag `isAdmin`).
+- **Diario**: domande giornaliere seed-based, editor WYSIWYG, mood tracker e cifratura per utente con password dedicata.
+- **Messaggi**: inbox utente con badge non letti e possibilità di segnare come letto.
+- **Profilo**: avatar animale, email, telefono, password account e password diario aggiornabili.
+- **Blog**: articoli pubblicati dagli amministratori con gestione versioni e bozza/pubblicazione.
+- **Admin**: dashboard per ruoli, broadcast, messaggi individuali, reset password, diario pubblico e gestione articoli.
 
 ## Contributi
 1. Crea branch (`git checkout -b feature/...`).
 2. Implementa e testa (`npm run lint` + eventuali test manuali).
 3. Commit e push → apri Pull Request su GitHub.
 4. Vercel esegue build di preview automaticamente.
+5. Mantieni questo README aggiornato quando introduci o modifichi funzionalità.
 
 Per domande o problemi apri una issue nella repo GitHub.

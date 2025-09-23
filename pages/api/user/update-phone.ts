@@ -34,10 +34,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         phone: true,
         role: true,
         diaryVisibility: true,
+        diaryPasswordHash: true,
       }
     })
 
-    res.status(200).json({ user: { ...updatedUser, isAdmin: updatedUser.role === 'ADMIN' } })
+    const { diaryPasswordHash, ...safeUser } = updatedUser
+
+    res.status(200).json({
+      user: {
+        ...safeUser,
+        isAdmin: updatedUser.role === 'ADMIN',
+        hasDiaryPassword: !!diaryPasswordHash,
+      }
+    })
   } catch (error) {
     console.error('Error updating phone:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {

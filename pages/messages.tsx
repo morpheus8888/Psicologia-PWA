@@ -1,25 +1,18 @@
 import Page from '@/components/page'
 import Section from '@/components/section'
-import { Trans } from '@lingui/react'
-import { useState, useEffect } from 'react'
+import { Trans, useLingui } from '@lingui/react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/router'
 
 const Messages = () => {
-  const { user, token, isLoggedIn } = useAuth()
+  const { user, token, isLoggedIn, refreshUnreadCount, unreadCount } = useAuth()
   const router = useRouter()
   const [messages, setMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { i18n } = useLingui()
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push('/login')
-      return
-    }
-    loadMessages()
-  }, [isLoggedIn, router])
-
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     if (!token) return
     
     try {
@@ -29,13 +22,22 @@ const Messages = () => {
       if (res.ok) {
         const data = await res.json()
         setMessages(data.messages)
+        await refreshUnreadCount()
       }
     } catch (error) {
       console.error('Error loading messages:', error)
     }
     
     setLoading(false)
-  }
+  }, [token, refreshUnreadCount])
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login')
+      return
+    }
+    void loadMessages()
+  }, [isLoggedIn, router, loadMessages])
 
   const markAsRead = async (messageId: string) => {
     if (!token) return
@@ -49,6 +51,7 @@ const Messages = () => {
         setMessages(prev => prev.map(msg => 
           msg.id === messageId ? { ...msg, isRead: true } : msg
         ))
+        await refreshUnreadCount()
       }
     } catch (error) {
       console.error('Error marking message as read:', error)
@@ -87,6 +90,11 @@ const Messages = () => {
             </h1>
             <p className="text-zinc-600 dark:text-zinc-400">
               I tuoi messaggi dal team
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {unreadCount > 0
+                ? i18n._('{count, plural, one {You have # unread message} other {You have # unread messages}}', { count: unreadCount })
+                : i18n._('All caught up!')}
             </p>
           </div>
 

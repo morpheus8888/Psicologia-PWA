@@ -36,7 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         avatar: true,
         nickname: true,
         phone: true,
-        createdAt: true
+        createdAt: true,
+        diaryPasswordHash: true,
       },
       orderBy: {
         createdAt: 'desc'
@@ -44,9 +45,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     res.status(200).json({
-      users: users.map((record) => ({
+      users: users.map(({ diaryPasswordHash, ...record }) => ({
         ...record,
         isAdmin: record.role === 'ADMIN',
+        hasDiaryPassword: !!diaryPasswordHash,
       }))
     })
   } catch (error) {

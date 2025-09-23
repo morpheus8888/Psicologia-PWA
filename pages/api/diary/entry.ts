@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
-import { decryptDiaryText } from '@/lib/diary-encryption'
+import { decryptDiaryText, verifyDiaryPassword } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -20,6 +20,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const secret = getJwtSecret()
     const decoded = jwt.verify(token, secret) as { sub: string }
     const { date } = req.query
+    const diaryPassword = req.headers['x-diary-password']
+
+    if (!diaryPassword || typeof diaryPassword !== 'string') {
+      return res.status(400).json({ error: 'Password diario richiesta' })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.sub },
+      select: {
+        diaryPasswordHash: true,
+        diaryPasswordSalt: true,
+      }
+    })
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utente non trovato' })
+    }
+
+    if (!user.diaryPasswordHash) {
+      return res.status(400).json({ error: 'Imposta prima una password per il diario nelle impostazioni' })
+    }
+
+    const passwordValid = await verifyDiaryPassword(diaryPassword, user.diaryPasswordSalt, user.diaryPasswordHash)
+
+    if (!passwordValid) {
+      return res.status(400).json({ error: 'Password diario non corretta' })
+    }
 
     if (!date || typeof date !== 'string') {
       return res.status(400).json({ error: 'Data richiesta' })
@@ -62,8 +89,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
     }
-    if (error instanceof Error && error.message.includes('DIARY_ENCRYPTION_KEY')) {
-      return res.status(500).json({ error: 'DIARY_ENCRYPTION_KEY non configurata sul server' })
+    if (error instanceof Error && error.message.includes('DIARY_MASTER_KEY')) {
+      return res.status(500).json({ error: 'DIARY_MASTER_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il caricamento della voce' })
   }

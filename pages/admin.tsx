@@ -1,10 +1,14 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
+import { Trans, useLingui } from '@lingui/react'
+
 import Page from '@/components/page'
 import Section from '@/components/section'
 import UserAvatar from '@/components/user-avatar'
-import { useLingui, Trans } from '@lingui/react'
-import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useRouter } from 'next/router'
+
+const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false })
 
 type AdminManagedUser = {
   id: string
@@ -16,30 +20,72 @@ type AdminManagedUser = {
   phone: string | null
   createdAt: string
   isAdmin: boolean
+  hasDiaryPassword: boolean
+}
+
+type UserDetails = {
+  id: string
+  email: string
+  nickname: string | null
+  avatar: string | null
+  phone: string | null
+  role: 'ADMIN' | 'PROFESSIONAL' | 'CLIENT'
+  diaryVisibility: 'PRIVATE' | 'PROFESSIONALS' | 'PUBLIC'
+  createdAt: string
+  messages: Array<{ id: string; title: string; createdAt: string; isRead: boolean }>
+  _count: { diaryEntries: number; messages: number }
+}
+
+type Article = {
+  id: string
+  title: string
+  slug: string
+  summary: string | null
+  content: string
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+  author: { id: string; email: string }
 }
 
 const AdminPanel = () => {
   const { user, token, isLoggedIn } = useAuth()
   const router = useRouter()
   const { i18n } = useLingui()
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [sending, setSending] = useState(false)
+
   const [users, setUsers] = useState<AdminManagedUser[]>([])
-  const [showUserList, setShowUserList] = useState(false)
-  const [diaryCache, setDiaryCache] = useState<Record<string, any[]>>({})
+  const [showUsers, setShowUsers] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [selectedUserDetails, setSelectedUserDetails] = useState<UserDetails | null>(null)
+  const [userDetailsLoading, setUserDetailsLoading] = useState(false)
+  const [diaryCache, setDiaryCache] = useState<Record<string, Array<{ id: string; date: string; mood: string | null; freeText: string | null }>>>({})
   const [loadingDiaryFor, setLoadingDiaryFor] = useState<string | null>(null)
-  const [messageDraft, setMessageDraft] = useState({ userId: '', title: '', content: '', sending: false })
-  const [passwordDraft, setPasswordDraft] = useState({ userId: '', newPassword: '', saving: false })
-  const [roleUpdating, setRoleUpdating] = useState<string | null>(null)
-  const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
+
+  const [broadcastOpen, setBroadcastOpen] = useState(false)
+  const [broadcastTitle, setBroadcastTitle] = useState('')
+  const [broadcastContent, setBroadcastContent] = useState('')
+  const [broadcastSending, setBroadcastSending] = useState(false)
+
+  const [messageDraft, setMessageDraft] = useState({ title: '', content: '', sending: false })
+  const [passwordDraft, setPasswordDraft] = useState({ newPassword: '', saving: false })
+  const [roleUpdating, setRoleUpdating] = useState(false)
+  const [deletingUser, setDeletingUser] = useState(false)
+
+  const [articles, setArticles] = useState<Article[]>([])
+  const [articleFormOpen, setArticleFormOpen] = useState(false)
+  const [articleSaving, setArticleSaving] = useState(false)
+  const [editingArticleId, setEditingArticleId] = useState<string | null>(null)
+  const [articleTitle, setArticleTitle] = useState('')
+  const [articleSlug, setArticleSlug] = useState('')
+  const [articleSummary, setArticleSummary] = useState('')
+  const [articleContent, setArticleContent] = useState('')
+  const [articlePublished, setArticlePublished] = useState(false)
 
   const loadUsers = useCallback(async () => {
     if (!token) return
-    
     try {
       const res = await fetch('/api/admin/users', {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
         const data = await res.json()
@@ -47,6 +93,69 @@ const AdminPanel = () => {
       }
     } catch (error) {
       console.error('Error loading users:', error)
+    }
+  }, [token])
+
+  const loadUserDetails = useCallback(
+    async (userId: string) => {
+      if (!token) return
+      setUserDetailsLoading(true)
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setSelectedUserDetails(data.user)
+        } else {
+          const data = await res.json().catch(() => ({}))
+          alert(data.error || 'Errore durante il caricamento del profilo utente')
+        }
+      } catch (error) {
+        console.error('Error loading user details:', error)
+        alert('Errore di connessione')
+      }
+      setUserDetailsLoading(false)
+    },
+    [token]
+  )
+
+  const loadDiaryForUser = useCallback(
+    async (accountId: string) => {
+      if (!token) return
+      setLoadingDiaryFor(accountId)
+      try {
+        const res = await fetch(`/api/admin/users/${accountId}/diary`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setDiaryCache((prev) => ({ ...prev, [accountId]: data.entries }))
+        } else {
+          const data = await res.json().catch(() => ({}))
+          alert(data.error || 'Impossibile recuperare il diario')
+        }
+      } catch (error) {
+        console.error('Error loading diary:', error)
+        alert('Errore di connessione durante il caricamento del diario')
+      }
+      setLoadingDiaryFor(null)
+    },
+    [token]
+  )
+
+  const loadArticles = useCallback(async () => {
+    if (!token) return
+    try {
+      const res = await fetch('/api/admin/articles', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setArticles(data.articles)
+      }
+    } catch (error) {
+      console.error('Error loading articles:', error)
     }
   }, [token])
 
@@ -60,239 +169,265 @@ const AdminPanel = () => {
       return
     }
     loadUsers()
-  }, [isLoggedIn, user, router, loadUsers])
+    loadArticles()
+  }, [isLoggedIn, user, router, loadUsers, loadArticles])
 
   const adminUsers = useMemo(() => users.filter((u) => u.role === 'ADMIN'), [users])
   const professionalUsers = useMemo(() => users.filter((u) => u.role === 'PROFESSIONAL'), [users])
   const clientUsers = useMemo(() => users.filter((u) => u.role === 'CLIENT'), [users])
 
-  const sendMessage = async () => {
-    if (!title.trim() || !content.trim()) {
-      alert('Inserisci sia il titolo che il contenuto del messaggio')
+  const handleBroadcast = async () => {
+    if (!titleOr(broadcastTitle) || !titleOr(broadcastContent)) {
+      alert(i18n._('Provide both title and message'))
       return
     }
-    
-    setSending(true)
-    
+    if (!token) return
+    setBroadcastSending(true)
     try {
       const res = await fetch('/api/admin/send-message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, content })
+        body: JSON.stringify({ title: broadcastTitle, content: broadcastContent }),
       })
-
       if (res.ok) {
-        alert('Messaggio inviato a tutti gli utenti!')
-        setTitle('')
-        setContent('')
+        alert(i18n._('Broadcast delivered to every user'))
+        setBroadcastTitle('')
+        setBroadcastContent('')
+        setBroadcastOpen(false)
       } else {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         alert(data.error || 'Errore nell\'invio del messaggio')
       }
     } catch (error) {
+      console.error('Error sending broadcast:', error)
       alert('Errore di connessione')
     }
-    
-    setSending(false)
-  }
-
-  const toggleUserList = () => {
-    const next = !showUserList
-    setShowUserList(next)
-    if (next && users.length === 0) {
-      loadUsers()
-    }
-  }
-
-  const loadDiaryForUser = async (account: AdminManagedUser) => {
-    if (account.diaryVisibility !== 'PUBLIC' || !token) return
-    if (diaryCache[account.id]) return
-
-    setLoadingDiaryFor(account.id)
-    try {
-      const res = await fetch(`/api/admin/users/${account.id}/diary`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setDiaryCache((prev) => ({ ...prev, [account.id]: data.entries }))
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Impossibile recuperare il diario')
-      }
-    } catch (error) {
-      alert('Errore di connessione durante il caricamento del diario')
-    }
-    setLoadingDiaryFor(null)
-  }
-
-  const openMessageForm = (accountId: string) => {
-    setMessageDraft({ userId: accountId, title: '', content: '', sending: false })
-  }
-
-  const submitUserMessage = async () => {
-    if (!token || !messageDraft.userId) return
-    if (!messageDraft.title.trim() || !messageDraft.content.trim()) {
-      alert('Completa titolo e contenuto')
-      return
-    }
-
-    setMessageDraft((prev) => ({ ...prev, sending: true }))
-    try {
-      const res = await fetch(`/api/admin/users/${messageDraft.userId}/message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ title: messageDraft.title, content: messageDraft.content })
-      })
-
-      if (res.ok) {
-        alert('Messaggio inviato')
-        setMessageDraft({ userId: '', title: '', content: '', sending: false })
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Errore nell\'invio del messaggio')
-        setMessageDraft((prev) => ({ ...prev, sending: false }))
-      }
-    } catch (error) {
-      alert('Errore di connessione')
-      setMessageDraft((prev) => ({ ...prev, sending: false }))
-    }
-  }
-
-  const openPasswordForm = (accountId: string) => {
-    setPasswordDraft({ userId: accountId, newPassword: '', saving: false })
-  }
-
-  const submitPasswordReset = async () => {
-    if (!token || !passwordDraft.userId) return
-    if (passwordDraft.newPassword.length < 8) {
-      alert('La password deve avere almeno 8 caratteri')
-      return
-    }
-
-    setPasswordDraft((prev) => ({ ...prev, saving: true }))
-    try {
-      const res = await fetch(`/api/admin/users/${passwordDraft.userId}/password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ newPassword: passwordDraft.newPassword })
-      })
-
-      if (res.ok) {
-        alert('Password aggiornata')
-        setPasswordDraft({ userId: '', newPassword: '', saving: false })
-      } else {
-        const data = await res.json()
-        alert(data.error || 'Errore durante l\'aggiornamento della password')
-        setPasswordDraft((prev) => ({ ...prev, saving: false }))
-      }
-    } catch (error) {
-      alert('Errore di connessione')
-      setPasswordDraft((prev) => ({ ...prev, saving: false }))
-    }
+    setBroadcastSending(false)
   }
 
   const handleRoleChange = async (accountId: string, role: AdminManagedUser['role']) => {
     if (!token) return
-    setRoleUpdating(accountId)
+    setRoleUpdating(true)
     try {
       const res = await fetch(`/api/admin/users/${accountId}/role`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ role })
+        body: JSON.stringify({ role }),
       })
-
       if (res.ok) {
         await loadUsers()
-        if (messageDraft.userId && messageDraft.userId === accountId) {
-          setMessageDraft((prev) => ({ ...prev, userId: '', sending: false }))
+        if (selectedUserId === accountId) {
+          await loadUserDetails(accountId)
         }
       } else {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         alert(data.error || 'Errore durante l\'aggiornamento del ruolo')
       }
     } catch (error) {
+      console.error('Error updating role:', error)
       alert('Errore di connessione')
     }
-    setRoleUpdating(null)
+    setRoleUpdating(false)
   }
 
-  const handleDeleteUser = async (accountId: string) => {
-    if (!token) return
-    if (!confirm('Sei sicuro di voler eliminare questo utente?')) {
+  const submitUserMessage = async () => {
+    if (!token || !selectedUserId) return
+    if (!titleOr(messageDraft.title) || !titleOr(messageDraft.content)) {
+      alert(i18n._('Provide both title and message'))
       return
     }
-    setDeletingUserId(accountId)
+    setMessageDraft((prev) => ({ ...prev, sending: true }))
     try {
-      const res = await fetch(`/api/admin/users/${accountId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetch(`/api/admin/users/${selectedUserId}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: messageDraft.title, content: messageDraft.content }),
       })
       if (res.ok) {
-        alert('Utente eliminato')
-        setDiaryCache((prev) => {
-          const next = { ...prev }
-          delete next[accountId]
-          return next
-        })
-        if (messageDraft.userId === accountId) {
-          setMessageDraft({ userId: '', title: '', content: '', sending: false })
-        }
-        if (passwordDraft.userId === accountId) {
-          setPasswordDraft({ userId: '', newPassword: '', saving: false })
-        }
-        await loadUsers()
+        alert(i18n._('Message sent'))
+        setMessageDraft({ title: '', content: '', sending: false })
       } else {
-        const data = await res.json()
-        alert(data.error || 'Errore durante l\'eliminazione')
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Errore nell\'invio del messaggio')
+        setMessageDraft((prev) => ({ ...prev, sending: false }))
       }
     } catch (error) {
+      console.error('Error sending message:', error)
+      alert('Errore di connessione')
+      setMessageDraft((prev) => ({ ...prev, sending: false }))
+    }
+  }
+
+  const submitPasswordReset = async () => {
+    if (!token || !selectedUserId) return
+    if (passwordDraft.newPassword.length < 8) {
+      alert(i18n._('The new password must be at least 8 characters long'))
+      return
+    }
+    setPasswordDraft((prev) => ({ ...prev, saving: true }))
+    try {
+      const res = await fetch(`/api/admin/users/${selectedUserId}/password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newPassword: passwordDraft.newPassword }),
+      })
+      if (res.ok) {
+        alert(i18n._('Password updated'))
+        setPasswordDraft({ newPassword: '', saving: false })
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Errore durante l\'aggiornamento della password')
+        setPasswordDraft((prev) => ({ ...prev, saving: false }))
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error)
+      alert('Errore di connessione')
+      setPasswordDraft((prev) => ({ ...prev, saving: false }))
+    }
+  }
+
+  const handleDeleteUser = async () => {
+    if (!token || !selectedUserId) return
+    if (!confirm(i18n._('Are you sure you want to delete this user? This action cannot be undone.'))) {
+      return
+    }
+    setDeletingUser(true)
+    try {
+      const res = await fetch(`/api/admin/users/${selectedUserId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        alert(i18n._('User removed'))
+        setSelectedUserId(null)
+        setSelectedUserDetails(null)
+        await loadUsers()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Errore durante l\'eliminazione dell\'utente')
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error)
       alert('Errore di connessione')
     }
-    setDeletingUserId(null)
+    setDeletingUser(false)
   }
 
-  const formatDiaryDate = (dateString: string) =>
-    new Date(dateString).toLocaleString('it-IT', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-
-  const roleLabelMap: Record<AdminManagedUser['role'], string> = {
-    ADMIN: 'Administrator',
-    PROFESSIONAL: 'Professional',
-    CLIENT: 'Client',
+  const selectUser = (account: AdminManagedUser) => {
+    setSelectedUserId(account.id)
+    setSelectedUserDetails(null)
+    setMessageDraft({ title: '', content: '', sending: false })
+    setPasswordDraft({ newPassword: '', saving: false })
+    void loadUserDetails(account.id)
+    if (account.diaryVisibility === 'PUBLIC' && !diaryCache[account.id]) {
+      void loadDiaryForUser(account.id)
+    }
   }
 
-  const visibilityLabels: Record<AdminManagedUser['diaryVisibility'], string> = {
-    PRIVATE: 'Only me',
-    PROFESSIONALS: 'Professionals only',
-    PUBLIC: 'Everyone',
+  const resetArticleForm = () => {
+    setEditingArticleId(null)
+    setArticleTitle('')
+    setArticleSlug('')
+    setArticleSummary('')
+    setArticleContent('')
+    setArticlePublished(false)
   }
 
-  const roleOptions: AdminManagedUser['role'][] = ['ADMIN', 'PROFESSIONAL', 'CLIENT']
+  const populateArticleForm = (article: Article) => {
+    setEditingArticleId(article.id)
+    setArticleTitle(article.title)
+    setArticleSlug(article.slug)
+    setArticleSummary(article.summary ?? '')
+    setArticleContent(article.content)
+    setArticlePublished(!!article.publishedAt)
+    setArticleFormOpen(true)
+  }
 
-  if (!isLoggedIn || user?.role !== 'ADMIN') {
+  const handleArticleSave = async () => {
+    if (!token) return
+    if (!titleOr(articleTitle) || !titleOr(articleContent)) {
+      alert(i18n._('Article title and content are required'))
+      return
+    }
+    setArticleSaving(true)
+    const payload = {
+      title: articleTitle,
+      slug: articleSlug,
+      summary: articleSummary,
+      content: articleContent,
+      published: articlePublished,
+    }
+    try {
+      const res = await fetch(`/api/admin/articles${editingArticleId ? `/${editingArticleId}` : ''}`, {
+        method: editingArticleId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+      if (res.ok) {
+        await loadArticles()
+        resetArticleForm()
+        setArticleFormOpen(false)
+        alert(i18n._('Article saved'))
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Errore durante il salvataggio dell\'articolo')
+      }
+    } catch (error) {
+      console.error('Error saving article:', error)
+      alert('Errore di connessione')
+    }
+    setArticleSaving(false)
+  }
+
+  const handleArticleDelete = async (articleId: string) => {
+    if (!token) return
+    if (!confirm(i18n._('Are you sure you want to delete this article?'))) {
+      return
+    }
+    try {
+      const res = await fetch(`/api/admin/articles/${articleId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        await loadArticles()
+        if (editingArticleId === articleId) {
+          resetArticleForm()
+          setArticleFormOpen(false)
+        }
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || 'Errore durante l\'eliminazione dell\'articolo')
+      }
+    } catch (error) {
+      console.error('Error deleting article:', error)
+      alert('Errore di connessione')
+    }
+  }
+
+  if (!isLoggedIn || !user || user.role !== 'ADMIN') {
     return (
       <Page title='Admin Panel'>
         <Section>
-          <div className="text-center">
-            <p className="text-zinc-600 dark:text-zinc-400">Accesso negato</p>
+          <div className='text-center'>
+            <p className='text-zinc-600 dark:text-zinc-400'>
+              <Trans id='Access denied' />
+            </p>
           </div>
         </Section>
       </Page>
@@ -302,361 +437,603 @@ const AdminPanel = () => {
   return (
     <Page title='Admin Panel'>
       <Section>
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-zinc-800 dark:text-zinc-200 mb-4">
-              <Trans id="Admin Panel" />
+        <div className='max-w-6xl mx-auto space-y-8'>
+          <header className='text-center'>
+            <h1 className='text-3xl font-bold text-zinc-800 dark:text-zinc-200'>
+              <Trans id='Admin Panel' />
             </h1>
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Pannello di amministrazione per gestire utenti e messaggi
+            <p className='mt-2 text-sm text-zinc-500 dark:text-zinc-400'>
+              <Trans id='Manage users, broadcast communications, and publish articles for the platform.' />
             </p>
-            <div className="mt-4 flex justify-center">
-              <button
-                onClick={toggleUserList}
-                className="px-4 py-2 rounded-lg border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-              >
-                {showUserList ? (
-                  <Trans id="Hide account list" />
-                ) : (
-                  <Trans id="List all accounts" />
-                )}
-              </button>
-            </div>
+          </header>
+
+          <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+            <StatsCard label={i18n._('Total users')} value={users.length} accent='primary' />
+            <StatsCard label={i18n._('Administrators')} value={adminUsers.length} accent='success' />
+            <StatsCard label={i18n._('Professionals')} value={professionalUsers.length} accent='purple' />
+            <StatsCard label={i18n._('Clients')} value={clientUsers.length} accent='amber' />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Send Message Section */}
-            <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 shadow-lg">
-              <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-200">
-                Invia Messaggio a Tutti gli Utenti
+          <div className='flex flex-wrap gap-3'>
+            <button
+              onClick={() => setShowUsers((prev) => !prev)}
+              className='rounded-lg border border-indigo-500 px-4 py-2 text-sm font-semibold text-indigo-500 hover:bg-indigo-500 hover:text-white'
+            >
+              {showUsers ? <Trans id='Hide account list' /> : <Trans id='List all accounts' />}
+            </button>
+            <button
+              onClick={() => setBroadcastOpen((prev) => !prev)}
+              className='rounded-lg border border-green-500 px-4 py-2 text-sm font-semibold text-green-600 hover:bg-green-500 hover:text-white'
+            >
+              <Trans id='Send a message to every user' />
+            </button>
+            <button
+              onClick={() => {
+                setArticleFormOpen((prev) => !prev)
+                if (!articleFormOpen) {
+                  resetArticleForm()
+                }
+              }}
+              className='rounded-lg border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-500 hover:text-white'
+            >
+              <Trans id='Create article' />
+            </button>
+          </div>
+
+          {broadcastOpen && (
+            <div className='rounded-lg border border-green-300 bg-green-50 p-6 dark:border-green-700 dark:bg-green-900/20'>
+              <h2 className='text-lg font-semibold text-green-700 dark:text-green-200'>
+                <Trans id='Broadcast to all accounts' />
               </h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                    Titolo
-                  </label>
-                  <input
-                    id="title"
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-3 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100"
-                    placeholder="Inserisci il titolo del messaggio..."
-                  />
+              <div className='mt-4 space-y-4'>
+                <input
+                  type='text'
+                  value={broadcastTitle}
+                  onChange={(event) => setBroadcastTitle(event.target.value)}
+                  placeholder={i18n._('Title')}
+                  className='w-full rounded border border-green-200 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950 dark:text-green-100'
+                />
+                <textarea
+                  value={broadcastContent}
+                  onChange={(event) => setBroadcastContent(event.target.value)}
+                  rows={4}
+                  placeholder={i18n._('Message content')}
+                  className='w-full rounded border border-green-200 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950 dark:text-green-100'
+                />
+                <div className='flex justify-end gap-2'>
+                  <button
+                    onClick={() => {
+                      setBroadcastOpen(false)
+                      setBroadcastTitle('')
+                      setBroadcastContent('')
+                    }}
+                    className='rounded border border-green-400 px-4 py-2 text-sm text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-200'
+                  >
+                    <Trans id='Cancel' />
+                  </button>
+                  <button
+                    onClick={handleBroadcast}
+                    disabled={broadcastSending}
+                    className='rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-50'
+                  >
+                    {broadcastSending ? <Trans id='Sending...' /> : <Trans id='Send' />}
+                  </button>
                 </div>
-                
-                <div>
-                  <label htmlFor="content" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                    Contenuto
-                  </label>
-                  <textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="w-full h-32 p-3 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 resize-none"
-                    placeholder="Scrivi il contenuto del messaggio..."
-                  />
-                </div>
-                
-                <button
-                  onClick={sendMessage}
-                  disabled={sending}
-                  className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
-                >
-                  {sending ? 'Invio in corso...' : 'Invia Messaggio'}
-                </button>
               </div>
             </div>
+          )}
 
-            {/* Users Statistics */}
-            <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 shadow-lg">
-              <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-zinc-200">
-                Statistiche Utenti
-              </h2>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
-                  <span className="text-zinc-700 dark:text-zinc-300"><Trans id="Total users" /></span>
-                  <span className="text-2xl font-bold text-blue-500">{users.length}</span>
-                </div>
-                
-                <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
-                  <span className="text-zinc-700 dark:text-zinc-300"><Trans id="Administrators" /></span>
-                  <span className="text-2xl font-bold text-green-500">
-                    {adminUsers.length}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
-                  <span className="text-zinc-700 dark:text-zinc-300"><Trans id="Professionals" /></span>
-                  <span className="text-2xl font-bold text-purple-500">
-                    {professionalUsers.length}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
-                  <span className="text-zinc-700 dark:text-zinc-300"><Trans id="Clients" /></span>
-                  <span className="text-2xl font-bold text-amber-500">
-                    {clientUsers.length}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <h3 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-3">
-                  Utenti Recenti
+          {showUsers && (
+            <div className='grid gap-6 lg:grid-cols-[320px_1fr]'>
+              <div className='space-y-2 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+                <h3 className='text-sm font-semibold text-zinc-700 dark:text-zinc-200'>
+                  <Trans id='Accounts' />
                 </h3>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {users.slice(0, 5).map((user) => (
-                    <div key={user.id} className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-700 dark:text-zinc-300">{user.email}</span>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        user.isAdmin 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                          : 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
-                      }`}>
-                        {user.isAdmin ? 'Admin' : 'User'}
-                      </span>
-                    </div>
+                <div className='space-y-1'>
+                  {users.map((account) => (
+                    <button
+                      key={account.id}
+                      onClick={() => selectUser(account)}
+                      className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                        selectedUserId === account.id
+                          ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-900/30'
+                          : 'border-zinc-200 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-700'
+                      }`}
+                    >
+                      <span className='truncate text-zinc-700 dark:text-zinc-200'>{account.email}</span>
+                      <span className='text-xs text-zinc-500 dark:text-zinc-400'>{account.role}</span>
+                    </button>
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6">
-                <h3 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-3">
-                  <Trans id="Active Administrators" />
-                </h3>
-                {adminUsers.length === 0 ? (
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    <Trans id="No administrators found" />
-                  </p>
+              <div className='rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-800'>
+                {selectedUserId ? (
+                  userDetailsLoading ? (
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                      <Trans id='Loading user details...' />
+                    </p>
+                  ) : selectedUserDetails ? (
+                    <UserDetailPanel
+                      user={selectedUserDetails}
+                      account={users.find((item) => item.id === selectedUserId)!}
+                      messageDraft={messageDraft}
+                      setMessageDraft={setMessageDraft}
+                      passwordDraft={passwordDraft}
+                      setPasswordDraft={setPasswordDraft}
+                      diaryEntries={diaryCache[selectedUserId] || []}
+                      onReloadUsers={loadUsers}
+                      onReloadDetails={() => loadUserDetails(selectedUserId)}
+                      onLoadDiary={() => loadDiaryForUser(selectedUserId)}
+                      onSendMessage={submitUserMessage}
+                      onResetPassword={submitPasswordReset}
+                      onDeleteUser={handleDeleteUser}
+                      onRoleChange={handleRoleChange}
+                      loadingStates={{
+                        loadingDiary: loadingDiaryFor === selectedUserId,
+                        sendingMessage: messageDraft.sending,
+                        resettingPassword: passwordDraft.saving,
+                        deletingUser,
+                        updatingRole: roleUpdating,
+                      }}
+                    />
+                  ) : (
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                      <Trans id='Select an account to inspect details.' />
+                    </p>
+                  )
                 ) : (
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {adminUsers.map((admin) => (
-                      <div key={admin.id} className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-700 dark:text-zinc-300">{admin.email}</span>
-                        <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                          <Trans id="Admin" />
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                  <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                    <Trans id='Pick an account from the list to open the detail panel.' />
+                  </p>
                 )}
               </div>
             </div>
-          </div>
+          )}
+
+          <ArticlesPanel
+            articles={articles}
+            articleFormOpen={articleFormOpen}
+            editingArticleId={editingArticleId}
+            articleTitle={articleTitle}
+            articleSlug={articleSlug}
+            articleSummary={articleSummary}
+            articleContent={articleContent}
+            articlePublished={articlePublished}
+            onToggleForm={() => {
+              if (articleFormOpen) {
+                resetArticleForm()
+              }
+              setArticleFormOpen((prev) => !prev)
+            }}
+            onTitleChange={(value) => {
+              setArticleTitle(value)
+              if (!editingArticleId) {
+                setArticleSlug(slugify(value))
+              }
+            }}
+            onSlugChange={setArticleSlug}
+            onSummaryChange={setArticleSummary}
+            onContentChange={setArticleContent}
+            onPublishedChange={setArticlePublished}
+            onEditArticle={populateArticleForm}
+            onDeleteArticle={handleArticleDelete}
+            onSaveArticle={handleArticleSave}
+            onResetForm={resetArticleForm}
+            saving={articleSaving}
+          />
         </div>
-
-        {showUserList && (
-          <div className="mt-10">
-            <h2 className="text-2xl font-semibold text-zinc-800 dark:text-zinc-200 mb-4">
-              <Trans id="All accounts" />
-            </h2>
-
-            {users.length === 0 ? (
-              <p className="text-zinc-600 dark:text-zinc-400">
-                <Trans id="No accounts available" />
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {users.map((account) => {
-                  const canViewDiary = account.diaryVisibility === 'PUBLIC'
-                  const isMessageOpen = messageDraft.userId === account.id
-                  const isPasswordOpen = passwordDraft.userId === account.id
-
-                  return (
-                    <div
-                      key={account.id}
-                      className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
-                    >
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-start gap-3">
-                          <UserAvatar
-                            animal={account.avatar || 'leone'}
-                            size="md"
-                            className="border border-zinc-300 dark:border-zinc-600"
-                          />
-                          <div>
-                            <p className="font-medium text-zinc-800 dark:text-zinc-100">{account.email}</p>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                              {account.nickname || '—'}
-                            </p>
-                            {account.phone && (
-                              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                {account.phone}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-100">
-                            <Trans id={roleLabelMap[account.role]} />
-                          </span>
-                          <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-100">
-                            <Trans id={visibilityLabels[account.diaryVisibility]} />
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <button
-                          onClick={() => loadDiaryForUser(account)}
-                          disabled={!canViewDiary || loadingDiaryFor === account.id}
-                          className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-                            canViewDiary
-                              ? 'border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white'
-                              : 'border border-dashed border-zinc-400 text-zinc-400 cursor-not-allowed'
-                          }`}
-                        >
-                          {loadingDiaryFor === account.id ? (
-                            <Trans id="Loading diary..." />
-                          ) : (
-                            <Trans id="View diary" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => (isMessageOpen ? setMessageDraft({ userId: '', title: '', content: '', sending: false }) : openMessageForm(account.id))}
-                          className="rounded-lg border border-green-500 px-3 py-2 text-sm text-green-600 hover:bg-green-500 hover:text-white transition-colors"
-                        >
-                          {isMessageOpen ? <Trans id="Close message" /> : <Trans id="Send message" />}
-                        </button>
-                        <button
-                          onClick={() => (isPasswordOpen ? setPasswordDraft({ userId: '', newPassword: '', saving: false }) : openPasswordForm(account.id))}
-                          className="rounded-lg border border-amber-500 px-3 py-2 text-sm text-amber-600 hover:bg-amber-500 hover:text-white transition-colors"
-                        >
-                          {isPasswordOpen ? <Trans id="Close password form" /> : <Trans id="Reset password" />}
-                        </button>
-                        <select
-                          value={account.role}
-                          onChange={(event) => {
-                            const selectedRole = event.target.value as AdminManagedUser['role']
-                            if (selectedRole !== account.role) {
-                              handleRoleChange(account.id, selectedRole)
-                            }
-                          }}
-                          disabled={roleUpdating === account.id}
-                          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100"
-                        >
-                          {roleOptions.map((role) => (
-                            <option key={role} value={role}>
-                              {i18n._(roleLabelMap[role])}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => handleDeleteUser(account.id)}
-                          disabled={deletingUserId === account.id}
-                          className="rounded-lg border border-red-500 px-3 py-2 text-sm text-red-600 hover:bg-red-500 hover:text-white transition-colors"
-                        >
-                          {deletingUserId === account.id ? <Trans id="Deleting..." /> : <Trans id="Delete user" />}
-                        </button>
-                      </div>
-
-                      {isMessageOpen && (
-                        <div className="mt-4 space-y-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-700 dark:bg-green-900/30">
-                          <input
-                            type="text"
-                            value={messageDraft.title}
-                            onChange={(e) => setMessageDraft((prev) => ({ ...prev, title: e.target.value }))}
-                            placeholder="Titolo"
-                            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100"
-                          />
-                          <textarea
-                            value={messageDraft.content}
-                            onChange={(e) => setMessageDraft((prev) => ({ ...prev, content: e.target.value }))}
-                            rows={4}
-                            placeholder="Contenuto"
-                            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100"
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => setMessageDraft({ userId: '', title: '', content: '', sending: false })}
-                              className="rounded px-3 py-2 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-zinc-100"
-                            >
-                              <Trans id="Cancel" />
-                            </button>
-                            <button
-                              onClick={submitUserMessage}
-                              disabled={messageDraft.sending}
-                              className="rounded bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600 disabled:opacity-50"
-                            >
-                              {messageDraft.sending ? <Trans id="Sending..." /> : <Trans id="Send" />}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {isPasswordOpen && (
-                        <div className="mt-4 space-y-3 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
-                          <input
-                            type="password"
-                            value={passwordDraft.newPassword}
-                            onChange={(e) => setPasswordDraft((prev) => ({ ...prev, newPassword: e.target.value }))}
-                            placeholder="Nuova password"
-                            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100"
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => setPasswordDraft({ userId: '', newPassword: '', saving: false })}
-                              className="rounded px-3 py-2 text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-zinc-100"
-                            >
-                              <Trans id="Cancel" />
-                            </button>
-                            <button
-                              onClick={submitPasswordReset}
-                              disabled={passwordDraft.saving}
-                              className="rounded bg-amber-500 px-4 py-2 text-sm text-white hover:bg-amber-600 disabled:opacity-50"
-                            >
-                              {passwordDraft.saving ? <Trans id="Saving..." /> : <Trans id="Update" />}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {diaryCache[account.id] && (
-                        <div className="mt-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-700 dark:bg-indigo-900/20">
-                          <h3 className="mb-2 text-sm font-semibold text-indigo-700 dark:text-indigo-200">
-                            <Trans id="Latest diary entries" />
-                          </h3>
-                          {diaryCache[account.id].length === 0 ? (
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                              <Trans id="No diary entries" />
-                            </p>
-                          ) : (
-                            <div className="space-y-3">
-                              {diaryCache[account.id].map((entry) => (
-                                <div key={entry.id} className="rounded border border-indigo-100 bg-white p-3 text-sm dark:border-indigo-800 dark:bg-indigo-900/40">
-                                  <div className="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-200">
-                                    <span>{formatDiaryDate(entry.date)}</span>
-                                    {entry.mood && <span>{entry.mood}</span>}
-                                  </div>
-                                  {entry.freeText ? (
-                                    <div
-                                      className="mt-2 text-zinc-700 dark:text-zinc-100"
-                                      dangerouslySetInnerHTML={{ __html: entry.freeText }}
-                                    />
-                                  ) : (
-                                    <p className="mt-2 text-zinc-500 dark:text-zinc-300">
-                                      <Trans id="No text provided" />
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
       </Section>
     </Page>
   )
 }
+
+const StatsCard = ({ label, value, accent }: { label: string; value: number; accent: 'primary' | 'success' | 'purple' | 'amber' }) => {
+  const palette: Record<typeof accent, string> = {
+    primary: 'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-200',
+    success: 'border-green-200 bg-green-50 text-green-600 dark:border-green-700 dark:bg-green-900/20 dark:text-green-200',
+    purple: 'border-purple-200 bg-purple-50 text-purple-600 dark:border-purple-700 dark:bg-purple-900/20 dark:text-purple-200',
+    amber: 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200',
+  }
+  return (
+    <div className={`rounded-lg border p-4 shadow-sm ${palette[accent]}`}>
+      <p className='text-xs uppercase tracking-wide'>{label}</p>
+      <p className='mt-2 text-2xl font-bold'>{value}</p>
+    </div>
+  )
+}
+
+const UserDetailPanel = ({
+  user,
+  account,
+  messageDraft,
+  setMessageDraft,
+  passwordDraft,
+  setPasswordDraft,
+  diaryEntries,
+  onReloadUsers,
+  onReloadDetails,
+  onLoadDiary,
+  onSendMessage,
+  onResetPassword,
+  onDeleteUser,
+  onRoleChange,
+  loadingStates,
+}: {
+  user: UserDetails
+  account: AdminManagedUser
+  messageDraft: { title: string; content: string; sending: boolean }
+  setMessageDraft: React.Dispatch<React.SetStateAction<{ title: string; content: string; sending: boolean }>>
+  passwordDraft: { newPassword: string; saving: boolean }
+  setPasswordDraft: React.Dispatch<React.SetStateAction<{ newPassword: string; saving: boolean }>>
+  diaryEntries: Array<{ id: string; date: string; mood: string | null; freeText: string | null }>
+  onReloadUsers: () => Promise<void>
+  onReloadDetails: () => Promise<void>
+  onLoadDiary: () => Promise<void>
+  onSendMessage: () => Promise<void>
+  onResetPassword: () => Promise<void>
+  onDeleteUser: () => Promise<void>
+  onRoleChange: (id: string, role: AdminManagedUser['role']) => Promise<void>
+  loadingStates: {
+    loadingDiary: boolean
+    sendingMessage: boolean
+    resettingPassword: boolean
+    deletingUser: boolean
+    updatingRole: boolean
+  }
+}) => {
+  const { i18n } = useLingui()
+
+  const infoPairs = useMemo(() => {
+    const base: Record<string, string | null> = {
+      Email: user.email,
+      Nickname: user.nickname,
+      Phone: user.phone,
+      Role: user.role,
+      'Diary visibility': user.diaryVisibility,
+      'Created at': new Date(user.createdAt).toLocaleString(),
+    }
+    return Object.entries(base)
+  }, [user])
+
+  return (
+    <div className='space-y-6'>
+      <div className='flex items-center gap-4'>
+        <UserAvatar animal={user.avatar || 'leone'} size='md' />
+        <div>
+          <p className='text-lg font-semibold text-zinc-800 dark:text-zinc-100'>{user.email}</p>
+          <p className='text-sm text-zinc-500 dark:text-zinc-400'>ID: {user.id}</p>
+        </div>
+      </div>
+
+      <div className='grid gap-4 sm:grid-cols-2'>
+        {infoPairs.map(([label, value]) => (
+          <div key={label} className='rounded-lg border border-zinc-200 p-3 dark:border-zinc-700'>
+            <p className='text-xs uppercase text-zinc-500 dark:text-zinc-400'>{label}</p>
+            <p className='mt-1 text-sm text-zinc-800 dark:text-zinc-100'>{value || '—'}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className='space-y-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700'>
+        <h4 className='text-sm font-semibold text-zinc-700 dark:text-zinc-200'>
+          <Trans id='Account actions' />
+        </h4>
+        <div className='grid gap-4 sm:grid-cols-2'>
+          <label className='space-y-2 text-sm text-zinc-600 dark:text-zinc-300'>
+            <span><Trans id='Role' /></span>
+            <select
+              value={account.role}
+              onChange={(event) => onRoleChange(account.id, event.target.value as AdminManagedUser['role'])}
+              disabled={loadingStates.updatingRole}
+              className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
+            >
+              <option value='ADMIN'>{i18n._('Administrator')}</option>
+              <option value='PROFESSIONAL'>{i18n._('Professional')}</option>
+              <option value='CLIENT'>{i18n._('Client')}</option>
+            </select>
+          </label>
+          <label className='space-y-2 text-sm text-zinc-600 dark:text-zinc-300'>
+            <span><Trans id='New password' /></span>
+            <div className='flex gap-2'>
+              <input
+                type='password'
+                value={passwordDraft.newPassword}
+                onChange={(event) => setPasswordDraft({ newPassword: event.target.value, saving: false })}
+                className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
+              />
+              <button
+                onClick={onResetPassword}
+                disabled={loadingStates.resettingPassword}
+                className='rounded bg-amber-500 px-3 py-2 text-sm text-white hover:bg-amber-600 disabled:opacity-50'
+              >
+                <Trans id='Reset' />
+              </button>
+            </div>
+          </label>
+        </div>
+        <div className='flex justify-between'>
+          <button
+            onClick={async () => {
+              await onReloadDetails()
+              await onReloadUsers()
+            }}
+            className='rounded border border-zinc-300 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-300'
+          >
+            <Trans id='Refresh data' />
+          </button>
+          <button
+            onClick={onDeleteUser}
+            disabled={loadingStates.deletingUser}
+            className='rounded bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600 disabled:opacity-50'
+          >
+            <Trans id='Delete user' />
+          </button>
+        </div>
+      </div>
+
+      <div className='space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700'>
+        <h4 className='text-sm font-semibold text-zinc-700 dark:text-zinc-200'>
+          <Trans id='Send a private message' />
+        </h4>
+        <input
+          type='text'
+          value={messageDraft.title}
+          onChange={(event) => setMessageDraft((prev) => ({ ...prev, title: event.target.value }))}
+          placeholder={i18n._('Title')}
+          className='w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
+        />
+        <textarea
+          value={messageDraft.content}
+          onChange={(event) => setMessageDraft((prev) => ({ ...prev, content: event.target.value }))}
+          rows={3}
+          placeholder={i18n._('Message content')}
+          className='w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
+        />
+        <div className='flex justify-end'>
+          <button
+            onClick={onSendMessage}
+            disabled={loadingStates.sendingMessage}
+            className='rounded bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600 disabled:opacity-50'
+          >
+            {loadingStates.sendingMessage ? <Trans id='Sending...' /> : <Trans id='Send' />}
+          </button>
+        </div>
+      </div>
+
+      <div className='space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700'>
+        <div className='flex items-center justify-between'>
+          <h4 className='text-sm font-semibold text-zinc-700 dark:text-zinc-200'>
+            <Trans id='Diary visibility' />
+          </h4>
+          <span className='text-xs uppercase text-zinc-500 dark:text-zinc-400'>{user.diaryVisibility}</span>
+        </div>
+        {account.diaryVisibility === 'PUBLIC' ? (
+          <div className='space-y-2'>
+            <button
+              onClick={onLoadDiary}
+              disabled={loadingStates.loadingDiary}
+              className='rounded border border-indigo-400 px-3 py-2 text-sm text-indigo-500 hover:bg-indigo-500 hover:text-white disabled:opacity-50'
+            >
+              {loadingStates.loadingDiary ? <Trans id='Loading diary...' /> : <Trans id='View diary' />}
+            </button>
+            {diaryEntries.length > 0 ? (
+              <ul className='max-h-56 space-y-2 overflow-y-auto text-sm'>
+                {diaryEntries.map((entry) => (
+                  <li key={entry.id} className='rounded border border-zinc-200 p-2 dark:border-zinc-700'>
+                    <div className='flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400'>
+                      <span>{new Date(entry.date).toLocaleDateString()}</span>
+                      {entry.mood && <span>{entry.mood}</span>}
+                    </div>
+                    {entry.freeText ? (
+                      <div className='prose prose-sm max-w-none text-zinc-700 dark:prose-invert dark:text-zinc-100' dangerouslySetInnerHTML={{ __html: entry.freeText }} />
+                    ) : (
+                      <p className='text-xs text-zinc-500 dark:text-zinc-300'>
+                        <Trans id='No text provided' />
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+                <Trans id='No diary entries' />
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+            <Trans id='The diary is not shared. Ask the user to change visibility to "Everyone" if needed.' />
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const ArticlesPanel = ({
+  articles,
+  articleFormOpen,
+  editingArticleId,
+  articleTitle,
+  articleSlug,
+  articleSummary,
+  articleContent,
+  articlePublished,
+  onToggleForm,
+  onTitleChange,
+  onSlugChange,
+  onSummaryChange,
+  onContentChange,
+  onPublishedChange,
+  onEditArticle,
+  onDeleteArticle,
+  onSaveArticle,
+  onResetForm,
+  saving,
+}: {
+  articles: Article[]
+  articleFormOpen: boolean
+  editingArticleId: string | null
+  articleTitle: string
+  articleSlug: string
+  articleSummary: string
+  articleContent: string
+  articlePublished: boolean
+  onToggleForm: () => void
+  onTitleChange: (value: string) => void
+  onSlugChange: (value: string) => void
+  onSummaryChange: (value: string) => void
+  onContentChange: (value: string) => void
+  onPublishedChange: (value: boolean) => void
+  onEditArticle: (article: Article) => void
+  onDeleteArticle: (id: string) => void
+  onSaveArticle: () => void
+  onResetForm: () => void
+  saving: boolean
+}) => {
+  const { i18n } = useLingui()
+
+  return (
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-lg font-semibold text-zinc-800 dark:text-zinc-200'>
+          <Trans id='Blog articles' />
+        </h2>
+        <button
+          onClick={onToggleForm}
+          className='rounded border border-amber-500 px-4 py-2 text-sm font-semibold text-amber-600 hover:bg-amber-500 hover:text-white'
+        >
+          {articleFormOpen ? <Trans id='Close editor' /> : <Trans id='Create article' />}
+        </button>
+      </div>
+
+      {articleFormOpen && (
+        <div className='rounded-lg border border-amber-300 bg-amber-50 p-6 dark:border-amber-700 dark:bg-amber-900/20'>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <label className='text-sm text-zinc-600 dark:text-zinc-200'>
+              <span className='mb-1 block font-medium'><Trans id='Title' /></span>
+              <input
+                type='text'
+                value={articleTitle}
+                onChange={(event) => onTitleChange(event.target.value)}
+                className='w-full rounded border border-amber-200 px-3 py-2 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100'
+              />
+            </label>
+            <label className='text-sm text-zinc-600 dark:text-zinc-200'>
+              <span className='mb-1 block font-medium'><Trans id='Slug' /></span>
+              <input
+                type='text'
+                value={articleSlug}
+                onChange={(event) => onSlugChange(event.target.value)}
+                className='w-full rounded border border-amber-200 px-3 py-2 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100'
+              />
+            </label>
+          </div>
+          <label className='mt-4 block text-sm text-zinc-600 dark:text-zinc-200'>
+            <span className='mb-1 block font-medium'><Trans id='Summary' /></span>
+            <textarea
+              value={articleSummary}
+              onChange={(event) => onSummaryChange(event.target.value)}
+              rows={2}
+              className='w-full rounded border border-amber-200 px-3 py-2 text-sm dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100'
+            />
+          </label>
+          <label className='mt-4 block text-sm text-zinc-600 dark:text-zinc-200'>
+            <span className='mb-1 block font-medium'><Trans id='Content' /></span>
+            <RichTextEditor value={articleContent} onChange={onContentChange} />
+          </label>
+          <label className='mt-4 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-200'>
+            <input
+              type='checkbox'
+              checked={articlePublished}
+              onChange={(event) => onPublishedChange(event.target.checked)}
+              className='h-4 w-4'
+            />
+            <span><Trans id='Publish immediately' /></span>
+          </label>
+          <div className='mt-6 flex justify-between'>
+            <button
+              onClick={() => {
+                onResetForm()
+                onToggleForm()
+              }}
+              className='rounded border border-amber-400 px-4 py-2 text-sm text-amber-600 hover:bg-amber-100 dark:border-amber-600 dark:text-amber-200'
+            >
+              <Trans id='Cancel' />
+            </button>
+            <button
+              onClick={onSaveArticle}
+              disabled={saving}
+              className='rounded bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50'
+            >
+              {saving ? i18n._('Saving...') : i18n._('Save')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className='space-y-3'>
+        {articles.length === 0 ? (
+          <p className='text-sm text-zinc-500 dark:text-zinc-400'>
+            <Trans id='No articles yet. Create one above.' />
+          </p>
+        ) : (
+          <div className='grid gap-3 md:grid-cols-2'>
+            {articles.map((article) => (
+              <div key={article.id} className='space-y-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700'>
+                <div className='flex items-start justify-between'>
+                  <div>
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>{article.slug}</p>
+                    <h3 className='text-lg font-semibold text-zinc-800 dark:text-zinc-100'>{article.title}</h3>
+                  </div>
+                  {article.publishedAt ? (
+                    <span className='rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-200'>
+                      <Trans id='Published' />
+                    </span>
+                  ) : (
+                    <span className='rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'>
+                      <Trans id='Draft' />
+                    </span>
+                  )}
+                </div>
+                {article.summary && (
+                  <p className='text-sm text-zinc-600 dark:text-zinc-300'>{article.summary}</p>
+                )}
+                <div className='flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400'>
+                  <span>{new Date(article.updatedAt || article.createdAt).toLocaleDateString()}</span>
+                  <span>{article.author.email}</span>
+                </div>
+                <div className='flex gap-2'>
+                  <button
+                    onClick={() => onEditArticle(article)}
+                    className='flex-1 rounded border border-indigo-400 px-3 py-2 text-sm text-indigo-500 hover:bg-indigo-500 hover:text-white'
+                  >
+                    <Trans id='Edit' />
+                  </button>
+                  <button
+                    onClick={() => onDeleteArticle(article.id)}
+                    className='rounded border border-red-400 px-3 py-2 text-sm text-red-500 hover:bg-red-500 hover:text-white'
+                  >
+                    <Trans id='Delete' />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const titleOr = (value: string) => value?.trim().length > 0
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
 
 export default AdminPanel

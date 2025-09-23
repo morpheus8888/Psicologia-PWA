@@ -1,0 +1,17 @@
+ALTER TABLE "User"
+  ADD COLUMN IF NOT EXISTS "diaryPasswordHash" TEXT,
+  ADD COLUMN IF NOT EXISTS "diaryPasswordSalt" TEXT;
+
+CREATE TABLE IF NOT EXISTS "Article" (
+  "id" TEXT PRIMARY KEY,
+  "title" TEXT NOT NULL,
+  "slug" TEXT NOT NULL UNIQUE,
+  "summary" TEXT,
+  "content" TEXT NOT NULL,
+  "authorId" TEXT NOT NULL REFERENCES "User"("id") ON DELETE CASCADE,
+  "publishedAt" TIMESTAMP(3),
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS "Article_publishedAt_idx" ON "Article"("publishedAt" DESC);
