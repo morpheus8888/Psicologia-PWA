@@ -10,6 +10,15 @@ export const locales = {
 
 const defaultLocale = 'it'
 
+type CatalogMessages = Record<string, string>
+
+const toCompiledCatalog = (locale: string, messages: CatalogMessages) => ({
+  messages,
+  locale,
+  languageData: {},
+  _compiled: true,
+})
+
 export const LocalizationProvider = ({ children }: { children: React.ReactNode }) => {
   const { locale } = useRouter()
   const [ready, setReady] = useState(false)
@@ -18,23 +27,24 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
     const load = async () => {
       try {
         const current = (locale || defaultLocale) as keyof typeof locales
+        const targetLocale = locales[current] ? current : defaultLocale
         if (!locales[current]) {
           console.warn(`Locale ${current} not found, using default ${defaultLocale}`)
-          const { default: messages } = await locales[defaultLocale].loader()
-          i18n.load(defaultLocale, messages)
-          i18n.activate(defaultLocale)
-        } else {
-          const { default: messages } = await locales[current].loader()
-          i18n.load(current, messages)
-          i18n.activate(current)
         }
+
+        const localeModule = await locales[targetLocale].loader()
+        const messages: CatalogMessages = (localeModule as any).default ?? (localeModule as any).messages ?? {}
+
+        i18n.load(targetLocale, toCompiledCatalog(targetLocale, messages))
+        i18n.activate(targetLocale)
         setReady(true)
       } catch (error) {
         console.error('Error loading locale:', error)
         // Fallback to default locale
         try {
-          const { default: messages } = await locales[defaultLocale].loader()
-          i18n.load(defaultLocale, messages)
+          const defaultModule = await locales[defaultLocale].loader()
+          const messages: CatalogMessages = (defaultModule as any).default ?? (defaultModule as any).messages ?? {}
+          i18n.load(defaultLocale, toCompiledCatalog(defaultLocale, messages))
           i18n.activate(defaultLocale)
           setReady(true)
         } catch (fallbackError) {

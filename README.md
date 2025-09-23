@@ -34,6 +34,13 @@ DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 
 > 📝 **Preview senza DB:** Se `DATABASE_URL` non è impostata (es. su preview Vercel), l'applicazione resta navigabile ma il blog mostra un avviso e nessun articolo. Imposta la variabile prima di rilasciare ambienti destinati agli utenti.
 
+## Migrazioni del database
+
+- Prisma tiene traccia della struttura del database con le migrazioni in `prisma/migrations/`. Ogni volta che aggiungiamo colonne o nuove tabelle viene creata una cartella con gli script SQL da applicare.
+- In locale usa `npx prisma migrate dev --name <nome>` per creare le nuove migrazioni e aggiornare il database di sviluppo.
+- In ambienti remoti (es. Vercel) è sufficiente eseguire `npx prisma migrate deploy` per applicare tutte le migrazioni pendenti. Il progetto include già lo script `vercel-post-build` che Vercel esegue automaticamente dopo il build.
+- Se vedi errori del tipo `column "user.role" does not exist` significa che il database non è stato migrato: lancialo manualmente una volta (Vercel → Deployments → Run Command → `npx prisma migrate deploy`) e il problema scompare.
+
 ## Setup locale
 
 ```bash
