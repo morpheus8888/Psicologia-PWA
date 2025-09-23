@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
+import compileMessage from '@lingui/message-utils/compileMessage'
 
 import itMessages from '@/locales/it/messages'
 import enMessages from '@/locales/en/messages'
@@ -29,6 +30,7 @@ i18n.loadLocaleData({
   en: { plurals: pluralRules.en },
   it: { plurals: pluralRules.it },
 })
+i18n.setMessagesCompiler(compileMessage)
 
 const buildCatalog = (locale: keyof typeof pluralRules, messages: Record<string, string>) => ({
   messages,

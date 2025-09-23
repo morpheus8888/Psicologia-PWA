@@ -57,7 +57,7 @@ L'app è disponibile su <http://localhost:3000>.
 
 ```bash
 npm run lint
-npm run build # esegue anche prisma generate
+npm run build
 ```
 
 ## Deployment su Vercel
