@@ -9,7 +9,6 @@ export const messages = {
   'Active Administrators': 'Active Administrators',
   'No administrators found': 'No administrators found',
   'Admin': 'Admin',
-  'Rice Bowl': 'Blog',
   'Who can read my diary?': 'Who can read my diary?',
   'Choose who can access your journal entries.': 'Choose who can access your journal entries.',
   'Only me': 'Only me',

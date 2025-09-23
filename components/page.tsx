@@ -21,7 +21,7 @@ const Page = ({ title, children }: Props) => {
 		}
 	}, [isLoggedIn, refreshUnreadCount])
 
-        const baseTitle = i18n._('Rice Bowl')
+        const baseTitle = 'Blog'
         const pageTitle = title ? `${title} – ${baseTitle}` : baseTitle
 
         return (
