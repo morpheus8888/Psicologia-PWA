@@ -45,16 +45,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Titolo e contenuto richiesti' })
     }
 
-    // Get all users (except admins, or include them if you want)
+    // Broadcast to every registered account, including administrators
     const users = await prisma.user.findMany({
-      where: {
-        role: {
-          not: 'ADMIN'
-        }
-      },
       select: {
-        id: true
-      }
+        id: true,
+      },
     })
 
     // Create messages for all users
