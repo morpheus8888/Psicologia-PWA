@@ -4,7 +4,7 @@ import { Trans } from '@lingui/react'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
-import { prisma } from '@/lib/prisma'
+import { prisma, isDatabaseConfigured } from '@/lib/prisma'
 
 type BlogPostProps = {
   article: {
@@ -14,15 +14,23 @@ type BlogPostProps = {
     publishedAt: string
     authorEmail: string
   } | null
+  databaseReady: boolean
 }
 
-const BlogPost = ({ article }: BlogPostProps) => {
+const BlogPost = ({ article, databaseReady }: BlogPostProps) => {
   if (!article) {
     return (
       <Page title='Article'>
         <Section>
-          <div className='text-center text-zinc-500 dark:text-zinc-300'>
-            <Trans id='The requested article is no longer available.' />
+          <div className='mx-auto max-w-2xl space-y-4 text-center text-zinc-500 dark:text-zinc-300'>
+            {!databaseReady && (
+              <div className='rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200'>
+                <Trans id='This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.' />
+              </div>
+            )}
+            <p>
+              <Trans id='The requested article is no longer available.' />
+            </p>
           </div>
         </Section>
       </Page>
@@ -57,38 +65,58 @@ export const getServerSideProps: GetServerSideProps<BlogPostProps> = async ({ pa
     return { notFound: true }
   }
 
-  const article = await prisma.article.findFirst({
-    where: {
-      slug,
-      publishedAt: { not: null },
-    },
-    include: {
-      author: { select: { email: true } },
-    },
-  })
-
-  if (!article) {
-    return { notFound: true }
+  if (!isDatabaseConfigured) {
+    return {
+      props: {
+        article: null,
+        databaseReady: false,
+      },
+    }
   }
 
-  const safeContent = sanitizeHtml(article.content, {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'blockquote']),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      img: ['src', 'alt']
-    },
-    allowedSchemes: ['data', 'http', 'https']
-  })
+  try {
+    const article = await prisma.article.findFirst({
+      where: {
+        slug,
+        publishedAt: { not: null },
+      },
+      include: {
+        author: { select: { email: true } },
+      },
+    })
 
-  return {
-    props: {
-      article: {
-        id: article.id,
-        title: article.title,
-        content: safeContent,
-        publishedAt: (article.publishedAt ?? article.createdAt).toISOString(),
-        authorEmail: article.author.email,
+    if (!article) {
+      return { notFound: true }
+    }
+
+    const safeContent = sanitizeHtml(article.content, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'blockquote']),
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'alt']
+      },
+      allowedSchemes: ['data', 'http', 'https']
+    })
+
+    return {
+      props: {
+        article: {
+          id: article.id,
+          title: article.title,
+          content: safeContent,
+          publishedAt: (article.publishedAt ?? article.createdAt).toISOString(),
+          authorEmail: article.author.email,
+        },
+        databaseReady: true,
       }
+    }
+  } catch (error) {
+    console.error('[Blog] Error loading article:', error)
+    return {
+      props: {
+        article: null,
+        databaseReady: false,
+      },
     }
   }
 }

@@ -296,10 +296,12 @@ export const messages = {
   'Saving...': 'Salvataggio in corso...',
   'Latest insights from the community': 'Ultimi approfondimenti dalla community',
   'Explore articles curated by the administrative team to support your wellbeing journey.': 'Esplora gli articoli curati dal team amministrativo per supportare il tuo percorso di benessere.',
+  'The content database is not configured. Administrators can set DATABASE_URL to enable blog articles.': 'Il database dei contenuti non è configurato. Gli amministratori possono impostare DATABASE_URL per abilitare gli articoli del blog.',
   'No articles have been published yet. Check back soon!': 'Non ci sono ancora articoli pubblicati. Torna presto!',
   'Read article': 'Leggi articolo',
   'Published article': 'Articolo pubblicato',
   'The requested article is no longer available.': 'L’articolo richiesto non è più disponibile.',
+  'This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.': 'Impossibile caricare questo articolo perché la connessione al database non è disponibile. Configura DATABASE_URL e ridistribuisci per ripristinare i contenuti del blog.',
   'Open messages': 'Apri messaggi',
   '{count, plural, one {You have # unread message} other {You have # unread messages}}': '{count, plural, one {Hai # messaggio non letto} other {Hai # messaggi non letti}}',
   'All caught up!': 'Sei aggiornato!'

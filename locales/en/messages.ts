@@ -295,10 +295,12 @@ export const messages = {
   'Saving...': 'Saving...',
   'Latest insights from the community': 'Latest insights from the community',
   'Explore articles curated by the administrative team to support your wellbeing journey.': 'Explore articles curated by the administrative team to support your wellbeing journey.',
+  'The content database is not configured. Administrators can set DATABASE_URL to enable blog articles.': 'The content database is not configured. Administrators can set DATABASE_URL to enable blog articles.',
   'No articles have been published yet. Check back soon!': 'No articles have been published yet. Check back soon!',
   'Read article': 'Read article',
   'Published article': 'Published article',
   'The requested article is no longer available.': 'The requested article is no longer available.',
+  'This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.': 'This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content.',
   'Open messages': 'Open messages',
   '{count, plural, one {You have # unread message} other {You have # unread messages}}': '{count, plural, one {You have # unread message} other {You have # unread messages}}',
   'All caught up!': 'All caught up!'

@@ -5,7 +5,7 @@ import { Trans, useLingui } from '@lingui/react'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
-import { prisma } from '@/lib/prisma'
+import { prisma, isDatabaseConfigured } from '@/lib/prisma'
 
 type ArticleCard = {
   id: string
@@ -19,9 +19,10 @@ type ArticleCard = {
 
 type HomeProps = {
   articles: ArticleCard[]
+  databaseReady: boolean
 }
 
-const Home = ({ articles }: HomeProps) => {
+const Home = ({ articles, databaseReady }: HomeProps) => {
   const { i18n } = useLingui()
 
   return (
@@ -36,6 +37,12 @@ const Home = ({ articles }: HomeProps) => {
               <Trans id='Explore articles curated by the administrative team to support your wellbeing journey.' />
             </p>
           </header>
+
+          {!databaseReady && (
+            <div className='rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-700 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200'>
+              <Trans id='The content database is not configured. Administrators can set DATABASE_URL to enable blog articles.' />
+            </div>
+          )}
 
           {articles.length === 0 ? (
             <div className='rounded-lg border border-dashed border-zinc-300 p-8 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-300'>
@@ -79,30 +86,50 @@ const Home = ({ articles }: HomeProps) => {
 }
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  const articles = await prisma.article.findMany({
-    where: { publishedAt: { not: null } },
-    orderBy: { publishedAt: 'desc' },
-    include: { author: { select: { email: true } } },
-  })
-
-  const mapped = articles.map((article) => {
-    const plainText = sanitizeHtml(article.content, { allowedTags: [], allowedAttributes: {} })
-    const excerpt = plainText.replace(/\s+/g, ' ').trim().slice(0, 280)
+  if (!isDatabaseConfigured) {
     return {
-      id: article.id,
-      slug: article.slug,
-      title: article.title,
-      summary: article.summary,
-      excerpt,
-      publishedAt: article.publishedAt?.toISOString() ?? article.createdAt.toISOString(),
-      authorEmail: article.author.email,
+      props: {
+        articles: [],
+        databaseReady: false,
+      },
     }
-  })
+  }
 
-  return {
-    props: {
-      articles: mapped,
-    },
+  try {
+    const articles = await prisma.article.findMany({
+      where: { publishedAt: { not: null } },
+      orderBy: { publishedAt: 'desc' },
+      include: { author: { select: { email: true } } },
+    })
+
+    const mapped = articles.map((article) => {
+      const plainText = sanitizeHtml(article.content, { allowedTags: [], allowedAttributes: {} })
+      const excerpt = plainText.replace(/\s+/g, ' ').trim().slice(0, 280)
+      return {
+        id: article.id,
+        slug: article.slug,
+        title: article.title,
+        summary: article.summary,
+        excerpt,
+        publishedAt: article.publishedAt?.toISOString() ?? article.createdAt.toISOString(),
+        authorEmail: article.author.email,
+      }
+    })
+
+    return {
+      props: {
+        articles: mapped,
+        databaseReady: true,
+      },
+    }
+  } catch (error) {
+    console.error('[Home] Error loading articles:', error)
+    return {
+      props: {
+        articles: [],
+        databaseReady: false,
+      },
+    }
   }
 }
 

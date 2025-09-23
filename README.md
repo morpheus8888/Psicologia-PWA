@@ -32,6 +32,8 @@ DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 > ⚠️ **Obbligatorio:** `JWT_SECRET` deve essere valorizzata sia in locale sia sui progetti Vercel, altrimenti le API rifiutano login/aggiornamenti profilo.
 > 🔐 **Sicurezza diario:** `DIARY_MASTER_KEY` viene usata per derivare le chiavi di cifratura dei diari utente. Genera una stringa robusta di almeno 32 caratteri, conservala al sicuro e non condividerla.
 
+> 📝 **Preview senza DB:** Se `DATABASE_URL` non è impostata (es. su preview Vercel), l'applicazione resta navigabile ma il blog mostra un avviso e nessun articolo. Imposta la variabile prima di rilasciare ambienti destinati agli utenti.
+
 ## Setup locale
 
 ```bash
