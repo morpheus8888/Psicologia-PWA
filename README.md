@@ -49,7 +49,8 @@ npm run build # esegue anche prisma generate
 ## Deployment su Vercel
 
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
-2. Vercel esegue automaticamente `npm install`, `npm run build` e `prisma migrate deploy` (script già configurato).
+2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` e `prisma migrate deploy` (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
+   - ⚠️ Ricordati di aggiornare sempre `pnpm-lock.yaml` con `pnpm install --lockfile-only` ogni volta che modifichi le dipendenze, altrimenti la build fallisce.
 3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.
 
