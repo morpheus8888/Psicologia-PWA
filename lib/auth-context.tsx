@@ -5,7 +5,8 @@ interface User {
   email: string
   avatar: string
   nickname: string
-  phone?: string
+  phone?: string | null
+  isAdmin: boolean
 }
 
 interface AuthContextType {
@@ -32,7 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const userData = JSON.parse(savedUser)
         setToken(savedToken)
-        setUser(userData)
+        setUser({
+          ...userData,
+          isAdmin: !!userData.isAdmin,
+        })
       } catch (error) {
         // Se i dati sono corrotti, pulisci
         localStorage.removeItem('token')
@@ -56,8 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const updateUser = (updatedUser: User) => {
-    setUser(updatedUser)
-    localStorage.setItem('user', JSON.stringify(updatedUser))
+    setUser((prev) => {
+      const nextUser = {
+        ...(prev ?? {}),
+        ...updatedUser,
+        isAdmin: updatedUser.isAdmin ?? prev?.isAdmin ?? false,
+      }
+      localStorage.setItem('user', JSON.stringify(nextUser))
+      return nextUser as User
+    })
   }
 
   const value = {

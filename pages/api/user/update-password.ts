@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { getJwtSecret } from '@/lib/jwt'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -15,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Token mancante' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
+    const secret = getJwtSecret()
+    const decoded = jwt.verify(token, secret) as { sub: string }
     const { currentPassword, newPassword, confirmPassword } = req.body
 
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -55,6 +57,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json({ message: 'Password aggiornata con successo' })
   } catch (error) {
     console.error('Error updating password:', error)
+    if (error instanceof Error && error.message.includes('JWT_SECRET')) {
+      return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+    }
     res.status(500).json({ error: 'Errore durante l\'aggiornamento della password' })
   }
 }

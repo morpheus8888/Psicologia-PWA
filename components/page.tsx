@@ -11,10 +11,13 @@ interface Props {
 const Page = ({ title, children }: Props) => {
         const { i18n } = useLingui()
 
+        const baseTitle = i18n._('Rice Bowl')
+        const pageTitle = title ? `${title} – ${baseTitle}` : baseTitle
+
         return (
                 <>
                         <Head>
-                                <title>{i18n._('Rice Bowl')}</title>
+                                <title>{pageTitle}</title>
                         </Head>
 
 		<Appbar />

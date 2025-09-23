@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
+import { getJwtSecret } from '@/lib/jwt'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -14,7 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Token mancante' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: string }
+    const secret = getJwtSecret()
+    const decoded = jwt.verify(token, secret) as { sub: string }
     const { phone } = req.body
 
     if (!phone || phone.trim() === '') {
@@ -29,13 +31,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: true,
         avatar: true,
         nickname: true,
-        phone: true
+        phone: true,
+        isAdmin: true,
       }
     })
 
     res.status(200).json({ user: updatedUser })
   } catch (error) {
     console.error('Error updating phone:', error)
+    if (error instanceof Error && error.message.includes('JWT_SECRET')) {
+      return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+    }
     res.status(500).json({ error: 'Errore durante l\'aggiornamento del telefono' })
   }
 }

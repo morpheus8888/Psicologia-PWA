@@ -2,8 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
-
-const secret = process.env.JWT_SECRET || 'secret'
+import { getJwtSecret } from '@/lib/jwt'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -17,6 +16,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing fields' })
   }
 
+  let secret: string
+  try {
+    secret = getJwtSecret()
+  } catch (error) {
+    return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+  }
+
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) return res.status(401).json({ error: 'Invalid credentials' })
 
@@ -24,13 +30,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!valid) return res.status(401).json({ error: 'Invalid credentials' })
 
   const token = jwt.sign({ sub: user.id }, secret, { expiresIn: '7d' })
-  return res.status(200).json({ 
-    token, 
-    user: { 
-      id: user.id, 
-      email: user.email, 
-      avatar: user.avatar, 
-      nickname: user.nickname 
-    } 
+  return res.status(200).json({
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      avatar: user.avatar,
+      nickname: user.nickname,
+      isAdmin: user.isAdmin,
+      phone: user.phone ?? null,
+    },
   })
 }

@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
-
-const secret = process.env.JWT_SECRET || 'secret'
+import { getJwtSecret } from '@/lib/jwt'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -22,6 +21,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const token = authHeader.substring(7)
+  let secret: string
+  try {
+    secret = getJwtSecret()
+  } catch (error) {
+    return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+  }
 
   try {
     const payload = jwt.verify(token, secret) as { sub: string }
@@ -30,11 +35,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = await prisma.user.update({
       where: { id: userId },
       data: { avatar, nickname: avatar },
-      select: { id: true, email: true, avatar: true, nickname: true, phone: true }
+      select: { id: true, email: true, avatar: true, nickname: true, phone: true, isAdmin: true }
     })
 
     return res.status(200).json({ success: true, user })
   } catch (err: any) {
+    if (err instanceof Error && err.message.includes('JWT_SECRET')) {
+      return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+    }
     if (err.name === 'JsonWebTokenError') {
       return res.status(401).json({ error: 'Invalid token' })
     }
