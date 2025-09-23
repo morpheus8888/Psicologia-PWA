@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import { en, it } from 'make-plural/plurals'
-
 import itMessages from '@/locales/it/messages'
 import enMessages from '@/locales/en/messages'
 
@@ -14,9 +12,15 @@ export const locales = {
 
 const defaultLocale = 'it'
 
+const createPluralRule = (locale: string) => {
+  const cardinal = new Intl.PluralRules(locale)
+  const ordinal = new Intl.PluralRules(locale, { type: 'ordinal' })
+  return (value: number, ord?: boolean) => (ord ? ordinal : cardinal).select(value)
+}
+
 const pluralRules = {
-  en,
-  it,
+  en: createPluralRule('en'),
+  it: createPluralRule('it'),
 }
 
 i18n.loadLocaleData({
