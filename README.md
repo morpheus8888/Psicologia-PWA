@@ -38,8 +38,8 @@ DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 
 - Prisma tiene traccia della struttura del database con le migrazioni in `prisma/migrations/`. Ogni volta che aggiungiamo colonne o nuove tabelle viene creata una cartella con gli script SQL da applicare.
 - In locale usa `npx prisma migrate dev --name <nome>` per creare le nuove migrazioni e aggiornare il database di sviluppo.
-- In ambienti remoti (es. Vercel) è sufficiente eseguire `npx prisma migrate deploy` per applicare tutte le migrazioni pendenti. Il progetto include già lo script `vercel-post-build` che Vercel esegue automaticamente dopo il build.
-- Se vedi errori del tipo `column "user.role" does not exist` significa che il database non è stato migrato: lancialo manualmente una volta (Vercel → Deployments → Run Command → `npx prisma migrate deploy`) e il problema scompare.
+- In ambienti remoti (es. Vercel) le migrazioni vengono applicate automaticamente grazie allo script `scripts/run-migrations.js`, eseguito sia durante `npm run build` sia nel post-build di Vercel. Nessuna azione manuale è richiesta.
+- Se vedi errori del tipo `column "user.role" does not exist` significa che il database era privo di migrazioni e l'ambiente è ripartito senza `DATABASE_URL`. Appena la variabile è presente, il successivo build applicherà automaticamente gli script pendenti.
 
 ## Setup locale
 
@@ -62,7 +62,7 @@ npm run build # esegue anche prisma generate
 ## Deployment su Vercel
 
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
-2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` e `prisma migrate deploy` (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
+2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` (che include le migrazioni) e `scripts/run-migrations.js` come post-build (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
    - ⚠️ Ricordati di aggiornare sempre `pnpm-lock.yaml` con `pnpm install --lockfile-only` ogni volta che modifichi le dipendenze, altrimenti la build fallisce.
 3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.

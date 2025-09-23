@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "vercel-post-build": "prisma migrate deploy",
+    "build": "prisma generate && node scripts/run-migrations.js && next build",
+    "vercel-post-build": "node scripts/run-migrations.js",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
