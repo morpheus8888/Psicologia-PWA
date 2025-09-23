@@ -16,12 +16,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const hashed = await bcrypt.hash(password, 10)
-    const adminExists = await prisma.user.count({ where: { isAdmin: true } })
+    const adminExists = await prisma.user.count({ where: { role: 'ADMIN' } })
     const user = await prisma.user.create({
       data: {
         email,
         password: hashed,
-        isAdmin: adminExists === 0,
+        role: adminExists === 0 ? 'ADMIN' : 'CLIENT',
+        diaryVisibility: 'PRIVATE',
       },
     })
     return res.status(201).json({
@@ -31,7 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: user.email,
         avatar: user.avatar,
         nickname: user.nickname,
-        isAdmin: user.isAdmin,
+        role: user.role,
+        diaryVisibility: user.diaryVisibility,
+        isAdmin: user.role === 'ADMIN',
         phone: user.phone ?? null,
       },
     })

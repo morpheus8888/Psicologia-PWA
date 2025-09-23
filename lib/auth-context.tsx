@@ -1,11 +1,16 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
+export type UserRole = 'ADMIN' | 'PROFESSIONAL' | 'CLIENT'
+export type DiaryVisibility = 'PRIVATE' | 'PROFESSIONALS' | 'PUBLIC'
+
 interface User {
   id: string
   email: string
   avatar: string
   nickname: string
   phone?: string | null
+  role: UserRole
+  diaryVisibility: DiaryVisibility
   isAdmin: boolean
 }
 
@@ -20,6 +25,22 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const normalizeUser = (raw: any): User => {
+  const role: UserRole = raw?.role ?? (raw?.isAdmin ? 'ADMIN' : 'CLIENT')
+  const diaryVisibility: DiaryVisibility = raw?.diaryVisibility ?? 'PRIVATE'
+
+  return {
+    id: raw?.id ?? '',
+    email: raw?.email ?? '',
+    avatar: raw?.avatar ?? 'leone',
+    nickname: raw?.nickname ?? 'leone',
+    phone: raw?.phone ?? null,
+    role,
+    diaryVisibility,
+    isAdmin: raw?.isAdmin ?? role === 'ADMIN',
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -33,10 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const userData = JSON.parse(savedUser)
         setToken(savedToken)
-        setUser({
-          ...userData,
-          isAdmin: !!userData.isAdmin,
-        })
+        setUser(normalizeUser(userData))
       } catch (error) {
         // Se i dati sono corrotti, pulisci
         localStorage.removeItem('token')
@@ -47,9 +65,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (newToken: string, newUser: User) => {
     setToken(newToken)
-    setUser(newUser)
+    const normalized = normalizeUser(newUser)
+    setUser(normalized)
     localStorage.setItem('token', newToken)
-    localStorage.setItem('user', JSON.stringify(newUser))
+    localStorage.setItem('user', JSON.stringify(normalized))
   }
 
   const logout = () => {
@@ -61,13 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUser = (updatedUser: User) => {
     setUser((prev) => {
-      const nextUser = {
+      const normalized = normalizeUser({
         ...(prev ?? {}),
         ...updatedUser,
-        isAdmin: updatedUser.isAdmin ?? prev?.isAdmin ?? false,
-      }
-      localStorage.setItem('user', JSON.stringify(nextUser))
-      return nextUser as User
+      })
+      localStorage.setItem('user', JSON.stringify(normalized))
+      return normalized
     })
   }
 

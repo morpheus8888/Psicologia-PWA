@@ -37,8 +37,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       email: user.email,
       avatar: user.avatar,
       nickname: user.nickname,
-      isAdmin: user.isAdmin,
       phone: user.phone ?? null,
+      role: user.role,
+      diaryVisibility: user.diaryVisibility,
+      isAdmin: user.role === 'ADMIN',
     },
   })
 }

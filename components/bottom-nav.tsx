@@ -85,7 +85,10 @@ const BottomNav = () => {
 	const router = useRouter()
 	const { user } = useAuth()
 
-	const links = useMemo(() => (user?.isAdmin ? [...baseLinks, adminLink] : baseLinks), [user?.isAdmin])
+	const links = useMemo(() => {
+		const isAdmin = user?.role === 'ADMIN' || user?.isAdmin
+		return isAdmin ? [...baseLinks, adminLink] : baseLinks
+	}, [user?.role, user?.isAdmin])
 
 	return (
 		<div className='sm:hidden'>

@@ -5,6 +5,7 @@ import NicknameSelector from '@/components/nickname-selector'
 import { Trans } from '@lingui/react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/auth-context'
+import type { DiaryVisibility } from '@/lib/auth-context'
 import { useRouter } from 'next/router'
 
 const Profile = () => {
@@ -21,6 +22,8 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [diaryVisibility, setDiaryVisibility] = useState<DiaryVisibility>('PRIVATE')
+  const [savingVisibility, setSavingVisibility] = useState(false)
 
   useEffect(() => {
     // Redirect se non loggato
@@ -33,6 +36,7 @@ const Profile = () => {
       setSelectedAnimal(user.avatar)
       setPhoneValue(user.phone || '')
       setEmailValue(user.email)
+      setDiaryVisibility(user.diaryVisibility || 'PRIVATE')
     }
   }, [isLoggedIn, user, router])
 
@@ -69,6 +73,41 @@ const Profile = () => {
     }
     
     setSaving(false)
+  }
+
+  const handleUpdateDiaryVisibility = async (visibility: DiaryVisibility) => {
+    if (!token) {
+      alert('Non sei autenticato')
+      return
+    }
+
+    setDiaryVisibility(visibility)
+    setSavingVisibility(true)
+
+    try {
+      const res = await fetch('/api/user/update-visibility', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ visibility })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        updateUser(data.user)
+      } else {
+        alert(data.error || 'Errore durante l\'aggiornamento della visibilità')
+        setDiaryVisibility(user?.diaryVisibility || 'PRIVATE')
+      }
+    } catch (error) {
+      alert('Errore di connessione')
+      setDiaryVisibility(user?.diaryVisibility || 'PRIVATE')
+    }
+
+    setSavingVisibility(false)
   }
 
   const handleSaveEmail = async () => {
@@ -416,7 +455,54 @@ const Profile = () => {
                 </button>
               </div>
             </div>
-          )}
+        )}
+      </div>
+
+        {/* Diary visibility */}
+        <div className="mb-6 border rounded-lg p-4 bg-zinc-50 dark:bg-zinc-800">
+          <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">
+            <Trans id="Who can read my diary?" />
+          </h3>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+            <Trans id="Choose who can access your journal entries." />
+          </p>
+
+          <div className="space-y-3">
+            {[
+              { value: 'PRIVATE', label: 'Only me' },
+              { value: 'PUBLIC', label: 'Everyone' },
+              { value: 'PROFESSIONALS', label: 'Professionals only' }
+            ].map((option) => (
+              <label
+                key={option.value}
+                className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors ${
+                  diaryVisibility === option.value
+                    ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/30'
+                    : 'border-zinc-300 dark:border-zinc-600'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="diary-visibility"
+                    value={option.value}
+                    checked={diaryVisibility === option.value}
+                    disabled={savingVisibility}
+                    onChange={() => handleUpdateDiaryVisibility(option.value as DiaryVisibility)}
+                    className="h-4 w-4 text-blue-500 focus:ring-blue-500"
+                  />
+                  <span className="text-zinc-700 dark:text-zinc-200">
+                    <Trans id={option.label} />
+                  </span>
+                </div>
+                {savingVisibility && diaryVisibility === option.value && (
+                  <span className="text-xs text-blue-500">
+                    <Trans id="Saving preference..." />
+                  </span>
+                )}
+              </label>
+            ))}
+          </div>
         </div>
 
       </Section>

@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
 
+const VISIBILITY_OPTIONS = ['PRIVATE', 'PROFESSIONALS', 'PUBLIC'] as const
+
+type VisibilityOption = (typeof VISIBILITY_OPTIONS)[number]
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -10,34 +14,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const token = req.headers.authorization?.replace('Bearer ', '')
-    
+
     if (!token) {
       return res.status(401).json({ error: 'Token mancante' })
     }
 
     const secret = getJwtSecret()
     const decoded = jwt.verify(token, secret) as { sub: string }
-    const { email } = req.body
+    const { visibility } = req.body as { visibility?: VisibilityOption }
 
-    if (!email || !email.includes('@')) {
-      return res.status(400).json({ error: 'Email valida richiesta' })
-    }
-
-    // Controlla se l'email è già in uso da un altro utente
-    const existingUser = await prisma.user.findFirst({
-      where: { 
-        email: email.toLowerCase(),
-        NOT: { id: decoded.sub }
-      }
-    })
-
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email già in uso' })
+    if (!visibility || !VISIBILITY_OPTIONS.includes(visibility)) {
+      return res.status(400).json({ error: 'Visibilità non valida' })
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: decoded.sub },
-      data: { email: email.toLowerCase() },
+      data: { diaryVisibility: visibility },
       select: {
         id: true,
         email: true,
@@ -51,10 +43,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({ user: { ...updatedUser, isAdmin: updatedUser.role === 'ADMIN' } })
   } catch (error) {
-    console.error('Error updating email:', error)
+    console.error('Error updating diary visibility:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
     }
-    res.status(500).json({ error: 'Errore durante l\'aggiornamento dell\'email' })
+    res.status(500).json({ error: 'Errore durante l\'aggiornamento della visibilità' })
   }
 }

@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       where: { id: decoded.sub }
     })
 
-    if (!user || !user.isAdmin) {
+    if (!user || user.role !== 'ADMIN') {
       return res.status(403).json({ error: 'Accesso negato' })
     }
 
@@ -48,7 +48,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Get all users (except admins, or include them if you want)
     const users = await prisma.user.findMany({
       where: {
-        isAdmin: false // Send only to non-admin users
+        role: {
+          not: 'ADMIN'
+        }
       },
       select: {
         id: true

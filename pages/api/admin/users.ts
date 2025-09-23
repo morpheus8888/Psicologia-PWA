@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       where: { id: decoded.sub }
     })
 
-    if (!user || !user.isAdmin) {
+    if (!user || user.role !== 'ADMIN') {
       return res.status(403).json({ error: 'Accesso negato' })
     }
 
@@ -31,7 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       select: {
         id: true,
         email: true,
-        isAdmin: true,
+        role: true,
+        diaryVisibility: true,
+        avatar: true,
+        nickname: true,
+        phone: true,
         createdAt: true
       },
       orderBy: {
@@ -39,7 +43,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     })
 
-    res.status(200).json({ users })
+    res.status(200).json({
+      users: users.map((record) => ({
+        ...record,
+        isAdmin: record.role === 'ADMIN',
+      }))
+    })
   } catch (error) {
     console.error('Error loading users:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {

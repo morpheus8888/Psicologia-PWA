@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  PROFESSIONAL
+  CLIENT
+}
+
+enum DiaryVisibility {
+  PRIVATE
+  PROFESSIONALS
+  PUBLIC
+}
+
 model User {
   id           String       @id @default(cuid())
   email        String       @unique
@@ -14,7 +26,8 @@ model User {
   phone        String?
   nickname     String?      @default("leone")
   avatar       String?      @default("leone")
-  isAdmin      Boolean      @default(false)
+  role         Role         @default(CLIENT)
+  diaryVisibility DiaryVisibility @default(PRIVATE)
   createdAt    DateTime     @default(now())
   diaryEntries DiaryEntry[]
   messages     Message[]

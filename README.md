@@ -26,9 +26,11 @@ b) Imposta almeno:
 ```
 DATABASE_URL="postgres://user:password@host:port/db"
 JWT_SECRET="string casuale lunga e complessa"
+DIARY_ENCRYPTION_KEY="chiave AES-256 di 32 caratteri alfanumerici"
 ```
 
 > ⚠️ **Obbligatorio:** `JWT_SECRET` deve essere valorizzata sia in locale sia sui progetti Vercel, altrimenti le API rifiutano login/aggiornamenti profilo.
+> 🔐 **Sicurezza diario:** `DIARY_ENCRYPTION_KEY` è usata per cifrare le voci del diario prima di salvarle nel database. Genera una stringa di almeno 32 caratteri casuali e conservala al sicuro.
 
 ## Setup locale
 
@@ -56,10 +58,12 @@ npm run build # esegue anche prisma generate
 3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.
 
-## Account amministratore
-- Il primo account registrato ottiene automaticamente i privilegi amministratore (`isAdmin: true`).
-- Puoi verificare gli amministratori attivi interrogando il database: `SELECT email FROM "User" WHERE "isAdmin" = true;`.
-- Gli admin accedono al pannello `/admin` per inviare messaggi broadcast e gestire le statistiche utenti.
+## Tipologie di account
+- Alla registrazione si ottiene il ruolo `CLIENT`.
+- Il primo account creato nella piattaforma viene promosso automaticamente a `ADMIN`.
+- Gli amministratori possono promuovere/demansionare gli utenti tra `ADMIN`, `PROFESSIONAL` e `CLIENT` dal pannello `/admin`.
+- Puoi verificare chi possiede privilegi elevati con la query: `SELECT email, role FROM "User" WHERE "role" = 'ADMIN';`.
+- Gli admin accedono al pannello `/admin` per inviare messaggi broadcast, gestire le statistiche utenti, amministrare i profili e visionare (solo se pubblici) i diari cifrati.
 
 ## Flussi principali
 - **Autenticazione**: registrazione/login utente, token JWT salvato in `localStorage` e condiviso via `AuthProvider`.

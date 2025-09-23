@@ -12,6 +12,7 @@ const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
   const { user, isLoggedIn, logout: authLogout } = useAuth()
   const { i18n } = useLingui()
+  const isAdmin = !!user && (user.role === 'ADMIN' || user.isAdmin)
 
   const toggle = () => setOpen((o) => !o)
   const handleLogout = () => {
@@ -70,7 +71,7 @@ const ProfileMenu = () => {
                     <Trans id='Messages' />
                   </Link>
                 </li>
-                {user?.isAdmin && (
+                {isAdmin && (
                   <li>
                     <Link href='/admin' className='group flex items-center rounded px-2 py-1 hover:text-indigo-500'>
                       <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>

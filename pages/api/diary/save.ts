@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
+import { encryptDiaryText } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -47,6 +48,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Contenuto o umore richiesto' })
     }
 
+    const encryptedText = sanitizedFreeText
+      ? encryptDiaryText(decoded.sub, sanitizedFreeText)
+      : null
+
     const entry = await prisma.diaryEntry.upsert({
       where: {
         userId_date: {
@@ -54,20 +59,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           date: entryDate
         }
       },
-      update: { freeText: sanitizedFreeText, mood: mood || null },
+      update: { freeText: encryptedText, mood: mood || null },
       create: {
         userId: decoded.sub,
         date: entryDate,
-        freeText: sanitizedFreeText,
+        freeText: encryptedText,
         mood: mood || null,
       }
     })
 
-    res.status(200).json({ entry })
+    res.status(200).json({
+      entry: {
+        ...entry,
+        freeText: sanitizedFreeText,
+      }
+    })
   } catch (error) {
     console.error('Error saving diary entry:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+    }
+    if (error instanceof Error && error.message.includes('DIARY_ENCRYPTION_KEY')) {
+      return res.status(500).json({ error: 'DIARY_ENCRYPTION_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il salvataggio della voce' })
   }

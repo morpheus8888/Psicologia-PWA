@@ -32,11 +32,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         avatar: true,
         nickname: true,
         phone: true,
-        isAdmin: true,
+        role: true,
+        diaryVisibility: true,
       }
     })
 
-    res.status(200).json({ user: updatedUser })
+    res.status(200).json({ user: { ...updatedUser, isAdmin: updatedUser.role === 'ADMIN' } })
   } catch (error) {
     console.error('Error updating phone:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {

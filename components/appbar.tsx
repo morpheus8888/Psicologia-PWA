@@ -17,11 +17,11 @@ const Appbar = () => {
        const { user } = useAuth()
 
        const links = useMemo(() => {
-               if (user?.isAdmin) {
+               if (user?.role === 'ADMIN' || user?.isAdmin) {
                        return [...baseLinks, adminLink]
                }
                return baseLinks
-       }, [user?.isAdmin])
+       }, [user?.role, user?.isAdmin])
 
 	return (
                <div className='fixed top-0 left-0 z-[200] w-full bg-zinc-900 pt-safe'>

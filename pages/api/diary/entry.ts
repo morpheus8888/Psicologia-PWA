@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
+import { decryptDiaryText } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -37,11 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     })
 
+    const decryptedText = entry?.freeText ? decryptDiaryText(decoded.sub, entry.freeText) : null
+
     const sanitizedEntry = entry
       ? {
           ...entry,
-          freeText: entry.freeText
-            ? sanitizeHtml(entry.freeText, {
+          freeText: decryptedText
+            ? sanitizeHtml(decryptedText, {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
                 allowedAttributes: {
                   ...sanitizeHtml.defaults.allowedAttributes,
@@ -58,6 +61,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error('Error loading diary entry:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
+    }
+    if (error instanceof Error && error.message.includes('DIARY_ENCRYPTION_KEY')) {
+      return res.status(500).json({ error: 'DIARY_ENCRYPTION_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il caricamento della voce' })
   }
