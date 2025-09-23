@@ -28,7 +28,7 @@ const ProfileMenu = () => {
         className={`relative h-10 w-10 overflow-hidden rounded-full border border-zinc-300 dark:border-zinc-700 ${
           isLoggedIn ? '' : 'bg-zinc-400'
         }`}
-        aria-label={String(i18n._('Profile menu'))}
+        aria-label={i18n._('Profile menu') || 'Profile menu'}
       >
         {isLoggedIn && user ? (
           <UserAvatar animal={user.avatar} size="sm" className="w-full h-full border-0 rounded-full" />
