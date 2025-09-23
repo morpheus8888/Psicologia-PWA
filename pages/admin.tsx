@@ -685,16 +685,41 @@ const UserDetailPanel = ({
   const { i18n } = useLingui()
 
   const infoPairs = useMemo(() => {
-    const base: Record<string, string | null> = {
-      Email: user.email,
-      Nickname: user.nickname,
-      Phone: user.phone,
-      Role: user.role,
-      'Diary visibility': user.diaryVisibility,
-      'Created at': new Date(user.createdAt).toLocaleString(),
+    const roleMap: Record<UserDetails['role'], string> = {
+      ADMIN: i18n._('Administrator'),
+      PROFESSIONAL: i18n._('Professional'),
+      CLIENT: i18n._('Client'),
     }
-    return Object.entries(base)
-  }, [user])
+    const visibilityMap: Record<UserDetails['diaryVisibility'], string> = {
+      PRIVATE: i18n._('Only me'),
+      PUBLIC: i18n._('Everyone'),
+      PROFESSIONALS: i18n._('Professionals only'),
+    }
+
+    const safeNickname = user.nickname || i18n._('Not set')
+    const safePhone = user.phone || i18n._('Not set')
+    const avatarContent = account.avatar ? (
+      <div className='flex items-center gap-2'>
+        <UserAvatar animal={account.avatar} size='sm' />
+        <span>{i18n._(account.avatar)}</span>
+      </div>
+    ) : (
+      <span>{i18n._('Not set')}</span>
+    )
+
+    return [
+      { label: i18n._('Avatar'), value: avatarContent },
+      { label: i18n._('Display name'), value: safeNickname },
+      { label: i18n._('Email'), value: user.email },
+      { label: i18n._('Phone'), value: safePhone },
+      { label: i18n._('Role'), value: roleMap[user.role] ?? user.role },
+      {
+        label: i18n._('Diary visibility'),
+        value: visibilityMap[user.diaryVisibility] ?? user.diaryVisibility,
+      },
+      { label: i18n._('Created at'), value: new Date(user.createdAt).toLocaleString() },
+    ]
+  }, [account.avatar, i18n, user])
 
   return (
     <div className='space-y-6'>
@@ -707,10 +732,10 @@ const UserDetailPanel = ({
       </div>
 
       <div className='grid gap-4 sm:grid-cols-2'>
-        {infoPairs.map(([label, value]) => (
+        {infoPairs.map(({ label, value }) => (
           <div key={label} className='rounded-lg border border-zinc-200 p-3 dark:border-zinc-700'>
             <p className='text-xs uppercase text-zinc-500 dark:text-zinc-400'>{label}</p>
-            <p className='mt-1 text-sm text-zinc-800 dark:text-zinc-100'>{value || '—'}</p>
+            <div className='mt-1 text-sm text-zinc-800 dark:text-zinc-100'>{value}</div>
           </div>
         ))}
       </div>
