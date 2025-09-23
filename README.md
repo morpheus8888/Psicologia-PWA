@@ -10,6 +10,8 @@ Progressive Web App per supporto psicologico personale, costruita con Next.js 14
 - **Lingui** per localizzazione IT/EN
 - **React-Quill** per editor rich text del diario
 
+> ℹ️ **Linee guida**: ogni feature o refactor deve sempre preservare il supporto multilingua (IT/EN) aggiornando i cataloghi Lingui dove necessario.
+
 ## Requisiti
 - Node.js 18+
 - PostgreSQL (locale o gestito, es. Vercel Postgres / Supabase)
