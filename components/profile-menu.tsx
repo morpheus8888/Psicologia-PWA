@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import { useLingui, Trans } from '@lingui/react'
+import { useLingui, Trans } from '@/lib/i18n'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
 import { useAuth } from '@/lib/auth-context'

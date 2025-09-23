@@ -1,6 +1,6 @@
 import Page from '@/components/page'
 import Section from '@/components/section'
-import { Trans } from '@lingui/react'
+import { Trans } from '@/lib/i18n'
 
 const Story = () => (
 	<Page>

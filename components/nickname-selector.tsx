@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/react'
+import { Trans } from '@/lib/i18n'
 
 import UserAvatar from '@/components/user-avatar'
 import { avatarOptions, avatarIds } from '@/lib/avatar-options'

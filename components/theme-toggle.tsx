@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { Trans } from '@lingui/react'
+import { Trans } from '@/lib/i18n'
 
 interface Props {
   onChange?: () => void

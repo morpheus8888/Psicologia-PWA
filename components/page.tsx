@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Appbar from '@/components/appbar'
 import BottomNav from '@/components/bottom-nav'
-import { Trans, useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
 interface Props {

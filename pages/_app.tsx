@@ -3,13 +3,13 @@ import { ThemeProvider } from 'next-themes'
 import '@/styles/globals.css'
 import '@/styles/login.css'
 import '@/styles/nickname-selector.css'
-import { LocalizationProvider } from '@/lib/i18n'
+import { I18nProvider } from '@/lib/i18n'
 import { AuthProvider } from '@/lib/auth-context'
 
 export default function App({ Component, pageProps }: AppProps) {
         return (
                 <AuthProvider>
-                        <LocalizationProvider>
+                        <I18nProvider>
                                 <ThemeProvider
                                         attribute='class'
                                         defaultTheme='system'
@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
                                 >
                                         <Component {...pageProps} />
                                 </ThemeProvider>
-                        </LocalizationProvider>
+                        </I18nProvider>
                 </AuthProvider>
         )
 }

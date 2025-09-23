@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trans } from '@lingui/react'
+import { Trans } from '@/lib/i18n'
 import Page from '@/components/page'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/router'

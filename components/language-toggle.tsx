@@ -1,25 +1,24 @@
-import { locales } from '@/lib/i18n'
-import { useRouter } from 'next/router'
 import React from 'react'
+
+import { locales, useI18n, Locale } from '@/lib/i18n'
 
 interface Props {
   onChange?: () => void
 }
 
 const LanguageToggle = ({ onChange }: Props) => {
-  const router = useRouter()
-  const localeKeys = Object.keys(locales)
+  const { locale, setLocale } = useI18n()
+  const localeKeys = Object.keys(locales) as Locale[]
   if (localeKeys.length < 2) return null
-  const current = (router.locale || router.defaultLocale || localeKeys[0]) as keyof typeof locales
 
-  const changeLocale = (loc: string) => {
-    router.push(router.pathname, router.asPath, { locale: loc })
+  const changeLocale = (loc: Locale) => {
+    setLocale(loc)
     onChange?.()
   }
 
   if (localeKeys.length === 2) {
-    const [locA, locB] = localeKeys as [keyof typeof locales, keyof typeof locales]
-    const isChecked = current === locB
+    const [locA, locB] = localeKeys
+    const isChecked = locale === locB
     return (
       <div className='flex justify-center'>
         <div className='switch switch-lg'>
@@ -46,7 +45,7 @@ const LanguageToggle = ({ onChange }: Props) => {
           onClick={() => changeLocale(loc)}
           className='block w-full rounded px-2 py-1 text-left hover:text-indigo-500'
         >
-          {locales[loc as keyof typeof locales].label}
+          {locales[loc].label}
         </button>
       ))}
     </div>

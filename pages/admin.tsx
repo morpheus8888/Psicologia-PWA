@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import { Trans, useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'

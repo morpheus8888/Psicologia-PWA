@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { Trans, useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'

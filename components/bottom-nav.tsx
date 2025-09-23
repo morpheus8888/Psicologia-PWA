@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans } from '@lingui/react'
+import { Trans } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
 const baseLinks = [

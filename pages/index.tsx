@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import sanitizeHtml from 'sanitize-html'
-import { Trans, useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
