@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { en, it } from 'make-plural/plurals'
 
 export const locales = {
   it: { label: 'IT', loader: () => import('@/locales/it/messages') },
@@ -10,13 +11,14 @@ export const locales = {
 
 const defaultLocale = 'it'
 
-type CatalogMessages = Record<string, string>
+const pluralRules = {
+  en,
+  it,
+}
 
-const toCompiledCatalog = (locale: string, messages: CatalogMessages) => ({
-  messages,
-  locale,
-  languageData: {},
-  _compiled: true,
+i18n.loadLocaleData({
+  en: { plurals: pluralRules.en },
+  it: { plurals: pluralRules.it },
 })
 
 export const LocalizationProvider = ({ children }: { children: React.ReactNode }) => {
@@ -33,9 +35,16 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
         }
 
         const localeModule = await locales[targetLocale].loader()
-        const messages: CatalogMessages = (localeModule as any).default ?? (localeModule as any).messages ?? {}
+        const messages: Record<string, string> = (localeModule as any).default ?? (localeModule as any).messages ?? {}
 
-        i18n.load(targetLocale, toCompiledCatalog(targetLocale, messages))
+        const catalog = {
+          messages,
+          locale: targetLocale,
+          languageData: { plurals: pluralRules[targetLocale] ?? pluralRules[defaultLocale] },
+          _compiled: true,
+        }
+
+        i18n.load(targetLocale, catalog)
         i18n.activate(targetLocale)
         setReady(true)
       } catch (error) {
@@ -43,8 +52,16 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
         // Fallback to default locale
         try {
           const defaultModule = await locales[defaultLocale].loader()
-          const messages: CatalogMessages = (defaultModule as any).default ?? (defaultModule as any).messages ?? {}
-          i18n.load(defaultLocale, toCompiledCatalog(defaultLocale, messages))
+          const messages: Record<string, string> =
+            (defaultModule as any).default ?? (defaultModule as any).messages ?? {}
+          const catalog = {
+            messages,
+            locale: defaultLocale,
+            languageData: { plurals: pluralRules[defaultLocale] },
+            _compiled: true,
+          }
+
+          i18n.load(defaultLocale, catalog)
           i18n.activate(defaultLocale)
           setReady(true)
         } catch (fallbackError) {
