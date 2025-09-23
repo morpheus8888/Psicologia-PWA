@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
+import sanitizeHtml from 'sanitize-html'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -27,9 +28,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(403).json({ error: 'Accesso negato' })
     }
 
-    const { title, content } = req.body
+    const { title, content } = req.body as { title?: string; content?: string }
 
-    if (!title || !content) {
+    const cleanedTitle = sanitizeHtml(title ?? '', {
+      allowedTags: [],
+      allowedAttributes: {},
+    }).trim()
+
+    const cleanedContent = sanitizeHtml(content ?? '', {
+      allowedTags: ['b', 'strong', 'i', 'em', 'u', 'p', 'br', 'ul', 'ol', 'li'],
+      allowedAttributes: {},
+      textFilter: (text) => text.trimStart(),
+    }).trim()
+
+    if (!cleanedTitle || !cleanedContent) {
       return res.status(400).json({ error: 'Titolo e contenuto richiesti' })
     }
 
@@ -45,8 +57,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Create messages for all users
     const messageData = users.map(user => ({
-      title,
-      content,
+      title: cleanedTitle,
+      content: cleanedContent,
       userId: user.id
     }))
 

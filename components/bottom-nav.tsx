@@ -1,39 +1,10 @@
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Trans } from '@lingui/react'
+import { useAuth } from '@/lib/auth-context'
 
-const BottomNav = () => {
-	const router = useRouter()
-
-	return (
-		<div className='sm:hidden'>
-			<nav className='fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900'>
-				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
-                                        {links.map(({ href, id, icon }) => (
-                                                <Link
-                                                        key={id}
-                                                        href={href}
-                                                        className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
-                                                                router.pathname === href
-									? 'text-indigo-500 dark:text-indigo-400'
-									: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
-							}`}
-						>
-							{icon}
-                                                        <span className='text-xs text-zinc-600 dark:text-zinc-400'>
-                                                                <Trans id={id} />
-                                                        </span>
-                                                </Link>
-                                        ))}
-				</div>
-			</nav>
-		</div>
-	)
-}
-
-export default BottomNav
-
-const links = [
+const baseLinks = [
         {
                 id: 'Home',
                 href: '/',
@@ -89,3 +60,57 @@ const links = [
 		),
 	},
 ]
+
+const adminLink = {
+        id: 'Admin Panel',
+        href: '/admin',
+        icon: (
+		<svg
+			viewBox='0 0 15 15'
+			fill='none'
+			xmlns='http://www.w3.org/2000/svg'
+			width='18'
+			height='18'
+		>
+			<path
+				d='M7.5 1.5a1 1 0 011 1v1.086a4.5 4.5 0 013 4.242V11.5l1.276 1.702A.5.5 0 0112.342 14H2.658a.5.5 0 01-.434-.798L3.5 11.5V7.828a4.5 4.5 0 013-4.242V2.5a1 1 0 011-1h0z'
+				stroke='currentColor'
+			/>
+			<path d='M5.5 14v-2a2 2 0 012-2h0a2 2 0 012 2v2' stroke='currentColor' />
+		</svg>
+	),
+}
+
+const BottomNav = () => {
+	const router = useRouter()
+	const { user } = useAuth()
+
+	const links = useMemo(() => (user?.isAdmin ? [...baseLinks, adminLink] : baseLinks), [user?.isAdmin])
+
+	return (
+		<div className='sm:hidden'>
+			<nav className='fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900'>
+				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
+                                        {links.map(({ href, id, icon }) => (
+                                                <Link
+                                                        key={id}
+                                                        href={href}
+                                                        className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
+                                                                router.pathname === href
+									? 'text-indigo-500 dark:text-indigo-400'
+									: 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
+							}`}
+						>
+							{icon}
+                                                        <span className='text-xs text-zinc-600 dark:text-zinc-400'>
+                                                                <Trans id={id} />
+                                                        </span>
+                                                </Link>
+                                        ))}
+				</div>
+			</nav>
+		</div>
+	)
+}
+
+export default BottomNav

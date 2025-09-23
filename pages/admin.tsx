@@ -1,7 +1,7 @@
 import Page from '@/components/page'
 import Section from '@/components/section'
 import { Trans } from '@lingui/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/router'
 
@@ -13,19 +13,7 @@ const AdminPanel = () => {
   const [sending, setSending] = useState(false)
   const [users, setUsers] = useState<any[]>([])
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push('/login')
-      return
-    }
-    if (user && !user.isAdmin) {
-      router.push('/')
-      return
-    }
-    loadUsers()
-  }, [isLoggedIn, user, router])
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     if (!token) return
     
     try {
@@ -39,7 +27,22 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Error loading users:', error)
     }
-  }
+  }, [token])
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login')
+      return
+    }
+    if (user && !user.isAdmin) {
+      router.push('/')
+      return
+    }
+    loadUsers()
+  }, [isLoggedIn, user, router, loadUsers])
+
+  const adminUsers = useMemo(() => users.filter((u) => u.isAdmin), [users])
+  const regularUsers = users.length - adminUsers.length
 
   const sendMessage = async () => {
     if (!title.trim() || !content.trim()) {
@@ -159,14 +162,14 @@ const AdminPanel = () => {
                 <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
                   <span className="text-zinc-700 dark:text-zinc-300">Amministratori</span>
                   <span className="text-2xl font-bold text-green-500">
-                    {users.filter(u => u.isAdmin).length}
+                    {adminUsers.length}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-700 rounded-lg">
                   <span className="text-zinc-700 dark:text-zinc-300">Utenti Normali</span>
                   <span className="text-2xl font-bold text-purple-500">
-                    {users.filter(u => !u.isAdmin).length}
+                    {regularUsers}
                   </span>
                 </div>
               </div>
@@ -189,6 +192,28 @@ const AdminPanel = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-lg font-medium text-zinc-800 dark:text-zinc-200 mb-3">
+                  <Trans id="Active Administrators" />
+                </h3>
+                {adminUsers.length === 0 ? (
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    <Trans id="No administrators found" />
+                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {adminUsers.map((admin) => (
+                      <div key={admin.id} className="flex items-center justify-between text-sm">
+                        <span className="text-zinc-700 dark:text-zinc-300">{admin.email}</span>
+                        <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                          <Trans id="Admin" />
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

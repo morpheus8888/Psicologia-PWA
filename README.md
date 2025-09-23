@@ -56,6 +56,11 @@ npm run build # esegue anche prisma generate
 3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.
 
+## Account amministratore
+- Il primo account registrato ottiene automaticamente i privilegi amministratore (`isAdmin: true`).
+- Puoi verificare gli amministratori attivi interrogando il database: `SELECT email FROM "User" WHERE "isAdmin" = true;`.
+- Gli admin accedono al pannello `/admin` per inviare messaggi broadcast e gestire le statistiche utenti.
+
 ## Flussi principali
 - **Autenticazione**: registrazione/login utente, token JWT salvato in `localStorage` e condiviso via `AuthProvider`.
 - **Diario**: domande giornaliere seed-based, editor WYSIWYG e mood tracker con salvataggio versionato.

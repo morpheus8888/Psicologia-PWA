@@ -16,10 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const hashed = await bcrypt.hash(password, 10)
+    const adminExists = await prisma.user.count({ where: { isAdmin: true } })
     const user = await prisma.user.create({
       data: {
         email,
         password: hashed,
+        isAdmin: adminExists === 0,
       },
     })
     return res.status(201).json({

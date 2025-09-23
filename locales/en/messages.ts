@@ -1,6 +1,10 @@
 export const messages = {
   'Story': 'Story',
   'Recipes': 'Recipes',
+  'Admin Panel': 'Admin Panel',
+  'Active Administrators': 'Active Administrators',
+  'No administrators found': 'No administrators found',
+  'Admin': 'Admin',
   'Rice Bowl': 'Rice Bowl',
   'Gluten Free': 'Gluten Free',
   'Home': 'Home',

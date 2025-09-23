@@ -1,15 +1,27 @@
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Trans } from '@lingui/react'
 import ProfileMenu from '@/components/profile-menu'
+import { useAuth } from '@/lib/auth-context'
 
-const links = [
+const baseLinks = [
         { id: 'Story', href: '/story' },
         { id: 'Recipes', href: '/recipes' },
 ]
 
+const adminLink = { id: 'Admin Panel', href: '/admin' }
+
 const Appbar = () => {
        const router = useRouter()
+       const { user } = useAuth()
+
+       const links = useMemo(() => {
+               if (user?.isAdmin) {
+                       return [...baseLinks, adminLink]
+               }
+               return baseLinks
+       }, [user?.isAdmin])
 
 	return (
                <div className='fixed top-0 left-0 z-[200] w-full bg-zinc-900 pt-safe'>
