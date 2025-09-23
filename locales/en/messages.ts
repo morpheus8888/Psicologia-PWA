@@ -224,7 +224,6 @@ export const messages = {
   'Fear': 'Fear',
   'Surprise': 'Surprise',
   'Disgust': 'Disgust',
-  'Profile menu': 'Profile menu',
   'Avatar updated successfully!': 'Avatar updated successfully!',
   'Phone updated successfully': 'Phone updated successfully',
   'Email updated successfully': 'Email updated successfully',
