@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
 
 import UserAvatar from '@/components/user-avatar'
 import { avatarOptions, avatarIds } from '@/lib/avatar-options'
@@ -14,7 +14,7 @@ interface AvatarSelectionProps {
 }
 
 export default function AvatarSelection({ currentAvatar, onSave, onCancel }: AvatarSelectionProps) {
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
   const initialAvatar = useMemo(() => (avatarIds.includes(currentAvatar) ? currentAvatar : avatarIds[0]), [currentAvatar])
   const [selectedAnimal, setSelectedAnimal] = useState(initialAvatar)
   const [isSaving, setIsSaving] = useState(false)
@@ -34,7 +34,7 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
         </h2>
         <p className='text-sm text-zinc-600 dark:text-zinc-400'>
           <Trans id='Animale selezionato:' />{' '}
-          <strong>{i18n._(animalMessages[selectedAnimal as AnimalMessageKey])}</strong>
+          <strong>{t(animalMessages[selectedAnimal as AnimalMessageKey])}</strong>
         </p>
       </header>
 
@@ -54,7 +54,7 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
             >
               <UserAvatar animal={id} size='md' />
               <span className='text-sm font-medium text-zinc-700 dark:text-zinc-100'>
-                {i18n._(animalMessages[id as AnimalMessageKey])}
+                {t(animalMessages[id as AnimalMessageKey])}
               </span>
             </button>
           )

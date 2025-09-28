@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useLingui, createMessage } from '@/lib/i18n'
+import { useTranslations, defineMessage } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
 const baseLinks = [
 	{
-		label: createMessage('Home'),
+		label: defineMessage('Home'),
 		href: '/',
                 icon: (
 			<svg
@@ -24,7 +24,7 @@ const baseLinks = [
 		),
         },
 	{
-		label: createMessage('Story'),
+		label: defineMessage('Story'),
 		href: '/story',
                 icon: (
 			<svg
@@ -42,7 +42,7 @@ const baseLinks = [
 		),
         },
 	{
-		label: createMessage('Recipes'),
+		label: defineMessage('Recipes'),
 		href: '/recipes',
                 icon: (
 			<svg
@@ -62,7 +62,7 @@ const baseLinks = [
 ]
 
 const adminLink = {
-	label: createMessage('Admin Panel'),
+	label: defineMessage('Admin Panel'),
         href: '/admin',
         icon: (
 		<svg
@@ -84,7 +84,7 @@ const adminLink = {
 const BottomNav = () => {
 	const router = useRouter()
 	const { user } = useAuth()
-        const { i18n } = useLingui()
+	const { t } = useTranslations()
 
 	const links = useMemo(() => {
 		const isAdmin = user?.role === 'ADMIN' || user?.isAdmin
@@ -106,7 +106,7 @@ const BottomNav = () => {
 							}`}
 						>
 							{icon}
-						<span className='text-xs text-zinc-600 dark:text-zinc-400'>{i18n._(label)}</span>
+						<span className='text-xs text-zinc-600 dark:text-zinc-400'>{t(label)}</span>
 					</Link>
 				))}
 				</div>

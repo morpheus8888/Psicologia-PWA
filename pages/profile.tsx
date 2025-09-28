@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -23,7 +23,7 @@ const DiaryVisibilityOptions: Array<{ value: DiaryVisibility; label: string; des
 const Profile = () => {
   const { user, token, isLoggedIn, updateUser } = useAuth()
   const router = useRouter()
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['id']>('profile')
 
@@ -109,7 +109,7 @@ const Profile = () => {
       if (res.ok) {
         updateUser(data.user)
         setIsEditingAvatar(false)
-        alert(i18n._('Avatar updated successfully!'))
+        alert(t('Avatar updated successfully!'))
       } else {
         alert(data.error || 'Errore durante l\'aggiornamento')
       }
@@ -134,7 +134,7 @@ const Profile = () => {
       if (res.ok) {
         updateUser(data.user)
         setEditingPhone(false)
-        alert(i18n._('Phone updated successfully'))
+        alert(t('Phone updated successfully'))
       } else {
         alert(data.error || 'Errore durante l\'aggiornamento del telefono')
       }
@@ -158,7 +158,7 @@ const Profile = () => {
       if (res.ok) {
         updateUser(data.user)
         setEditingEmail(false)
-        alert(i18n._('Email updated successfully'))
+        alert(t('Email updated successfully'))
       } else {
         alert(data.error || 'Errore durante l\'aggiornamento dell\'email')
       }
@@ -170,11 +170,11 @@ const Profile = () => {
   const handleSavePassword = async () => {
     if (!token) return
     if (newPassword !== confirmPassword) {
-      alert(i18n._('Passwords do not match'))
+      alert(t('Passwords do not match'))
       return
     }
     if (newPassword.length < 6) {
-      alert(i18n._('Password must be at least 6 characters'))
+      alert(t('Password must be at least 6 characters'))
       return
     }
 
@@ -193,7 +193,7 @@ const Profile = () => {
         setCurrentPassword('')
         setNewPassword('')
         setConfirmPassword('')
-        alert(i18n._('Password updated successfully'))
+        alert(t('Password updated successfully'))
       } else {
         alert(data.error || 'Errore durante l\'aggiornamento della password')
       }
@@ -232,11 +232,11 @@ const Profile = () => {
   const handleUpdateDiaryPassword = async () => {
     if (!token) return
     if (newDiaryPassword !== confirmDiaryPassword) {
-      alert(i18n._('Passwords do not match'))
+      alert(t('Passwords do not match'))
       return
     }
     if (newDiaryPassword.length < 8) {
-      alert(i18n._('Diary password must be at least 8 characters'))
+      alert(t('Diary password must be at least 8 characters'))
       return
     }
     setUpdatingDiaryPassword(true)
@@ -255,7 +255,7 @@ const Profile = () => {
         setCurrentDiaryPassword('')
         setNewDiaryPassword('')
         setConfirmDiaryPassword('')
-        alert(i18n._('Diary password updated successfully'))
+        alert(t('Diary password updated successfully'))
       } else {
         alert(data.error || 'Errore durante l\'aggiornamento della password del diario')
       }
@@ -350,7 +350,7 @@ const Profile = () => {
                     <h3 className='text-lg font-semibold text-zinc-900 dark:text-zinc-100'>
                       <Trans id='Phone' />
                     </h3>
-                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>{user.phone || i18n._('Not set')}</p>
+                    <p className='text-sm text-zinc-500 dark:text-zinc-400'>{user.phone || t('Not set')}</p>
                   </div>
                   <button
                     onClick={() => setEditingPhone(!editingPhone)}
@@ -455,21 +455,21 @@ const Profile = () => {
                     type='password'
                     value={currentPassword}
                     onChange={(event) => setCurrentPassword(event.target.value)}
-                    placeholder={i18n._('Current Password')}
+                    placeholder={t('Current Password')}
                     className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                   />
                   <input
                     type='password'
                     value={newPassword}
                     onChange={(event) => setNewPassword(event.target.value)}
-                    placeholder={i18n._('New Password')}
+                    placeholder={t('New Password')}
                     className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                   />
                   <input
                     type='password'
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder={i18n._('Confirm Password')}
+                    placeholder={t('Confirm Password')}
                     className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                   />
                   <div className='flex justify-end gap-2'>
@@ -568,7 +568,7 @@ const Profile = () => {
                     type='password'
                     value={currentDiaryPassword}
                     onChange={(event) => setCurrentDiaryPassword(event.target.value)}
-                    placeholder={i18n._('Current diary password')}
+                    placeholder={t('Current diary password')}
                     className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                   />
                 )}
@@ -576,14 +576,14 @@ const Profile = () => {
                   type='password'
                   value={newDiaryPassword}
                   onChange={(event) => setNewDiaryPassword(event.target.value)}
-                  placeholder={i18n._('New diary password (min 8 characters)')}
+                  placeholder={t('New diary password (min 8 characters)')}
                   className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                 />
                 <input
                   type='password'
                   value={confirmDiaryPassword}
                   onChange={(event) => setConfirmDiaryPassword(event.target.value)}
-                  placeholder={i18n._('Confirm diary password')}
+                  placeholder={t('Confirm diary password')}
                   className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
                 />
               </div>

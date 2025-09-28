@@ -1,23 +1,22 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trans, useLingui, createMessage } from '@/lib/i18n'
+import { Trans, useTranslations, defineMessage } from '@/lib/i18n'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
 import { useAuth } from '@/lib/auth-context'
 import UserAvatar from '@/components/user-avatar'
 
-const profileMenuLabel = createMessage('Profile menu')
+const profileMenuLabel = defineMessage('Profile menu')
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false)
   const { user, isLoggedIn, logout: authLogout, unreadCount } = useAuth()
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
   const isAdmin = !!user && (user.role === 'ADMIN' || user.isAdmin)
 
-  const ariaLabel = i18n._(profileMenuLabel)
-  const ariaLabelText = typeof ariaLabel === 'string' ? ariaLabel : 'Profile menu'
+  const ariaLabelText = t(profileMenuLabel)
 
   const toggle = () => setOpen((o) => !o)
   const handleLogout = () => {

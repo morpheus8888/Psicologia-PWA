@@ -1,6 +1,6 @@
 import Page from '@/components/page'
 import Section from '@/components/section'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/router'
@@ -10,7 +10,7 @@ const Messages = () => {
   const router = useRouter()
   const [messages, setMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   const loadMessages = useCallback(async () => {
     if (!token) return
@@ -93,8 +93,10 @@ const Messages = () => {
             </p>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               {unreadCount > 0
-                ? i18n._('{count, plural, one {You have # unread message} other {You have # unread messages}}', { count: unreadCount })
-                : i18n._('All caught up!')}
+                ? t('{count, plural, one {You have # unread message} other {You have # unread messages}}', {
+                    count: unreadCount,
+                  })
+                : t('All caught up!')}
             </p>
           </div>
 

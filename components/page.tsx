@@ -3,12 +3,12 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Appbar from '@/components/appbar'
 import BottomNav from '@/components/bottom-nav'
-import { Trans, useLingui, createMessage } from '@/lib/i18n'
+import { Trans, useTranslations, defineMessage } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
-const singleUnreadMessage = createMessage('You have one unread message')
-const multipleUnreadMessages = createMessage('You have {count} unread messages')
-const baseTitleMessage = createMessage('Blog')
+const singleUnreadMessage = defineMessage('You have one unread message')
+const multipleUnreadMessages = defineMessage('You have {count} unread messages')
+const baseTitleMessage = defineMessage('Blog')
 
 interface Props {
 	title?: string
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const Page = ({ title, children }: Props) => {
-	const { i18n } = useLingui()
+	const { t } = useTranslations()
 	const { unreadCount, refreshUnreadCount, isLoggedIn } = useAuth()
 
 	useEffect(() => {
@@ -25,7 +25,7 @@ const Page = ({ title, children }: Props) => {
 		}
 	}, [isLoggedIn, refreshUnreadCount])
 
-	const baseTitle = i18n._(baseTitleMessage)
+	const baseTitle = t(baseTitleMessage)
         const pageTitle = title ? `${title} – ${baseTitle}` : baseTitle
 
         return (
@@ -48,8 +48,8 @@ const Page = ({ title, children }: Props) => {
 			<div className='flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm text-indigo-700 shadow-sm dark:border-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-100'>
 				<span>
 				{unreadCount === 1
-					? i18n._(singleUnreadMessage)
-					: i18n._(multipleUnreadMessages, { count: unreadCount })}
+					? t(singleUnreadMessage)
+					: t(multipleUnreadMessages, { count: unreadCount })}
 				</span>
 				<Link
 					href='/messages'

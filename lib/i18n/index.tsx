@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react'
 import {
   ReactNode,
   createContext,
@@ -8,12 +9,14 @@ import {
   useState,
 } from 'react'
 import { useRouter } from 'next/router'
-import { i18n, MessageDescriptor } from '@lingui/core'
-import { I18nProvider as LinguiProvider } from '@lingui/react'
-import { messages as enCatalog } from '@/locales/en/messages'
+import { setupI18n, type I18n } from '@lingui/core'
+import {
+  I18nProvider as LinguiProvider,
+  Trans as LinguiTrans,
+  useLingui as useLinguiBase,
+} from '@lingui/react'
+import { messages as enCatalog, type MessageKey } from '@/locales/en/messages'
 import { messages as itCatalog } from '@/locales/it/messages'
-
-type Catalog = Record<string, unknown>
 
 const localeDescriptors = {
   it: { label: 'IT', name: 'Italiano' },
@@ -25,38 +28,21 @@ export const locales = localeDescriptors
 
 const defaultLocale: Locale = 'it'
 
-const enPlural = (value: number, ordinal?: boolean) => {
-  if (ordinal) {
-    const mod10 = value % 10
-    const mod100 = value % 100
-    if (mod10 === 1 && mod100 !== 11) return 'one'
-    if (mod10 === 2 && mod100 !== 12) return 'two'
-    if (mod10 === 3 && mod100 !== 13) return 'few'
-    return 'other'
-  }
-  return value === 1 ? 'one' : 'other'
-}
-
-const itPlural = (value: number, ordinal?: boolean) => {
-  if (ordinal) {
-    return 'other'
-  }
-  return value === 1 ? 'one' : 'other'
-}
-
-i18n.loadLocaleData({
-  en: { plurals: enPlural },
-  it: { plurals: itPlural },
-})
+type Catalog = Record<MessageKey, string>
 
 const catalogs: Record<Locale, Catalog> = {
   en: enCatalog,
   it: itCatalog,
 }
 
-Object.entries(catalogs).forEach(([locale, messages]) => {
-  i18n.load(locale as Locale, messages)
-})
+const createI18n = () => {
+  const instance = setupI18n({ locale: defaultLocale })
+  ;(Object.entries(catalogs) as Array<[Locale, Catalog]>).forEach(([locale, catalog]) => {
+    instance.load(locale, catalog)
+  })
+  instance.activate(defaultLocale)
+  return instance
+}
 
 type LocaleContextValue = {
   locale: Locale
@@ -66,7 +52,7 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
 
-function normalizeLocale(candidate: string | string[] | undefined, fallback: Locale): Locale {
+const normalizeLocale = (candidate: string | string[] | undefined, fallback: Locale): Locale => {
   const value = Array.isArray(candidate) ? candidate[0] : candidate
   return (value && value in localeDescriptors ? value : fallback) as Locale
 }
@@ -74,15 +60,18 @@ function normalizeLocale(candidate: string | string[] | undefined, fallback: Loc
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const i18nInstance = useMemo(() => createI18n(), [])
 
   const activeLocale = useMemo(
     () => normalizeLocale(router.locale, normalizeLocale(router.defaultLocale, defaultLocale)),
     [router.locale, router.defaultLocale]
   )
 
-  if (i18n.locale !== activeLocale) {
-    i18n.activate(activeLocale)
-  }
+  useEffect(() => {
+    if (i18nInstance.locale !== activeLocale) {
+      i18nInstance.activate(activeLocale)
+    }
+  }, [activeLocale, i18nInstance])
 
   useEffect(() => {
     if (!router.events) return
@@ -104,10 +93,6 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
         document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000`
       }
 
-      const catalog = catalogs[target]
-      i18n.load(target, catalog)
-
-      i18n.activate(target)
       setLoading(true)
       await router.push(router.pathname, router.asPath, { locale: target, scroll: false })
     },
@@ -125,7 +110,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <LocaleContext.Provider value={contextValue}>
-      <LinguiProvider i18n={i18n}>{children}</LinguiProvider>
+      <LinguiProvider i18n={i18nInstance}>{children}</LinguiProvider>
     </LocaleContext.Provider>
   )
 }
@@ -138,14 +123,45 @@ export const useLocale = () => {
   return ctx
 }
 
-type TranslateValues = Parameters<typeof i18n._>[1]
+export { useLinguiBase as useLingui }
 
-export const translate = (message: MessageDescriptor | string, values?: TranslateValues) =>
-  typeof message === 'string' ? i18n._(message, values) : i18n._(message, values)
+export type MessageDescriptor<Id extends MessageKey = MessageKey> = {
+  id: Id
+  defaultMessage?: string
+  comment?: string
+}
 
-export { Trans, useLingui } from '@lingui/react'
+export const defineMessage = <Id extends MessageKey>(
+  input: MessageDescriptor<Id> | Id
+): MessageDescriptor<Id> => (typeof input === 'string' ? { id: input } : input)
 
-export const createMessage = (
-  id: string,
-  descriptor: Omit<MessageDescriptor, 'id'> = {}
-): MessageDescriptor => ({ id, ...descriptor })
+export type MessageInput<Id extends MessageKey = MessageKey> = Id | MessageDescriptor<Id>
+
+type TranslationValues = Record<string, unknown>
+
+export const formatMessage = <Id extends MessageKey>(
+  i18nInstance: I18n,
+  input: MessageInput<Id>,
+  values?: TranslationValues
+) => {
+  const id = typeof input === 'string' ? input : input.id
+  return i18nInstance._(id, values)
+}
+
+export const useTranslations = () => {
+  const { i18n } = useLinguiBase()
+  const translate = useCallback(
+    <Id extends MessageKey>(input: MessageInput<Id>, values?: TranslationValues) =>
+      formatMessage(i18n, input, values),
+    [i18n]
+  )
+
+  return { i18n, t: translate }
+}
+
+type LinguiTransProps = ComponentProps<typeof LinguiTrans>
+type TransProps<Id extends MessageKey> = Omit<LinguiTransProps, 'id'> & { id: Id }
+
+export const Trans = <Id extends MessageKey>(props: TransProps<Id>) => (
+  <LinguiTrans {...(props as LinguiTransProps)} />
+)

@@ -65,10 +65,10 @@ npm run build
 Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che utilizza dizionari TypeScript (`locales/en/messages.ts`, `locales/it/messages.ts`).
 
 - Aggiungi nuove stringhe traducibili aggiornando entrambi i file di dizionario.
-- Per usare il toggle lingua importa `useLingui`/`Trans` da `@/lib/i18n`.
+- Per usare il toggle lingua importa `useLocale`, `useTranslations` e `Trans` da `@/lib/i18n`.
 - Le route Next.js mantengono il locale sincronizzato con il contesto, quindi il deploy su Vercel funziona senza passaggi extra.
 - La configurazione di Lingui è in `lingui.config.js` (file JavaScript per evitare errori TypeScript durante i build su Vercel).
-- Per le stringhe dinamiche usa `createMessage` da `@/lib/i18n` + `i18n._(...)` oppure `<Trans id='...' />`; non è più necessario (né supportato) `@lingui/macro`.
+- Per le stringhe dinamiche usa `const { t } = useTranslations()` e chiama `t('chiave')` oppure `t(defineMessage('chiave'))`; `<Trans id='...' />` resta la soluzione consigliata nei template JSX.
 
 ## Deployment su Vercel
 

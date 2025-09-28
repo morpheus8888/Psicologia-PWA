@@ -1,4 +1,4 @@
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
 
 import UserAvatar from '@/components/user-avatar'
 import { avatarOptions, avatarIds } from '@/lib/avatar-options'
@@ -12,7 +12,7 @@ interface NicknameSelectorProps {
 
 export default function NicknameSelector({ selectedAnimal, onAnimalSelect, className = '' }: NicknameSelectorProps) {
   const safeSelected = avatarIds.includes(selectedAnimal) ? selectedAnimal : avatarIds[0]
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   return (
     <div className={`nickname-selector ${className}`}>
@@ -34,7 +34,7 @@ export default function NicknameSelector({ selectedAnimal, onAnimalSelect, class
       </div>
       <p className="text-center mt-3 text-sm text-zinc-600 dark:text-zinc-400">
         <Trans id='Animale selezionato:' />{' '}
-        <strong>{i18n._(animalMessages[safeSelected as AnimalMessageKey])}</strong>
+        <strong>{t(animalMessages[safeSelected as AnimalMessageKey])}</strong>
       </p>
     </div>
   )

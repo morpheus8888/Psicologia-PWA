@@ -1,22 +1,29 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans, createMessage } from '@/lib/i18n'
+import { Trans, defineMessage, useTranslations } from '@/lib/i18n'
+import type { MessageDescriptor } from '@/lib/i18n'
+import type { MessageKey } from '@/locales/en/messages'
 import ProfileMenu from '@/components/profile-menu'
 import { useAuth } from '@/lib/auth-context'
+
+const storyLinkMessage = defineMessage('Story')
+const recipesLinkMessage = defineMessage('Recipes')
+const adminLinkMessage = defineMessage('Admin Panel')
 
 const Appbar = () => {
        const router = useRouter()
        const { user } = useAuth()
+       const { t } = useTranslations()
 
-	const links = useMemo(() => {
-		const base = [
-			{ href: '/story', label: createMessage('Story') },
-			{ href: '/recipes', label: createMessage('Recipes') },
+	const links = useMemo((): Array<{ href: string; label: MessageDescriptor<MessageKey> }> => {
+		const base: Array<{ href: string; label: MessageDescriptor<MessageKey> }> = [
+			{ href: '/story', label: storyLinkMessage },
+			{ href: '/recipes', label: recipesLinkMessage },
 		]
 
 		if (user?.role === 'ADMIN' || user?.isAdmin) {
-			base.push({ href: '/admin', label: createMessage('Admin Panel') })
+				base.push({ href: '/admin', label: adminLinkMessage })
 		}
 
 		return base
@@ -45,9 +52,9 @@ const Appbar = () => {
                                                                                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
                                                                                }`}
                                                                         >
-								<Trans id={label.id} />
-                                                                        </Link>
-                                                                ))}
+								{t(label)}
+							</Link>
+						))}
                                                         </div>
                                                 </div>
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -51,7 +51,7 @@ type Article = {
 const AdminPanel = () => {
   const { user, token, isLoggedIn } = useAuth()
   const router = useRouter()
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   const [users, setUsers] = useState<AdminManagedUser[]>([])
   const [showUsers, setShowUsers] = useState(false)
@@ -178,7 +178,7 @@ const AdminPanel = () => {
 
   const handleBroadcast = async () => {
     if (!titleOr(broadcastTitle) || !titleOr(broadcastContent)) {
-      alert(i18n._('Provide both title and message'))
+      alert(t('Provide both title and message'))
       return
     }
     if (!token) return
@@ -193,7 +193,7 @@ const AdminPanel = () => {
         body: JSON.stringify({ title: broadcastTitle, content: broadcastContent }),
       })
       if (res.ok) {
-        alert(i18n._('Broadcast delivered to every user'))
+        alert(t('Broadcast delivered to every user'))
         setBroadcastTitle('')
         setBroadcastContent('')
         setBroadcastOpen(false)
@@ -239,7 +239,7 @@ const AdminPanel = () => {
   const submitUserMessage = async () => {
     if (!token || !selectedUserId) return
     if (!titleOr(messageDraft.title) || !titleOr(messageDraft.content)) {
-      alert(i18n._('Provide both title and message'))
+      alert(t('Provide both title and message'))
       return
     }
     setMessageDraft((prev) => ({ ...prev, sending: true }))
@@ -253,7 +253,7 @@ const AdminPanel = () => {
         body: JSON.stringify({ title: messageDraft.title, content: messageDraft.content }),
       })
       if (res.ok) {
-        alert(i18n._('Message sent'))
+        alert(t('Message sent'))
         setMessageDraft({ title: '', content: '', sending: false })
       } else {
         const data = await res.json().catch(() => ({}))
@@ -270,7 +270,7 @@ const AdminPanel = () => {
   const submitPasswordReset = async () => {
     if (!token || !selectedUserId) return
     if (passwordDraft.newPassword.length < 8) {
-      alert(i18n._('The new password must be at least 8 characters long'))
+      alert(t('The new password must be at least 8 characters long'))
       return
     }
     setPasswordDraft((prev) => ({ ...prev, saving: true }))
@@ -284,7 +284,7 @@ const AdminPanel = () => {
         body: JSON.stringify({ newPassword: passwordDraft.newPassword }),
       })
       if (res.ok) {
-        alert(i18n._('Password updated'))
+        alert(t('Password updated'))
         setPasswordDraft({ newPassword: '', saving: false })
       } else {
         const data = await res.json().catch(() => ({}))
@@ -300,7 +300,7 @@ const AdminPanel = () => {
 
   const handleDeleteUser = async () => {
     if (!token || !selectedUserId) return
-    const confirmMessage = i18n._(
+    const confirmMessage = t(
       'Are you sure you want to delete this user? This action cannot be undone.'
     )
     if (!confirm(typeof confirmMessage === 'string' ? confirmMessage : String(confirmMessage))) {
@@ -313,7 +313,7 @@ const AdminPanel = () => {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (res.ok) {
-        alert(i18n._('User removed'))
+        alert(t('User removed'))
         setSelectedUserId(null)
         setSelectedUserDetails(null)
         await loadUsers()
@@ -361,7 +361,7 @@ const AdminPanel = () => {
   const handleArticleSave = async () => {
     if (!token) return
     if (!titleOr(articleTitle) || !titleOr(articleContent)) {
-      alert(i18n._('Article title and content are required'))
+      alert(t('Article title and content are required'))
       return
     }
     setArticleSaving(true)
@@ -385,7 +385,7 @@ const AdminPanel = () => {
         await loadArticles()
         resetArticleForm()
         setArticleFormOpen(false)
-        alert(i18n._('Article saved'))
+        alert(t('Article saved'))
       } else {
         const data = await res.json().catch(() => ({}))
         alert(data.error || 'Errore durante il salvataggio dell\'articolo')
@@ -399,7 +399,7 @@ const AdminPanel = () => {
 
   const handleArticleDelete = async (articleId: string) => {
     if (!token) return
-    if (!confirm(i18n._('Are you sure you want to delete this article?'))) {
+    if (!confirm(t('Are you sure you want to delete this article?'))) {
       return
     }
     try {
@@ -451,10 +451,10 @@ const AdminPanel = () => {
           </header>
 
           <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-            <StatsCard label={i18n._('Total users')} value={users.length} accent='primary' />
-            <StatsCard label={i18n._('Administrators')} value={adminUsers.length} accent='success' />
-            <StatsCard label={i18n._('Professionals')} value={professionalUsers.length} accent='purple' />
-            <StatsCard label={i18n._('Clients')} value={clientUsers.length} accent='amber' />
+            <StatsCard label={t('Total users')} value={users.length} accent='primary' />
+            <StatsCard label={t('Administrators')} value={adminUsers.length} accent='success' />
+            <StatsCard label={t('Professionals')} value={professionalUsers.length} accent='purple' />
+            <StatsCard label={t('Clients')} value={clientUsers.length} accent='amber' />
           </div>
 
           <div className='flex flex-wrap gap-3'>
@@ -493,14 +493,14 @@ const AdminPanel = () => {
                   type='text'
                   value={broadcastTitle}
                   onChange={(event) => setBroadcastTitle(event.target.value)}
-                  placeholder={i18n._('Title')}
+                  placeholder={t('Title')}
                   className='w-full rounded border border-green-200 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950 dark:text-green-100'
                 />
                 <textarea
                   value={broadcastContent}
                   onChange={(event) => setBroadcastContent(event.target.value)}
                   rows={4}
-                  placeholder={i18n._('Message content')}
+                  placeholder={t('Message content')}
                   className='w-full rounded border border-green-200 px-3 py-2 text-sm dark:border-green-800 dark:bg-green-950 dark:text-green-100'
                 />
                 <div className='flex justify-end gap-2'>
@@ -685,44 +685,44 @@ const UserDetailPanel = ({
     updatingRole: boolean
   }
 }) => {
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   const infoPairs = useMemo<Array<{ label: string; value: ReactNode }>>(() => {
     const roleMap: Record<UserDetails['role'], string> = {
-      ADMIN: i18n._('Administrator'),
-      PROFESSIONAL: i18n._('Professional'),
-      CLIENT: i18n._('Client'),
+      ADMIN: t('Administrator'),
+      PROFESSIONAL: t('Professional'),
+      CLIENT: t('Client'),
     }
     const visibilityMap: Record<UserDetails['diaryVisibility'], string> = {
-      PRIVATE: i18n._('Only me'),
-      PUBLIC: i18n._('Everyone'),
-      PROFESSIONALS: i18n._('Professionals only'),
+      PRIVATE: t('Only me'),
+      PUBLIC: t('Everyone'),
+      PROFESSIONALS: t('Professionals only'),
     }
 
-    const safeNickname = user.nickname || i18n._('Not set')
-    const safePhone = user.phone || i18n._('Not set')
+    const safeNickname = user.nickname || t('Not set')
+    const safePhone = user.phone || t('Not set')
     const avatarContent = account.avatar ? (
       <div className='flex items-center gap-2'>
         <UserAvatar animal={account.avatar} size='sm' />
-        <span>{i18n._(account.avatar)}</span>
+        <span>{t(account.avatar)}</span>
       </div>
     ) : (
-      <span>{i18n._('Not set')}</span>
+      <span>{t('Not set')}</span>
     )
 
     return [
-      { label: i18n._('Avatar'), value: avatarContent },
-      { label: i18n._('Display name'), value: safeNickname },
-      { label: i18n._('Email'), value: user.email },
-      { label: i18n._('Phone'), value: safePhone },
-      { label: i18n._('Role'), value: roleMap[user.role] ?? user.role },
+      { label: t('Avatar'), value: avatarContent },
+      { label: t('Display name'), value: safeNickname },
+      { label: t('Email'), value: user.email },
+      { label: t('Phone'), value: safePhone },
+      { label: t('Role'), value: roleMap[user.role] ?? user.role },
       {
-        label: i18n._('Diary visibility'),
+        label: t('Diary visibility'),
         value: visibilityMap[user.diaryVisibility] ?? user.diaryVisibility,
       },
-      { label: i18n._('Created at'), value: new Date(user.createdAt).toLocaleString() },
+      { label: t('Created at'), value: new Date(user.createdAt).toLocaleString() },
     ]
-  }, [account.avatar, i18n, user])
+  }, [account.avatar, t, user])
 
   return (
     <div className='space-y-6'>
@@ -756,9 +756,9 @@ const UserDetailPanel = ({
               disabled={loadingStates.updatingRole}
               className='w-full rounded border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
             >
-              <option value='ADMIN'>{i18n._('Administrator')}</option>
-              <option value='PROFESSIONAL'>{i18n._('Professional')}</option>
-              <option value='CLIENT'>{i18n._('Client')}</option>
+              <option value='ADMIN'>{t('Administrator')}</option>
+              <option value='PROFESSIONAL'>{t('Professional')}</option>
+              <option value='CLIENT'>{t('Client')}</option>
             </select>
           </label>
           <label className='space-y-2 text-sm text-zinc-600 dark:text-zinc-300'>
@@ -808,14 +808,14 @@ const UserDetailPanel = ({
           type='text'
           value={messageDraft.title}
           onChange={(event) => setMessageDraft((prev) => ({ ...prev, title: event.target.value }))}
-          placeholder={i18n._('Title')}
+          placeholder={t('Title')}
           className='w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
         />
         <textarea
           value={messageDraft.content}
           onChange={(event) => setMessageDraft((prev) => ({ ...prev, content: event.target.value }))}
           rows={3}
-          placeholder={i18n._('Message content')}
+          placeholder={t('Message content')}
           className='w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100'
         />
         <div className='flex justify-end'>
@@ -920,7 +920,7 @@ const ArticlesPanel = ({
   onResetForm: () => void
   saving: boolean
 }) => {
-  const { i18n } = useLingui()
+  const { t } = useTranslations()
 
   return (
     <div className='space-y-6'>
@@ -995,7 +995,7 @@ const ArticlesPanel = ({
               disabled={saving}
               className='rounded bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50'
             >
-              {saving ? i18n._('Saving...') : i18n._('Save')}
+              {saving ? t('Saving...') : t('Save')}
             </button>
           </div>
         </div>

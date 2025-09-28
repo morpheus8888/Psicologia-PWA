@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans, useTranslations } from '@/lib/i18n'
+import type { MessageKey } from '@/locales/en/messages'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -17,19 +18,19 @@ interface DiaryEntry {
   date: string
 }
 
-const emotions = [
-  { emoji: '😊', name: 'Happy' },
-  { emoji: '😢', name: 'Sad' },
-  { emoji: '😠', name: 'Angry' },
-  { emoji: '😨', name: 'Fear' },
-  { emoji: '😮', name: 'Surprise' },
-  { emoji: '🤢', name: 'Disgust' },
+const emotions: Array<{ emoji: string; label: MessageKey }> = [
+  { emoji: '😊', label: 'Happy' },
+  { emoji: '😢', label: 'Sad' },
+  { emoji: '😠', label: 'Angry' },
+  { emoji: '😨', label: 'Fear' },
+  { emoji: '😮', label: 'Surprise' },
+  { emoji: '🤢', label: 'Disgust' },
 ]
 
 const Diary = () => {
   const { user, token, isLoggedIn } = useAuth()
   const router = useRouter()
-  const { i18n } = useLingui()
+  const { i18n, t } = useTranslations()
 
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [dailyQuestions, setDailyQuestions] = useState<string[]>(getQuestionsForDate(new Date()))
@@ -52,6 +53,14 @@ const Diary = () => {
   const [passwordInput, setPasswordInput] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [isVerifyingPassword, setIsVerifyingPassword] = useState(false)
+
+  const weekdayLabels = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat(i18n.locale, { weekday: 'short' })
+    const referenceSunday = new Date(Date.UTC(2023, 0, 1))
+    return Array.from({ length: 7 }, (_, index) =>
+      formatter.format(new Date(referenceSunday.getTime() + index * 24 * 60 * 60 * 1000))
+    )
+  }, [i18n.locale])
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -110,7 +119,7 @@ const Diary = () => {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      throw new Error(data.error || i18n._('Unable to unlock diary with the provided password'))
+      throw new Error(data.error || t('Unable to unlock diary with the provided password'))
     }
 
     const data = await res.json()
@@ -181,7 +190,7 @@ const Diary = () => {
   const handlePasswordSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!passwordInput.trim()) {
-      setPasswordError(i18n._('Enter your diary password to continue'))
+      setPasswordError(t('Enter your diary password to continue'))
       return
     }
     await unlockDiary(passwordInput.trim())
@@ -222,7 +231,7 @@ const Diary = () => {
 
   const handleAnswer = () => {
     if (!currentAnswer.trim()) {
-      alert(i18n._('Please write an answer or skip the question'))
+      alert(t('Please write an answer or skip the question'))
       return
     }
     setAnswers((prev) => ({ ...prev, [dailyQuestions[currentQuestion]]: currentAnswer }))
@@ -251,7 +260,7 @@ const Diary = () => {
   const saveEntry = async (mood?: string) => {
     if (!token || !passwordValidated || !diaryPassword) {
       setPasswordModalOpen(true)
-      alert(i18n._('Unlock your diary before saving an entry'))
+      alert(t('Unlock your diary before saving an entry'))
       return
     }
 
@@ -291,7 +300,7 @@ const Diary = () => {
         setShowMoodSelector(false)
         await fetchEntryDates(diaryPassword)
         await fetchEntry(selectedDate, diaryPassword)
-        alert(i18n._('Diary entry saved!'))
+        alert(t('Diary entry saved!'))
       } else {
         const data = await res.json().catch(() => ({}))
         alert(data.error || 'Errore nel salvare la voce')
@@ -444,7 +453,7 @@ const Diary = () => {
                       ←
                     </button>
                     <h2 className='text-lg font-semibold text-zinc-800 dark:text-zinc-200'>
-                      {selectedDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
+                      {selectedDate.toLocaleDateString(i18n.locale, { month: 'long', year: 'numeric' })}
                     </h2>
                     <button
                       onClick={() => {
@@ -459,7 +468,9 @@ const Diary = () => {
                   </div>
                   <div className='space-y-2'>
                     <div className='grid grid-cols-7 gap-1 text-center text-xs font-medium text-zinc-500'>
-                      <div>Dom</div><div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div>
+                      {weekdayLabels.map((label, index) => (
+                        <div key={index}>{label}</div>
+                      ))}
                     </div>
                     {generateCalendar()}
                   </div>
@@ -477,16 +488,19 @@ const Diary = () => {
                     </h3>
                     <div className='mb-4'>
                       <p className='mb-2 text-sm text-zinc-500'>
-                        {i18n._('Question {current} of {total}', { current: currentQuestion + 1, total: dailyQuestions.length })}
+                        {t('Question {current} of {total}', {
+                          current: currentQuestion + 1,
+                          total: dailyQuestions.length,
+                        })}
                       </p>
                       <p className='mb-4 text-lg text-zinc-700 dark:text-zinc-300'>
-                        <Trans id={dailyQuestions[currentQuestion]} />
+                        {t(dailyQuestions[currentQuestion] as MessageKey)}
                       </p>
                       <textarea
                         value={currentAnswer}
                         onChange={(event) => setCurrentAnswer(event.target.value)}
                         className='h-32 w-full resize-none rounded-lg border border-zinc-300 p-3 text-zinc-900 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100'
-                        placeholder='Scrivi la tua risposta...'
+                        placeholder={t('Write your answer here...')}
                       />
                     </div>
                     <div className='flex gap-3'>
@@ -519,16 +533,16 @@ const Diary = () => {
                       <Trans id='Select the emoji that best represents how you feel today:' />
                     </p>
                     <div className='mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3'>
-                      {emotions.map((emotion) => (
-                        <button
-                          key={emotion.name}
+                    {emotions.map((emotion) => (
+                      <button
+                        key={emotion.label}
                           onClick={() => handleMoodSelection(emotion.emoji)}
                           disabled={saving}
                           className='flex flex-col items-center rounded-lg border-2 border-zinc-200 p-3 transition-colors hover:border-blue-500 hover:bg-blue-50 disabled:opacity-50 dark:border-zinc-600 dark:hover:bg-blue-900/20'
                         >
                           <span className='mb-1 text-3xl'>{emotion.emoji}</span>
                           <span className='text-xs text-zinc-600 dark:text-zinc-400'>
-                            <Trans id={emotion.name} />
+                        {t(emotion.label)}
                           </span>
                         </button>
                       ))}
@@ -564,7 +578,7 @@ const Diary = () => {
                     <div className='mb-4 flex items-center justify-between'>
                       <div>
                         <h3 className='text-xl font-semibold text-zinc-800 dark:text-zinc-200'>
-                          <Trans id='Entry for' /> {selectedDate.toLocaleDateString('it-IT')}
+                          <Trans id='Entry for' /> {selectedDate.toLocaleDateString(i18n.locale)}
                         </h3>
                         {viewingEntry.mood && (
                           <p className='text-sm text-zinc-500 dark:text-zinc-400'>{viewingEntry.mood}</p>
