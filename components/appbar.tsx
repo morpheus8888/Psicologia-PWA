@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans } from '@/lib/i18n'
+import { Trans, createMessage } from '@/lib/i18n'
 import ProfileMenu from '@/components/profile-menu'
 import { useAuth } from '@/lib/auth-context'
 
@@ -11,12 +11,12 @@ const Appbar = () => {
 
 	const links = useMemo(() => {
 		const base = [
-			{ href: '/story', labelId: 'Story' },
-			{ href: '/recipes', labelId: 'Recipes' },
+			{ href: '/story', label: createMessage('Story') },
+			{ href: '/recipes', label: createMessage('Recipes') },
 		]
 
 		if (user?.role === 'ADMIN' || user?.isAdmin) {
-			base.push({ href: '/admin', labelId: 'Admin Panel' })
+			base.push({ href: '/admin', label: createMessage('Admin Panel') })
 		}
 
 		return base
@@ -35,7 +35,7 @@ const Appbar = () => {
 					<nav className='flex items-center space-x-6'>
 						<div className='hidden sm:block'>
 							<div className='flex items-center space-x-6'>
-					{links.map(({ labelId, href }) => (
+					{links.map(({ label, href }) => (
 						<Link
 							key={href}
 							href={href}
@@ -45,7 +45,7 @@ const Appbar = () => {
                                                                                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
                                                                                }`}
                                                                         >
-								<Trans id={labelId} />
+								<Trans id={label.id} />
                                                                         </Link>
                                                                 ))}
                                                         </div>

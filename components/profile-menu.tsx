@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trans, useLingui, defineMessage } from '@/lib/i18n'
+import { Trans, useLingui, createMessage } from '@/lib/i18n'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
 import { useAuth } from '@/lib/auth-context'
 import UserAvatar from '@/components/user-avatar'
 
-const profileMenuLabel = defineMessage({ id: 'Profile menu' })
+const profileMenuLabel = createMessage('Profile menu')
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 

@@ -1,19 +1,19 @@
-import { defineMessage } from '@lingui/core'
+import { createMessage } from '@/lib/i18n'
 
 export const animalMessages = {
-  leone: defineMessage({ id: 'leone' }),
-  gatto: defineMessage({ id: 'gatto' }),
-  cane: defineMessage({ id: 'cane' }),
-  orso: defineMessage({ id: 'orso' }),
-  volpe: defineMessage({ id: 'volpe' }),
-  lupo: defineMessage({ id: 'lupo' }),
-  coniglio: defineMessage({ id: 'coniglio' }),
-  panda: defineMessage({ id: 'panda' }),
-  tigre: defineMessage({ id: 'tigre' }),
-  elefante: defineMessage({ id: 'elefante' }),
-  koala: defineMessage({ id: 'koala' }),
-  giraffa: defineMessage({ id: 'giraffa' }),
-  farfalla: defineMessage({ id: 'farfalla' }),
+  leone: createMessage('leone'),
+  gatto: createMessage('gatto'),
+  cane: createMessage('cane'),
+  orso: createMessage('orso'),
+  volpe: createMessage('volpe'),
+  lupo: createMessage('lupo'),
+  coniglio: createMessage('coniglio'),
+  panda: createMessage('panda'),
+  tigre: createMessage('tigre'),
+  elefante: createMessage('elefante'),
+  koala: createMessage('koala'),
+  giraffa: createMessage('giraffa'),
+  farfalla: createMessage('farfalla'),
 } as const
 
 type AnimalKey = keyof typeof animalMessages

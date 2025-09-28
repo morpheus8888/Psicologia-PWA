@@ -3,12 +3,12 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Appbar from '@/components/appbar'
 import BottomNav from '@/components/bottom-nav'
-import { Trans, useLingui, defineMessage } from '@/lib/i18n'
+import { Trans, useLingui, createMessage } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
-const singleUnreadMessage = defineMessage({ id: 'You have one unread message' })
-const multipleUnreadMessages = defineMessage({ id: 'You have {count} unread messages' })
-const baseTitleMessage = defineMessage({ id: 'Blog' })
+const singleUnreadMessage = createMessage('You have one unread message')
+const multipleUnreadMessages = createMessage('You have {count} unread messages')
+const baseTitleMessage = createMessage('Blog')
 
 interface Props {
 	title?: string
