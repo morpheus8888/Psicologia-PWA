@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { useRouter } from 'next/router'
 import { setupI18n, type I18n } from '@lingui/core'
+import { compileMessage } from '@lingui/message-utils/compileMessage'
 import {
   I18nProvider as LinguiProvider,
   Trans as LinguiTrans,
@@ -37,6 +38,7 @@ const catalogs: Record<Locale, Catalog> = {
 
 const createI18n = () => {
   const instance = setupI18n({ locale: defaultLocale })
+  instance.setMessagesCompiler(compileMessage)
   ;(Object.entries(catalogs) as Array<[Locale, Catalog]>).forEach(([locale, catalog]) => {
     instance.load(locale, catalog)
   })

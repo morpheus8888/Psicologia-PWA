@@ -13,6 +13,7 @@
 - Replace any hard-coded wording or locale logic you touch; align dependent modules before merging and update both catalogs immediately.
 - Prefer `Intl.DateTimeFormat`/`Intl.NumberFormat` with `i18n.locale` for dates, numbers, weekday labels, and placeholders.
 - Validate both locales via the language toggle or `/path?locale=en` before you sign off.
+- Our runtime compiles raw catalogs via `setMessagesCompiler(compileMessage)`: never remove or bypass it, and watch browser consoles for “Uncompiled message detected” warnings—if one appears, add the missing key to both catalogs right away.
 
 ## Build, Test, and Dev Commands
 - `npm run dev` – Next.js dev server with HMR.

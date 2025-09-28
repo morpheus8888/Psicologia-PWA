@@ -11,7 +11,7 @@ const Story = () => (
 
 			<div className='mt-2'>
                                 <p className='text-zinc-600 dark:text-zinc-400'>
-                                        <Trans id="I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you." />
+                                        <Trans id="Recipes" />
                                 </p>
 
 				<br />
