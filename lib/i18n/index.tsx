@@ -10,8 +10,6 @@ import {
 import { useRouter } from 'next/router'
 import { i18n } from '@lingui/core'
 import { I18nProvider as LinguiProvider } from '@lingui/react'
-import { en, it } from 'make-plural/plurals'
-
 import { messages as enCatalog } from '@/locales/en/messages'
 import { messages as itCatalog } from '@/locales/it/messages'
 
@@ -27,9 +25,28 @@ export const locales = localeDescriptors
 
 const defaultLocale: Locale = 'it'
 
+const enPlural = (value: number, ordinal?: boolean) => {
+  if (ordinal) {
+    const mod10 = value % 10
+    const mod100 = value % 100
+    if (mod10 === 1 && mod100 !== 11) return 'one'
+    if (mod10 === 2 && mod100 !== 12) return 'two'
+    if (mod10 === 3 && mod100 !== 13) return 'few'
+    return 'other'
+  }
+  return value === 1 ? 'one' : 'other'
+}
+
+const itPlural = (value: number, ordinal?: boolean) => {
+  if (ordinal) {
+    return 'other'
+  }
+  return value === 1 ? 'one' : 'other'
+}
+
 i18n.loadLocaleData({
-  en: { plurals: en },
-  it: { plurals: it },
+  en: { plurals: enPlural },
+  it: { plurals: itPlural },
 })
 
 const catalogs: Record<Locale, Catalog> = {
