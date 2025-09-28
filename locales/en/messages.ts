@@ -145,6 +145,7 @@ export const messages = {
   'Edit with free editor': 'Edit with free editor',
   'Write freely your thoughts and reflections': 'Write freely your thoughts and reflections',
   'Write your answer here...': 'Write your answer here...',
+  '{words} words': '{words} words',
   // Diary Questions
   'How are you feeling right now?': 'How are you feeling right now?',
   'What made you smile today?': 'What made you smile today?',

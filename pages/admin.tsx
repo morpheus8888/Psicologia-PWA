@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { Trans, useTranslations } from '@/lib/i18n'
+import { resolveAnimalMessage, type AnimalMessageKey } from '@/lib/i18n/animals'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -704,7 +705,7 @@ const UserDetailPanel = ({
     const avatarContent = account.avatar ? (
       <div className='flex items-center gap-2'>
         <UserAvatar animal={account.avatar} size='sm' />
-        <span>{t(account.avatar)}</span>
+        <span>{t(resolveAnimalMessage(account.avatar as AnimalMessageKey))}</span>
       </div>
     ) : (
       <span>{t('Not set')}</span>

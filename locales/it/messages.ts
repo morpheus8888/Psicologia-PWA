@@ -147,6 +147,7 @@ export const messages = {
   'Edit with free editor': 'Modifica con editor libero',
   'Write freely your thoughts and reflections': 'Scrivi liberamente i tuoi pensieri e riflessioni',
   'Write your answer here...': 'Scrivi la tua risposta qui...',
+  '{words} words': '{words} words',
   // Diary Questions
   'How are you feeling right now?': 'Come ti senti in questo momento?',
   'What made you smile today?': 'Cosa ti ha fatto sorridere oggi?',

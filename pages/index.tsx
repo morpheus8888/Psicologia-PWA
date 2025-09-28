@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import sanitizeHtml from 'sanitize-html'
-import { Trans, useTranslations } from '@/lib/i18n'
+import { Trans, useTranslations, defineMessage } from '@/lib/i18n'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -21,6 +21,8 @@ type HomeProps = {
   articles: ArticleCard[]
   databaseReady: boolean
 }
+
+const wordsCountMessage = defineMessage('{words} words')
 
 const Home = ({ articles, databaseReady }: HomeProps) => {
   const { t } = useTranslations()
@@ -72,7 +74,7 @@ const Home = ({ articles, databaseReady }: HomeProps) => {
                       <Trans id='Read article' />
                     </Link>
                     <span className='text-xs text-zinc-400 dark:text-zinc-500'>
-                      {t('{words} words', {
+                      {t(wordsCountMessage, {
                         words: Math.max(80, Math.round(article.excerpt.split(' ').length)),
                       })}
                     </span>

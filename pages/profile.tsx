@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import { Trans, useTranslations } from '@/lib/i18n'
+import { resolveAnimalMessage, type AnimalMessageKey } from '@/lib/i18n/animals'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
@@ -308,7 +309,8 @@ const Profile = () => {
               <div className='flex-1'>
                 <p className='text-lg font-medium text-zinc-900 dark:text-zinc-100'>{user.email}</p>
                 <p className='text-sm text-zinc-500 dark:text-zinc-400'>
-                  <Trans id='Avatar' />: <Trans id={user.avatar} />
+                  <Trans id='Avatar' />:{' '}
+                  {user.avatar ? t(resolveAnimalMessage(user.avatar as AnimalMessageKey)) : t('Not set')}
                 </p>
               </div>
               <button
