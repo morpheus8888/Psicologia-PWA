@@ -1,19 +1,21 @@
 import React from 'react'
 
-import { locales, useI18n, Locale } from '@/lib/i18n'
+import { locales, useLocale, Locale } from '@/lib/i18n'
 
 interface Props {
   onChange?: () => void
 }
 
 const LanguageToggle = ({ onChange }: Props) => {
-  const { locale, setLocale } = useI18n()
+  const { locale, setLocale, loading } = useLocale()
   const localeKeys = Object.keys(locales) as Locale[]
   if (localeKeys.length < 2) return null
 
   const changeLocale = (loc: Locale) => {
-    setLocale(loc)
-    onChange?.()
+    if (loading || loc === locale) return
+    void setLocale(loc).then(() => {
+      onChange?.()
+    })
   }
 
   if (localeKeys.length === 2) {
@@ -27,6 +29,7 @@ const LanguageToggle = ({ onChange }: Props) => {
             type='checkbox'
             className='check-toggle check-toggle-round-flat'
             checked={isChecked}
+            disabled={loading}
             onChange={() => changeLocale(isChecked ? locA : locB)}
           />
           <label htmlFor='language-toggle'></label>
@@ -44,6 +47,7 @@ const LanguageToggle = ({ onChange }: Props) => {
           key={loc}
           onClick={() => changeLocale(loc)}
           className='block w-full rounded px-2 py-1 text-left hover:text-indigo-500'
+          disabled={loading}
         >
           {locales[loc].label}
         </button>

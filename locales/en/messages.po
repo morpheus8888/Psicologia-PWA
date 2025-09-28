@@ -1,0 +1,1207 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Story"
+msgstr "Story"
+
+
+msgid "Recipes"
+msgstr "Recipes"
+
+
+msgid "Admin Panel"
+msgstr "Admin Panel"
+
+
+msgid "List all accounts"
+msgstr "List all accounts"
+
+
+msgid "Hide account list"
+msgstr "Hide account list"
+
+
+msgid "All accounts"
+msgstr "All accounts"
+
+
+msgid "No accounts available"
+msgstr "No accounts available"
+
+
+msgid "Active Administrators"
+msgstr "Active Administrators"
+
+
+msgid "No administrators found"
+msgstr "No administrators found"
+
+
+msgid "Admin"
+msgstr "Admin"
+
+
+msgid "Who can read my diary?"
+msgstr "Who can read my diary?"
+
+
+msgid "Choose who can access your journal entries."
+msgstr "Choose who can access your journal entries."
+
+
+msgid "Only me"
+msgstr "Only me"
+
+
+msgid "Everyone"
+msgstr "Everyone"
+
+
+msgid "Professionals only"
+msgstr "Professionals only"
+
+
+msgid "Saving preference..."
+msgstr "Saving preference..."
+
+
+msgid "Loading diary..."
+msgstr "Loading diary..."
+
+
+msgid "View diary"
+msgstr "View diary"
+
+
+msgid "Send message"
+msgstr "Send message"
+
+
+msgid "Close message"
+msgstr "Close message"
+
+
+msgid "Reset password"
+msgstr "Reset password"
+
+
+msgid "Close password form"
+msgstr "Close password form"
+
+
+msgid "Delete user"
+msgstr "Delete user"
+
+
+msgid "Deleting..."
+msgstr "Deleting..."
+
+
+msgid "Cancel"
+msgstr "Cancel"
+
+
+msgid "Send"
+msgstr "Send"
+
+
+msgid "Sending..."
+msgstr "Sending..."
+
+
+msgid "Update"
+msgstr "Update"
+
+
+msgid "Latest diary entries"
+msgstr "Latest diary entries"
+
+
+msgid "No diary entries"
+msgstr "No diary entries"
+
+
+msgid "No text provided"
+msgstr "No text provided"
+
+
+msgid "Total users"
+msgstr "Total users"
+
+
+msgid "Administrators"
+msgstr "Administrators"
+
+
+msgid "Professionals"
+msgstr "Professionals"
+
+
+msgid "Clients"
+msgstr "Clients"
+
+
+msgid "Gluten Free"
+msgstr "Gluten Free"
+
+
+msgid "Home"
+msgstr "Home"
+
+
+msgid "We grow a lot of rice."
+msgstr "We grow a lot of rice."
+
+
+msgid "You love rice, and so does the rest of the world. In the crop year 2008/2009, the milled rice production volume amounted to over <0>448 million tons</0> worldwide."
+msgstr "You love rice, and so does the rest of the world. In the crop year 2008/2009, the milled rice production volume amounted to over <0>448 million tons</0> worldwide."
+
+
+msgid "Source"
+msgstr "Source"
+
+
+msgid "Ingredients"
+msgstr "Ingredients"
+
+
+msgid "Like any good recipe, we appreciate community offerings to cultivate a delicous dish."
+msgstr "Like any good recipe, we appreciate community offerings to cultivate a delicous dish."
+
+
+msgid "Thanks to"
+msgstr "Thanks to"
+
+
+msgid "for high quality images"
+msgstr "for high quality images"
+
+
+msgid "for lovely icons"
+msgstr "for lovely icons"
+
+
+msgid "\"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you.\""
+msgstr "\"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you.\""
+
+
+msgid "Vision"
+msgstr "Vision"
+
+
+msgid ", a two sentence story"
+msgstr ", a two sentence story"
+
+
+msgid "Profile menu"
+msgstr "Profile menu"
+
+
+msgid "My profile"
+msgstr "My profile"
+
+
+msgid "Edit profile"
+msgstr "Edit profile"
+
+
+msgid "Inbox"
+msgstr "Inbox"
+
+
+msgid "Help"
+msgstr "Help"
+
+
+msgid "Logout"
+msgstr "Logout"
+
+
+msgid "Login"
+msgstr "Login"
+
+
+msgid "Language"
+msgstr "Language"
+
+
+msgid "Dark mode"
+msgstr "Dark mode"
+
+
+msgid "Light mode"
+msgstr "Light mode"
+
+
+msgid "Create Account"
+msgstr "Create Account"
+
+
+msgid "or use your email for registration"
+msgstr "or use your email for registration"
+
+
+msgid "Name"
+msgstr "Name"
+
+
+msgid "Email"
+msgstr "Email"
+
+
+msgid "Password"
+msgstr "Password"
+
+
+msgid "Sign Up"
+msgstr "Sign Up"
+
+
+msgid "Sign in"
+msgstr "Sign in"
+
+
+msgid "or use your account"
+msgstr "or use your account"
+
+
+msgid "Forgot your password?"
+msgstr "Forgot your password?"
+
+
+msgid "Sign In"
+msgstr "Sign In"
+
+
+msgid "Welcome Back!"
+msgstr "Welcome Back!"
+
+
+msgid "To keep connected with us please login with your personal info"
+msgstr "To keep connected with us please login with your personal info"
+
+
+msgid "Hello, Friend!"
+msgstr "Hello, Friend!"
+
+
+msgid "Enter your personal details and start journey with us"
+msgstr "Enter your personal details and start journey with us"
+
+
+msgid "Scegli il tuo animale"
+msgstr "Choose your animal"
+
+
+msgid "Animale selezionato:"
+msgstr "Selected animal:"
+
+
+msgid "Tutti gli animali disponibili"
+msgstr "All available animals"
+
+
+msgid "Modifica Avatar"
+msgstr "Edit Avatar"
+
+
+msgid "Salva Avatar"
+msgstr "Save Avatar"
+
+
+msgid "Salvando..."
+msgstr "Saving..."
+
+
+msgid "Annulla"
+msgstr "Cancel"
+
+
+msgid "Avatar aggiornato con successo!"
+msgstr "Avatar updated successfully!"
+
+
+msgid "leone"
+msgstr "Lion"
+
+
+msgid "gatto"
+msgstr "Cat"
+
+
+msgid "cane"
+msgstr "Dog"
+
+
+msgid "orso"
+msgstr "Bear"
+
+
+msgid "volpe"
+msgstr "Fox"
+
+
+msgid "lupo"
+msgstr "Wolf"
+
+
+msgid "coniglio"
+msgstr "Rabbit"
+
+
+msgid "panda"
+msgstr "Panda"
+
+
+msgid "tigre"
+msgstr "Tiger"
+
+
+msgid "elefante"
+msgstr "Elephant"
+
+
+msgid "koala"
+msgstr "Koala"
+
+
+msgid "giraffa"
+msgstr "Giraffe"
+
+
+msgid "farfalla"
+msgstr "Butterfly"
+
+
+msgid "Phone"
+msgstr "Phone"
+
+
+msgid "Edit Phone"
+msgstr "Edit Phone"
+
+
+msgid "Save Phone"
+msgstr "Save Phone"
+
+
+msgid "Edit Email"
+msgstr "Edit Email"
+
+
+msgid "Save Email"
+msgstr "Save Email"
+
+
+msgid "Edit Password"
+msgstr "Edit Password"
+
+
+msgid "Save Password"
+msgstr "Save Password"
+
+
+msgid "New Password"
+msgstr "New Password"
+
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+
+msgid "Current Password"
+msgstr "Current Password"
+
+
+msgid "Diary"
+msgstr "Diary"
+
+
+msgid "My Personal Diary"
+msgstr "My Personal Diary"
+
+
+msgid "Welcome to your personal diary"
+msgstr "Welcome to your personal diary"
+
+
+msgid "This is your private space to reflect and write about your daily experiences"
+msgstr "This is your private space to reflect and write about your daily experiences"
+
+
+msgid "Select a date from the calendar to view or write entries"
+msgstr "Select a date from the calendar to view or write entries"
+
+
+msgid "Days with entries are highlighted"
+msgstr "Days with entries are highlighted"
+
+
+msgid "What did you do today?"
+msgstr "What did you do today?"
+
+
+msgid "Do you remember what you planned to do yesterday?"
+msgstr "Do you remember what you planned to do yesterday?"
+
+
+msgid "What do you think you did wrong today?"
+msgstr "What do you think you did wrong today?"
+
+
+msgid "What made you happy today?"
+msgstr "What made you happy today?"
+
+
+msgid "What would you like to improve tomorrow?"
+msgstr "What would you like to improve tomorrow?"
+
+
+msgid "I don't want to answer"
+msgstr "I don't want to answer"
+
+
+msgid "Next Question"
+msgstr "Next Question"
+
+
+msgid "Finish Entry"
+msgstr "Finish Entry"
+
+
+msgid "Save Entry"
+msgstr "Save Entry"
+
+
+msgid "Today's Entry"
+msgstr "Today's Entry"
+
+
+msgid "Entry for"
+msgstr "Entry for"
+
+
+msgid "No entry for this date"
+msgstr "No entry for this date"
+
+
+msgid "You can only edit today's entry"
+msgstr "You can only edit today's entry"
+
+
+msgid "Free text editor"
+msgstr "Free text editor"
+
+
+msgid "Rewrite with questions"
+msgstr "Rewrite with questions"
+
+
+msgid "Edit with free editor"
+msgstr "Edit with free editor"
+
+
+msgid "Write freely your thoughts and reflections"
+msgstr "Write freely your thoughts and reflections"
+
+
+msgid "How are you feeling right now?"
+msgstr "How are you feeling right now?"
+
+
+msgid "What made you smile today?"
+msgstr "What made you smile today?"
+
+
+msgid "What challenged you today?"
+msgstr "What challenged you today?"
+
+
+msgid "What are you grateful for today?"
+msgstr "What are you grateful for today?"
+
+
+msgid "What do you want to accomplish tomorrow?"
+msgstr "What do you want to accomplish tomorrow?"
+
+
+msgid "What did you learn today?"
+msgstr "What did you learn today?"
+
+
+msgid "What would you do differently today?"
+msgstr "What would you do differently today?"
+
+
+msgid "What are you looking forward to?"
+msgstr "What are you looking forward to?"
+
+
+msgid "What frustrated you today?"
+msgstr "What frustrated you today?"
+
+
+msgid "How did you handle stress today?"
+msgstr "How did you handle stress today?"
+
+
+msgid "What emotions did you experience today?"
+msgstr "What emotions did you experience today?"
+
+
+msgid "What calmed you down today?"
+msgstr "What calmed you down today?"
+
+
+msgid "How did you step out of your comfort zone today?"
+msgstr "How did you step out of your comfort zone today?"
+
+
+msgid "What personal goal did you work on today?"
+msgstr "What personal goal did you work on today?"
+
+
+msgid "Who did you spend time with today?"
+msgstr "Who did you spend time with today?"
+
+
+msgid "How did you show kindness to someone today?"
+msgstr "How did you show kindness to someone today?"
+
+
+msgid "What conversation had the biggest impact on you today?"
+msgstr "What conversation had the biggest impact on you today?"
+
+
+msgid "How did you connect with others today?"
+msgstr "How did you connect with others today?"
+
+
+msgid "Did you feel understood by someone today?"
+msgstr "Did you feel understood by someone today?"
+
+
+msgid "What inspired you today?"
+msgstr "What inspired you today?"
+
+
+msgid "What creative activity did you do today?"
+msgstr "What creative activity did you do today?"
+
+
+msgid "What new idea came to you today?"
+msgstr "What new idea came to you today?"
+
+
+msgid "What hobby or interest did you pursue today?"
+msgstr "What hobby or interest did you pursue today?"
+
+
+msgid "What beauty did you notice today?"
+msgstr "What beauty did you notice today?"
+
+
+msgid "How did you take care of your body today?"
+msgstr "How did you take care of your body today?"
+
+
+msgid "What did you eat that made you feel good?"
+msgstr "What did you eat that made you feel good?"
+
+
+msgid "How much did you sleep last night and how did it affect your day?"
+msgstr "How much did you sleep last night and how did it affect your day?"
+
+
+msgid "What physical activity did you do today?"
+msgstr "What physical activity did you do today?"
+
+
+msgid "How did you relax today?"
+msgstr "How did you relax today?"
+
+
+msgid "What work task gave you the most satisfaction today?"
+msgstr "What work task gave you the most satisfaction today?"
+
+
+msgid "What was your biggest accomplishment today?"
+msgstr "What was your biggest accomplishment today?"
+
+
+msgid "How did you manage your time today?"
+msgstr "How did you manage your time today?"
+
+
+msgid "What new skill did you develop today?"
+msgstr "What new skill did you develop today?"
+
+
+msgid "What challenge at work did you overcome today?"
+msgstr "What challenge at work did you overcome today?"
+
+
+msgid "What moment today were you most present?"
+msgstr "What moment today were you most present?"
+
+
+msgid "What did you notice about your surroundings today?"
+msgstr "What did you notice about your surroundings today?"
+
+
+msgid "How did you practice mindfulness today?"
+msgstr "How did you practice mindfulness today?"
+
+
+msgid "What sounds, smells, or textures stood out to you today?"
+msgstr "What sounds, smells, or textures stood out to you today?"
+
+
+msgid "When did you feel most at peace today?"
+msgstr "When did you feel most at peace today?"
+
+
+msgid "How did you live according to your values today?"
+msgstr "How did you live according to your values today?"
+
+
+msgid "What gave your day meaning?"
+msgstr "What gave your day meaning?"
+
+
+msgid "How did you make a difference today?"
+msgstr "How did you make a difference today?"
+
+
+msgid "What principle guided your decisions today?"
+msgstr "What principle guided your decisions today?"
+
+
+msgid "How did you honor what's important to you today?"
+msgstr "How did you honor what's important to you today?"
+
+
+msgid "What memory from the past came to mind today?"
+msgstr "What memory from the past came to mind today?"
+
+
+msgid "What from today will you want to remember in the future?"
+msgstr "What from today will you want to remember in the future?"
+
+
+msgid "How did your past experience help you today?"
+msgstr "How did your past experience help you today?"
+
+
+msgid "What tradition or ritual did you practice today?"
+msgstr "What tradition or ritual did you practice today?"
+
+
+msgid "What reminded you of your childhood today?"
+msgstr "What reminded you of your childhood today?"
+
+
+msgid "What dream did you think about today?"
+msgstr "What dream did you think about today?"
+
+
+msgid "How did you work toward your future goals today?"
+msgstr "How did you work toward your future goals today?"
+
+
+msgid "What possibility excited you today?"
+msgstr "What possibility excited you today?"
+
+
+msgid "What vision for your life became clearer today?"
+msgstr "What vision for your life became clearer today?"
+
+
+msgid "What hope do you have for tomorrow?"
+msgstr "What hope do you have for tomorrow?"
+
+
+msgid "What obstacle did you face and how did you handle it?"
+msgstr "What obstacle did you face and how did you handle it?"
+
+
+msgid "What helped you persevere through a difficult moment today?"
+msgstr "What helped you persevere through a difficult moment today?"
+
+
+msgid "How did you show courage today?"
+msgstr "How did you show courage today?"
+
+
+msgid "What strength did you discover in yourself today?"
+msgstr "What strength did you discover in yourself today?"
+
+
+msgid "How did you bounce back from a setback today?"
+msgstr "How did you bounce back from a setback today?"
+
+
+msgid "What gave you a sense of wonder today?"
+msgstr "What gave you a sense of wonder today?"
+
+
+msgid "How did you connect with something larger than yourself today?"
+msgstr "How did you connect with something larger than yourself today?"
+
+
+msgid "What question about life crossed your mind today?"
+msgstr "What question about life crossed your mind today?"
+
+
+msgid "What moment felt sacred or special today?"
+msgstr "What moment felt sacred or special today?"
+
+
+msgid "How did you find meaning in ordinary moments today?"
+msgstr "How did you find meaning in ordinary moments today?"
+
+
+msgid "What changed in your perspective today?"
+msgstr "What changed in your perspective today?"
+
+
+msgid "How are you different today than you were yesterday?"
+msgstr "How are you different today than you were yesterday?"
+
+
+msgid "What pattern in your behavior did you notice today?"
+msgstr "What pattern in your behavior did you notice today?"
+
+
+msgid "What feedback did you receive and how did you respond?"
+msgstr "What feedback did you receive and how did you respond?"
+
+
+msgid "What comfort zone did you step outside of today?"
+msgstr "What comfort zone did you step outside of today?"
+
+
+msgid "What did you want to say but didn't today?"
+msgstr "What did you want to say but didn't today?"
+
+
+msgid "How did you express yourself authentically today?"
+msgstr "How did you express yourself authentically today?"
+
+
+msgid "What conversation do you wish you could have had today?"
+msgstr "What conversation do you wish you could have had today?"
+
+
+msgid "How did you listen deeply to someone today?"
+msgstr "How did you listen deeply to someone today?"
+
+
+msgid "What truth about yourself did you acknowledge today?"
+msgstr "What truth about yourself did you acknowledge today?"
+
+
+msgid "How did your environment affect your mood today?"
+msgstr "How did your environment affect your mood today?"
+
+
+msgid "What space brought you comfort today?"
+msgstr "What space brought you comfort today?"
+
+
+msgid "How did nature impact you today?"
+msgstr "How did nature impact you today?"
+
+
+msgid "What in your surroundings would you like to change?"
+msgstr "What in your surroundings would you like to change?"
+
+
+msgid "Where did you feel most like yourself today?"
+msgstr "Where did you feel most like yourself today?"
+
+
+msgid "How did you spend your free time today?"
+msgstr "How did you spend your free time today?"
+
+
+msgid "What moment felt rushed and what felt unhurried today?"
+msgstr "What moment felt rushed and what felt unhurried today?"
+
+
+msgid "How did you balance work and rest today?"
+msgstr "How did you balance work and rest today?"
+
+
+msgid "What rhythm felt natural to you today?"
+msgstr "What rhythm felt natural to you today?"
+
+
+msgid "When did time seem to stand still or fly by today?"
+msgstr "When did time seem to stand still or fly by today?"
+
+
+msgid "What did your intuition tell you today?"
+msgstr "What did your intuition tell you today?"
+
+
+msgid "What wisdom did you gain from today's experiences?"
+msgstr "What wisdom did you gain from today's experiences?"
+
+
+msgid "What pattern did you recognize in your life today?"
+msgstr "What pattern did you recognize in your life today?"
+
+
+msgid "What truth became clear to you today?"
+msgstr "What truth became clear to you today?"
+
+
+msgid "What insight surprised you today?"
+msgstr "What insight surprised you today?"
+
+
+msgid "How do you feel today?"
+msgstr "How do you feel today?"
+
+
+msgid "Select the emoji that best represents how you feel today:"
+msgstr "Select the emoji that best represents how you feel today:"
+
+
+msgid "Happy"
+msgstr "Happy"
+
+
+msgid "Sad"
+msgstr "Sad"
+
+
+msgid "Angry"
+msgstr "Angry"
+
+
+msgid "Fear"
+msgstr "Fear"
+
+
+msgid "Surprise"
+msgstr "Surprise"
+
+
+msgid "Disgust"
+msgstr "Disgust"
+
+
+msgid "Avatar updated successfully!"
+msgstr "Avatar updated successfully!"
+
+
+msgid "Phone updated successfully"
+msgstr "Phone updated successfully"
+
+
+msgid "Email updated successfully"
+msgstr "Email updated successfully"
+
+
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
+
+
+msgid "Password must be at least 6 characters"
+msgstr "Password must be at least 6 characters"
+
+
+msgid "Diary password must be at least 8 characters"
+msgstr "Diary password must be at least 8 characters"
+
+
+msgid "Diary password updated successfully"
+msgstr "Diary password updated successfully"
+
+
+msgid "Current diary password"
+msgstr "Current diary password"
+
+
+msgid "New diary password (min 8 characters)"
+msgstr "New diary password (min 8 characters)"
+
+
+msgid "Confirm diary password"
+msgstr "Confirm diary password"
+
+
+msgid "Set password"
+msgstr "Set password"
+
+
+msgid "Diary entries are encrypted per account. Keep this password safe: without it you cannot recover past notes."
+msgstr "Diary entries are encrypted per account. Keep this password safe: without it you cannot recover past notes."
+
+
+msgid "Provide both title and message"
+msgstr "Provide both title and message"
+
+
+msgid "Question {current} of {total}"
+msgstr "Question {current} of {total}"
+
+
+msgid "Please write an answer or skip the question"
+msgstr "Please write an answer or skip the question"
+
+
+msgid "Unlock your diary before saving an entry"
+msgstr "Unlock your diary before saving an entry"
+
+
+msgid "Diary entry saved!"
+msgstr "Diary entry saved!"
+
+
+msgid "Enter your diary password to continue"
+msgstr "Enter your diary password to continue"
+
+
+msgid "Unlock diary"
+msgstr "Unlock diary"
+
+
+msgid "Unlocking..."
+msgstr "Unlocking..."
+
+
+msgid "Unlock"
+msgstr "Unlock"
+
+
+msgid "Lock diary again"
+msgstr "Lock diary again"
+
+
+msgid "Enter your diary password to unlock entries."
+msgstr "Enter your diary password to unlock entries."
+
+
+msgid "Protect your diary first"
+msgstr "Protect your diary first"
+
+
+msgid "Set a dedicated diary password in the profile settings to unlock, read and write your journal."
+msgstr "Set a dedicated diary password in the profile settings to unlock, read and write your journal."
+
+
+msgid "Go to settings"
+msgstr "Go to settings"
+
+
+msgid "The diary is not shared. Ask the user to change visibility to \"Everyone\" if needed."
+msgstr "The diary is not shared. Ask the user to change visibility to \"Everyone\" if needed."
+
+
+msgid "Refresh data"
+msgstr "Refresh data"
+
+
+msgid "Send a private message"
+msgstr "Send a private message"
+
+
+msgid "Diary visibility"
+msgstr "Diary visibility"
+
+
+msgid "Send a message to every user"
+msgstr "Send a message to every user"
+
+
+msgid "Broadcast to all accounts"
+msgstr "Broadcast to all accounts"
+
+
+msgid "Message content"
+msgstr "Message content"
+
+
+msgid "Loading user details..."
+msgstr "Loading user details..."
+
+
+msgid "Select an account to inspect details."
+msgstr "Select an account to inspect details."
+
+
+msgid "Pick an account from the list to open the detail panel."
+msgstr "Pick an account from the list to open the detail panel."
+
+
+msgid "Account actions"
+msgstr "Account actions"
+
+
+msgid "Role"
+msgstr "Role"
+
+
+msgid "Administrator"
+msgstr "Administrator"
+
+
+msgid "Professional"
+msgstr "Professional"
+
+
+msgid "Client"
+msgstr "Client"
+
+
+msgid "New password"
+msgstr "New password"
+
+
+msgid "Reset"
+msgstr "Reset"
+
+
+msgid "The new password must be at least 8 characters long"
+msgstr "The new password must be at least 8 characters long"
+
+
+msgid "Are you sure you want to delete this user? This action cannot be undone."
+msgstr "Are you sure you want to delete this user? This action cannot be undone."
+
+
+msgid "User removed"
+msgstr "User removed"
+
+
+msgid "Broadcast delivered to every user"
+msgstr "Broadcast delivered to every user"
+
+
+msgid "Blog articles"
+msgstr "Blog articles"
+
+
+msgid "Create article"
+msgstr "Create article"
+
+
+msgid "Close editor"
+msgstr "Close editor"
+
+
+msgid "Title"
+msgstr "Title"
+
+
+msgid "Slug"
+msgstr "Slug"
+
+
+msgid "Summary"
+msgstr "Summary"
+
+
+msgid "Content"
+msgstr "Content"
+
+
+msgid "Publish immediately"
+msgstr "Publish immediately"
+
+
+msgid "Article title and content are required"
+msgstr "Article title and content are required"
+
+
+msgid "Article saved"
+msgstr "Article saved"
+
+
+msgid "Save"
+msgstr "Save"
+
+
+msgid "No articles yet. Create one above."
+msgstr "No articles yet. Create one above."
+
+
+msgid "Published"
+msgstr "Published"
+
+
+msgid "Draft"
+msgstr "Draft"
+
+
+msgid "Edit"
+msgstr "Edit"
+
+
+msgid "Delete"
+msgstr "Delete"
+
+
+msgid "Are you sure you want to delete this article?"
+msgstr "Are you sure you want to delete this article?"
+
+
+msgid "Saving..."
+msgstr "Saving..."
+
+
+msgid "Latest insights from the community"
+msgstr "Latest insights from the community"
+
+
+msgid "Explore articles curated by the administrative team to support your wellbeing journey."
+msgstr "Explore articles curated by the administrative team to support your wellbeing journey."
+
+
+msgid "The content database is not configured. Administrators can set DATABASE_URL to enable blog articles."
+msgstr "The content database is not configured. Administrators can set DATABASE_URL to enable blog articles."
+
+
+msgid "No articles have been published yet. Check back soon!"
+msgstr "No articles have been published yet. Check back soon!"
+
+
+msgid "Read article"
+msgstr "Read article"
+
+
+msgid "Published article"
+msgstr "Published article"
+
+
+msgid "The requested article is no longer available."
+msgstr "The requested article is no longer available."
+
+
+msgid "This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content."
+msgstr "This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content."
+
+
+msgid "Open messages"
+msgstr "Open messages"
+
+
+msgid "You have one unread message"
+msgstr "You have one unread message"
+
+
+msgid "You have {count} unread messages"
+msgstr "You have {count} unread messages"
+
+
+msgid "{count, plural, one {You have # unread message} other {You have # unread messages}}"
+msgstr "{count, plural, one {You have # unread message} other {You have # unread messages}}"
+
+
+msgid "All caught up!"
+msgstr "All caught up!"

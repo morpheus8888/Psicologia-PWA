@@ -16,3 +16,6 @@ node_modules
 
 # Keep .env.example
 !.env.example
+
+# TypeScript incremental build info
+*.tsbuildinfo

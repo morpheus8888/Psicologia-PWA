@@ -8,7 +8,10 @@
     "vercel-post-build": "node scripts/run-migrations.js",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "i18n:extract": "lingui extract",
+    "i18n:compile": "lingui compile",
+    "i18n": "npm run i18n:extract && npm run i18n:compile"
   },
   "dependencies": {
     "@lingui/core": "^5.3.2",
@@ -20,6 +23,7 @@
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^12.1.1",
     "jsonwebtoken": "^9.0.2",
+    "make-plural": "^7.4.0",
     "next": "14.1.1",
     "next-pwa": "^5.6.0",
     "next-themes": "^0.2.1",
@@ -31,6 +35,8 @@
     "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
+    "@lingui/cli": "^5.5.0",
+    "@lingui/format-po": "^5.5.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.8.4",
     "@types/react": "^18.2.28",

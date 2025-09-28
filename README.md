@@ -70,6 +70,8 @@ Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che ut
 
 ## Deployment su Vercel
 
+> Nota: prima di intervenire sui deploy consulta sempre i file nella cartella `vercel/` (es. `vercel/vercel-docs.md`, `vercel/vercel-rest-api.md`). Manteniamoli sincronizzati con ogni cambiamento rilevante.
+
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
 2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` (che include le migrazioni) e `scripts/run-migrations.js` come post-build (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
    - ⚠️ Ricordati di aggiornare sempre `pnpm-lock.yaml` con `pnpm install --lockfile-only` ogni volta che modifichi le dipendenze, altrimenti la build fallisce.

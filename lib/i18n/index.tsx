@@ -1,243 +1,128 @@
-import React, {
+import {
+  ReactNode,
   createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-  ReactNode,
 } from 'react'
 import { useRouter } from 'next/router'
+import { i18n } from '@lingui/core'
+import { I18nProvider as LinguiProvider } from '@lingui/react'
+import { en, it } from 'make-plural/plurals'
 
-import enMessages from '@/locales/en/messages'
-import itMessages from '@/locales/it/messages'
+import { messages as enCatalog } from '@/locales/en/messages'
+import { messages as itCatalog } from '@/locales/it/messages'
 
-export type Locale = 'en' | 'it'
+type Catalog = Record<string, unknown>
 
-type Messages = Record<string, string>
-
-type Dictionaries = Record<Locale, Messages>
-
-type TranslateOptions = {
-  values?: Record<string, unknown>
-  components?: ReactNode[]
-}
-
-type I18nContextValue = {
-  locale: Locale
-  setLocale: (locale: Locale) => void
-  t: (id: string, options?: TranslateOptions) => ReactNode
-}
-
-const dictionaries: Dictionaries = {
-  en: enMessages,
-  it: itMessages,
-}
-
-export const locales = {
+const localeDescriptors = {
   it: { label: 'IT', name: 'Italiano' },
   en: { label: 'EN', name: 'English' },
 } as const
 
+export type Locale = keyof typeof localeDescriptors
+export const locales = localeDescriptors
+
 const defaultLocale: Locale = 'it'
 
-const I18nContext = createContext<I18nContextValue | undefined>(undefined)
+i18n.loadLocaleData({
+  en: { plurals: en },
+  it: { plurals: it },
+})
 
-const pluralRegex = /\{(\w+),\s*plural,\s*([^}]+\})\s*\}/g
-const optionRegex = /(zero|one|two|few|many|other)\s*\{([^}]*)\}/g
-const placeholderRegex = /\{(\w+)\}/g
-const componentTagRegex = /<\/?(\d+)>/g
-
-type ComponentNode = {
-  index: number
-  children: Array<ComponentNode | string>
+const catalogs: Record<Locale, Catalog> = {
+  en: enCatalog,
+  it: itCatalog,
 }
 
-type ParserNode = {
-  children: Array<ComponentNode | string>
+Object.entries(catalogs).forEach(([locale, messages]) => {
+  i18n.load(locale as Locale, messages)
+})
+
+type LocaleContextValue = {
+  locale: Locale
+  setLocale: (locale: Locale) => Promise<void>
+  loading: boolean
 }
 
-function applyPlurals(message: string, values?: Record<string, unknown>) {
-  return message.replace(pluralRegex, (_, key: string, body: string) => {
-    const rawCount = values?.[key]
-    const count = typeof rawCount === 'number' ? rawCount : Number(rawCount) || 0
-    const options: Record<string, string> = {}
-    let match: RegExpExecArray | null
-    while ((match = optionRegex.exec(body)) !== null) {
-      options[match[1]] = match[2]
-    }
-    let selected = options.other ?? ''
-    if (count === 0 && options.zero) selected = options.zero
-    else if (count === 1 && options.one) selected = options.one
-    else if (count === 2 && options.two) selected = options.two
-    else if (count > 1 && options.many) selected = options.many
-    selected = selected.replace(/#/g, String(count))
-    return selected
-  })
-}
+const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
 
-function applyPlaceholders(message: string, values?: Record<string, unknown>) {
-  if (!values) return message
-  return message.replace(placeholderRegex, (_, key: string) => {
-    const value = values[key]
-    if (value === undefined || value === null) return ''
-    return String(value)
-  })
-}
-
-function parseComponentStructure(input: string, components: ReactNode[]): Array<ComponentNode | string> {
-  if (!components.length || !componentTagRegex.test(input)) {
-    return [input]
-  }
-
-  componentTagRegex.lastIndex = 0
-  const root: ParserNode = { children: [] }
-  const stack: Array<ParserNode | ComponentNode> = [root]
-  let lastIndex = 0
-  let match: RegExpExecArray | null
-
-  while ((match = componentTagRegex.exec(input)) !== null) {
-    const [tag, idxStr] = match
-    const index = Number(idxStr)
-    const isClosing = tag.startsWith('</')
-    const text = input.slice(lastIndex, match.index)
-    if (text) {
-      const current = stack[stack.length - 1]
-      current.children.push(text)
-    }
-    if (isClosing) {
-      const node = stack.pop()
-      if (!node || ('index' in node && node.index !== index)) {
-        return [input]
-      }
-      if (stack.length === 0) {
-        return [input]
-      }
-    } else {
-      const newNode: ComponentNode = { index, children: [] }
-      const current = stack[stack.length - 1]
-      current.children.push(newNode)
-      stack.push(newNode)
-    }
-    lastIndex = componentTagRegex.lastIndex
-  }
-
-  if (lastIndex < input.length) {
-    const current = stack[stack.length - 1]
-    current.children.push(input.slice(lastIndex))
-  }
-
-  if (stack.length !== 1) {
-    return [input]
-  }
-
-  return root.children
-}
-
-function renderNode(node: ComponentNode | string, components: ReactNode[], key: number): ReactNode {
-  if (typeof node === 'string') {
-    return node
-  }
-
-  const component = components[node.index]
-  const children = node.children.map((child, childIndex) => renderNode(child, components, childIndex))
-
-  if (!component || !React.isValidElement(component)) {
-    return <React.Fragment key={key}>{children}</React.Fragment>
-  }
-
-  return React.cloneElement(component, { ...component.props, key }, ...children)
-}
-
-function renderNodes(nodes: Array<ComponentNode | string>, components: ReactNode[]): ReactNode {
-  const rendered = nodes.map((node, index) => renderNode(node, components, index))
-  if (rendered.length === 1) {
-    return rendered[0]
-  }
-  return rendered
-}
-
-function translate(locale: Locale, id: string, options?: TranslateOptions): ReactNode {
-  const dictionary = dictionaries[locale] ?? dictionaries[defaultLocale]
-  const raw = dictionary[id] ?? id
-  const withPlural = applyPlurals(raw, options?.values)
-  const withPlaceholders = applyPlaceholders(withPlural, options?.values)
-  if (!options?.components || options.components.length === 0) {
-    return withPlaceholders
-  }
-  const nodes = parseComponentStructure(withPlaceholders, options.components)
-  return renderNodes(nodes, options.components)
+function normalizeLocale(candidate: string | string[] | undefined, fallback: Locale): Locale {
+  const value = Array.isArray(candidate) ? candidate[0] : candidate
+  return (value && value in localeDescriptors ? value : fallback) as Locale
 }
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
-  const [locale, setLocaleState] = useState<Locale>(
-    (router.locale as Locale) || (router.defaultLocale as Locale) || defaultLocale
+  const [loading, setLoading] = useState(false)
+
+  const activeLocale = useMemo(
+    () => normalizeLocale(router.locale, normalizeLocale(router.defaultLocale, defaultLocale)),
+    [router.locale, router.defaultLocale]
   )
+
+  if (i18n.locale !== activeLocale) {
+    i18n.activate(activeLocale)
+  }
 
   useEffect(() => {
-    const nextLocale = (router.locale as Locale) || (router.defaultLocale as Locale) || defaultLocale
-    setLocaleState(nextLocale)
-  }, [router.locale, router.defaultLocale])
+    if (!router.events) return
+    const handleFinished = () => setLoading(false)
+    router.events.on('routeChangeComplete', handleFinished)
+    router.events.on('routeChangeError', handleFinished)
+    return () => {
+      router.events.off('routeChangeComplete', handleFinished)
+      router.events.off('routeChangeError', handleFinished)
+    }
+  }, [router.events])
 
   const setLocale = useCallback(
-    (next: Locale) => {
-      setLocaleState(next)
-      if (typeof window !== 'undefined') {
-        router.push(router.pathname, router.asPath, { locale: next })
+    async (next: Locale) => {
+      const target = normalizeLocale(next, defaultLocale)
+      if (target === activeLocale) return
+
+      if (typeof document !== 'undefined') {
+        document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000`
       }
+
+      const catalog = catalogs[target]
+      if (!i18n.availableLocales.includes(target)) {
+        i18n.load(target, catalog)
+      } else if (!i18n.messages?.[target]) {
+        i18n.load(target, catalog)
+      }
+
+      i18n.activate(target)
+      setLoading(true)
+      await router.push(router.pathname, router.asPath, { locale: target, scroll: false })
     },
-    [router]
+    [activeLocale, router]
   )
 
-  const t = useCallback(
-    (id: string, options?: TranslateOptions) => translate(locale, id, options),
-    [locale]
-  )
-
-  const value = useMemo<I18nContextValue>(
+  const contextValue = useMemo<LocaleContextValue>(
     () => ({
-      locale,
+      locale: activeLocale,
       setLocale,
-      t,
+      loading,
     }),
-    [locale, setLocale, t]
+    [activeLocale, loading, setLocale]
   )
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
+  return (
+    <LocaleContext.Provider value={contextValue}>
+      <LinguiProvider i18n={i18n}>{children}</LinguiProvider>
+    </LocaleContext.Provider>
+  )
 }
 
-export const useI18n = () => {
-  const ctx = useContext(I18nContext)
+export const useLocale = () => {
+  const ctx = useContext(LocaleContext)
   if (!ctx) {
-    throw new Error('useI18n must be used within an I18nProvider')
+    throw new Error('useLocale must be used inside an I18nProvider')
   }
   return ctx
 }
 
-export const useLingui = () => {
-  const { locale, setLocale, t } = useI18n()
-  const i18nApi = useMemo(
-    () => ({
-      locale,
-      _: (id: string, values?: Record<string, unknown>) => t(id, { values }),
-    }),
-    [locale, t]
-  )
-
-  return { i18n: i18nApi, locale, setLocale }
-}
-
-type TransProps = {
-  id: string
-  components?: ReactNode[]
-  values?: Record<string, unknown>
-}
-
-export const Trans = ({ id, components = [], values }: TransProps) => {
-  const { locale } = useI18n()
-  const content = translate(locale, id, { components, values })
-  return <>{content}</>
-}
-
-export default I18nProvider
+export { Trans, useLingui } from '@lingui/react'

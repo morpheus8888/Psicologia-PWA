@@ -300,7 +300,10 @@ const AdminPanel = () => {
 
   const handleDeleteUser = async () => {
     if (!token || !selectedUserId) return
-    if (!confirm(i18n._('Are you sure you want to delete this user? This action cannot be undone.'))) {
+    const confirmMessage = i18n._(
+      'Are you sure you want to delete this user? This action cannot be undone.'
+    )
+    if (!confirm(typeof confirmMessage === 'string' ? confirmMessage : String(confirmMessage))) {
       return
     }
     setDeletingUser(true)

@@ -1,0 +1,1207 @@
+msgid ""
+msgstr ""
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Story"
+msgstr "Storia"
+
+
+msgid "Recipes"
+msgstr "Ricette"
+
+
+msgid "Admin Panel"
+msgstr "Pannello Admin"
+
+
+msgid "List all accounts"
+msgstr "Mostra tutti gli utenti"
+
+
+msgid "Hide account list"
+msgstr "Nascondi elenco utenti"
+
+
+msgid "All accounts"
+msgstr "Tutti gli account"
+
+
+msgid "No accounts available"
+msgstr "Nessun account disponibile"
+
+
+msgid "Active Administrators"
+msgstr "Amministratori attivi"
+
+
+msgid "No administrators found"
+msgstr "Nessun amministratore presente"
+
+
+msgid "Admin"
+msgstr "Admin"
+
+
+msgid "Who can read my diary?"
+msgstr "Chi può leggere il mio diario?"
+
+
+msgid "Choose who can access your journal entries."
+msgstr "Scegli chi può accedere al tuo diario."
+
+
+msgid "Only me"
+msgstr "Solo io"
+
+
+msgid "Everyone"
+msgstr "Tutti"
+
+
+msgid "Professionals only"
+msgstr "Solo professionisti"
+
+
+msgid "Saving preference..."
+msgstr "Salvataggio preferenza..."
+
+
+msgid "Loading diary..."
+msgstr "Caricamento diario..."
+
+
+msgid "View diary"
+msgstr "Vedi diario"
+
+
+msgid "Send message"
+msgstr "Invia messaggio"
+
+
+msgid "Close message"
+msgstr "Chiudi messaggio"
+
+
+msgid "Reset password"
+msgstr "Reimposta password"
+
+
+msgid "Close password form"
+msgstr "Chiudi modulo password"
+
+
+msgid "Delete user"
+msgstr "Elimina utente"
+
+
+msgid "Deleting..."
+msgstr "Eliminazione in corso..."
+
+
+msgid "Cancel"
+msgstr "Annulla"
+
+
+msgid "Send"
+msgstr "Invia"
+
+
+msgid "Sending..."
+msgstr "Invio in corso..."
+
+
+msgid "Update"
+msgstr "Aggiorna"
+
+
+msgid "Latest diary entries"
+msgstr "Ultime voci del diario"
+
+
+msgid "No diary entries"
+msgstr "Nessuna voce di diario"
+
+
+msgid "No text provided"
+msgstr "Nessun testo disponibile"
+
+
+msgid "Total users"
+msgstr "Totale utenti"
+
+
+msgid "Administrators"
+msgstr "Amministratori"
+
+
+msgid "Professionals"
+msgstr "Professionisti"
+
+
+msgid "Clients"
+msgstr "Clienti"
+
+
+msgid "Gluten Free"
+msgstr "Senza glutine"
+
+
+msgid "Home"
+msgstr "Home"
+
+
+msgid "We grow a lot of rice."
+msgstr "Coltiviamo molto riso."
+
+
+msgid "You love rice, and so does the rest of the world. In the crop year 2008/2009, the milled rice production volume amounted to over <0>448 million tons</0> worldwide."
+msgstr "Ami il riso, come il resto del mondo. Nell'anno agricolo 2008/2009, la produzione mondiale di riso lavorato ha superato le <0>448 milioni di tonnellate</0>."
+
+
+msgid "Source"
+msgstr "Sorgente"
+
+
+msgid "Ingredients"
+msgstr "Ingredienti"
+
+
+msgid "Like any good recipe, we appreciate community offerings to cultivate a delicous dish."
+msgstr "Come in ogni buona ricetta, apprezziamo i contributi della comunità per preparare un piatto delizioso."
+
+
+msgid "Thanks to"
+msgstr "Grazie a"
+
+
+msgid "for high quality images"
+msgstr "per le immagini di alta qualità"
+
+
+msgid "for lovely icons"
+msgstr "per le icone graziose"
+
+
+msgid "\"I confess that when this all started, you were like a picture out of focus to me. And it took time for my eyes to adjust to you, to make sense of you, to really recognize you.\""
+msgstr "\"Confesso che quando tutto è iniziato, eri come un'immagine fuori fuoco per me. Ci è voluto tempo perché i miei occhi si abituassero a te, per capire chi fossi, per riconoscerti davvero.\""
+
+
+msgid "Vision"
+msgstr "Visione"
+
+
+msgid ", a two sentence story"
+msgstr ", una storia di due frasi"
+
+
+msgid "My profile"
+msgstr "Il mio profilo"
+
+
+msgid "Edit profile"
+msgstr "Modifica profilo"
+
+
+msgid "Inbox"
+msgstr "Messaggi"
+
+
+msgid "Help"
+msgstr "Aiuto"
+
+
+msgid "Logout"
+msgstr "Logout"
+
+
+msgid "Login"
+msgstr "Accedi"
+
+
+msgid "Language"
+msgstr "Lingua"
+
+
+msgid "Dark mode"
+msgstr "Modalità scura"
+
+
+msgid "Light mode"
+msgstr "Modalità chiara"
+
+
+msgid "Create Account"
+msgstr "Crea account"
+
+
+msgid "or use your email for registration"
+msgstr "oppure usa la tua email per registrarti"
+
+
+msgid "Name"
+msgstr "Nome"
+
+
+msgid "Email"
+msgstr "Email"
+
+
+msgid "Password"
+msgstr "Password"
+
+
+msgid "Sign Up"
+msgstr "Registrati"
+
+
+msgid "Sign in"
+msgstr "Accedi"
+
+
+msgid "or use your account"
+msgstr "oppure usa il tuo account"
+
+
+msgid "Forgot your password?"
+msgstr "Password dimenticata?"
+
+
+msgid "Sign In"
+msgstr "Accedi"
+
+
+msgid "Welcome Back!"
+msgstr "Bentornato!"
+
+
+msgid "To keep connected with us please login with your personal info"
+msgstr "Per restare connesso accedi con i tuoi dati personali"
+
+
+msgid "Hello, Friend!"
+msgstr "Ciao, Amico!"
+
+
+msgid "Enter your personal details and start journey with us"
+msgstr "Inserisci i tuoi dati personali e inizia il viaggio con noi"
+
+
+msgid "Scegli il tuo animale"
+msgstr "Scegli il tuo animale"
+
+
+msgid "Animale selezionato:"
+msgstr "Animale selezionato:"
+
+
+msgid "Tutti gli animali disponibili"
+msgstr "Tutti gli animali disponibili"
+
+
+msgid "Modifica Avatar"
+msgstr "Modifica Avatar"
+
+
+msgid "Salva Avatar"
+msgstr "Salva Avatar"
+
+
+msgid "Salvando..."
+msgstr "Salvando..."
+
+
+msgid "Annulla"
+msgstr "Annulla"
+
+
+msgid "Avatar aggiornato con successo!"
+msgstr "Avatar aggiornato con successo!"
+
+
+msgid "leone"
+msgstr "Leone"
+
+
+msgid "gatto"
+msgstr "Gatto"
+
+
+msgid "cane"
+msgstr "Cane"
+
+
+msgid "orso"
+msgstr "Orso"
+
+
+msgid "volpe"
+msgstr "Volpe"
+
+
+msgid "lupo"
+msgstr "Lupo"
+
+
+msgid "coniglio"
+msgstr "Coniglio"
+
+
+msgid "panda"
+msgstr "Panda"
+
+
+msgid "tigre"
+msgstr "Tigre"
+
+
+msgid "elefante"
+msgstr "Elefante"
+
+
+msgid "koala"
+msgstr "Koala"
+
+
+msgid "giraffa"
+msgstr "Giraffa"
+
+
+msgid "farfalla"
+msgstr "Farfalla"
+
+
+msgid "Phone"
+msgstr "Telefono"
+
+
+msgid "Edit Phone"
+msgstr "Modifica Telefono"
+
+
+msgid "Save Phone"
+msgstr "Salva Telefono"
+
+
+msgid "Edit Email"
+msgstr "Modifica Email"
+
+
+msgid "Save Email"
+msgstr "Salva Email"
+
+
+msgid "Edit Password"
+msgstr "Modifica Password"
+
+
+msgid "Save Password"
+msgstr "Salva Password"
+
+
+msgid "New Password"
+msgstr "Nuova Password"
+
+
+msgid "Confirm Password"
+msgstr "Conferma Password"
+
+
+msgid "Current Password"
+msgstr "Password Attuale"
+
+
+msgid "Diary"
+msgstr "Diario"
+
+
+msgid "My Personal Diary"
+msgstr "Il Mio Diario Personale"
+
+
+msgid "Welcome to your personal diary"
+msgstr "Benvenuto nel tuo diario personale"
+
+
+msgid "This is your private space to reflect and write about your daily experiences"
+msgstr "Questo è il tuo spazio privato per riflettere e scrivere delle tue esperienze quotidiane"
+
+
+msgid "Select a date from the calendar to view or write entries"
+msgstr "Seleziona una data dal calendario per visualizzare o scrivere le voci"
+
+
+msgid "Days with entries are highlighted"
+msgstr "I giorni con voci sono evidenziati"
+
+
+msgid "What did you do today?"
+msgstr "Cosa hai fatto oggi?"
+
+
+msgid "Do you remember what you planned to do yesterday?"
+msgstr "Ricordi cosa ti eri ripromesso di fare ieri?"
+
+
+msgid "What do you think you did wrong today?"
+msgstr "Cosa pensi di aver sbagliato oggi?"
+
+
+msgid "What made you happy today?"
+msgstr "Cosa ti ha reso felice oggi?"
+
+
+msgid "What would you like to improve tomorrow?"
+msgstr "Cosa vorresti migliorare domani?"
+
+
+msgid "I don't want to answer"
+msgstr "Non voglio rispondere"
+
+
+msgid "Next Question"
+msgstr "Prossima Domanda"
+
+
+msgid "Finish Entry"
+msgstr "Termina Voce"
+
+
+msgid "Save Entry"
+msgstr "Salva Voce"
+
+
+msgid "Today's Entry"
+msgstr "Voce di Oggi"
+
+
+msgid "Entry for"
+msgstr "Voce del"
+
+
+msgid "No entry for this date"
+msgstr "Nessuna voce per questa data"
+
+
+msgid "You can only edit today's entry"
+msgstr "Puoi modificare solo la voce di oggi"
+
+
+msgid "Free text editor"
+msgstr "Editor di testo libero"
+
+
+msgid "Rewrite with questions"
+msgstr "Riscrivi con domande"
+
+
+msgid "Edit with free editor"
+msgstr "Modifica con editor libero"
+
+
+msgid "Write freely your thoughts and reflections"
+msgstr "Scrivi liberamente i tuoi pensieri e riflessioni"
+
+
+msgid "How are you feeling right now?"
+msgstr "Come ti senti in questo momento?"
+
+
+msgid "What made you smile today?"
+msgstr "Cosa ti ha fatto sorridere oggi?"
+
+
+msgid "What challenged you today?"
+msgstr "Cosa ti ha messo alla prova oggi?"
+
+
+msgid "What are you grateful for today?"
+msgstr "Di cosa sei grato oggi?"
+
+
+msgid "What do you want to accomplish tomorrow?"
+msgstr "Cosa vuoi realizzare domani?"
+
+
+msgid "What did you learn today?"
+msgstr "Cosa hai imparato oggi?"
+
+
+msgid "What would you do differently today?"
+msgstr "Cosa faresti diversamente oggi?"
+
+
+msgid "What are you looking forward to?"
+msgstr "Cosa aspetti con ansia?"
+
+
+msgid "What frustrated you today?"
+msgstr "Cosa ti ha frustrato oggi?"
+
+
+msgid "How did you handle stress today?"
+msgstr "Come hai gestito lo stress oggi?"
+
+
+msgid "What emotions did you experience today?"
+msgstr "Quali emozioni hai provato oggi?"
+
+
+msgid "What calmed you down today?"
+msgstr "Cosa ti ha tranquillizzato oggi?"
+
+
+msgid "How did you step out of your comfort zone today?"
+msgstr "Come sei uscito dalla tua zona di comfort oggi?"
+
+
+msgid "What personal goal did you work on today?"
+msgstr "Su quale obiettivo personale hai lavorato oggi?"
+
+
+msgid "Who did you spend time with today?"
+msgstr "Con chi hai trascorso del tempo oggi?"
+
+
+msgid "How did you show kindness to someone today?"
+msgstr "Come hai mostrato gentilezza a qualcuno oggi?"
+
+
+msgid "What conversation had the biggest impact on you today?"
+msgstr "Quale conversazione ha avuto il maggior impatto su di te oggi?"
+
+
+msgid "How did you connect with others today?"
+msgstr "Come ti sei connesso con gli altri oggi?"
+
+
+msgid "Did you feel understood by someone today?"
+msgstr "Ti sei sentito compreso da qualcuno oggi?"
+
+
+msgid "What inspired you today?"
+msgstr "Cosa ti ha ispirato oggi?"
+
+
+msgid "What creative activity did you do today?"
+msgstr "Quale attività creativa hai fatto oggi?"
+
+
+msgid "What new idea came to you today?"
+msgstr "Quale nuova idea ti è venuta oggi?"
+
+
+msgid "What hobby or interest did you pursue today?"
+msgstr "Quale hobby o interesse hai coltivato oggi?"
+
+
+msgid "What beauty did you notice today?"
+msgstr "Quale bellezza hai notato oggi?"
+
+
+msgid "How did you take care of your body today?"
+msgstr "Come ti sei preso cura del tuo corpo oggi?"
+
+
+msgid "What did you eat that made you feel good?"
+msgstr "Cosa hai mangiato che ti ha fatto sentire bene?"
+
+
+msgid "How much did you sleep last night and how did it affect your day?"
+msgstr "Quanto hai dormito la notte scorsa e come ha influenzato la tua giornata?"
+
+
+msgid "What physical activity did you do today?"
+msgstr "Quale attività fisica hai fatto oggi?"
+
+
+msgid "How did you relax today?"
+msgstr "Come ti sei rilassato oggi?"
+
+
+msgid "What work task gave you the most satisfaction today?"
+msgstr "Quale compito lavorativo ti ha dato più soddisfazione oggi?"
+
+
+msgid "What was your biggest accomplishment today?"
+msgstr "Qual è stato il tuo più grande successo oggi?"
+
+
+msgid "How did you manage your time today?"
+msgstr "Come hai gestito il tuo tempo oggi?"
+
+
+msgid "What new skill did you develop today?"
+msgstr "Quale nuova abilità hai sviluppato oggi?"
+
+
+msgid "What challenge at work did you overcome today?"
+msgstr "Quale sfida al lavoro hai superato oggi?"
+
+
+msgid "What moment today were you most present?"
+msgstr "In quale momento oggi sei stato più presente?"
+
+
+msgid "What did you notice about your surroundings today?"
+msgstr "Cosa hai notato del tuo ambiente oggi?"
+
+
+msgid "How did you practice mindfulness today?"
+msgstr "Come hai praticato la consapevolezza oggi?"
+
+
+msgid "What sounds, smells, or textures stood out to you today?"
+msgstr "Quali suoni, odori o texture ti hanno colpito oggi?"
+
+
+msgid "When did you feel most at peace today?"
+msgstr "Quando ti sei sentito più in pace oggi?"
+
+
+msgid "How did you live according to your values today?"
+msgstr "Come hai vissuto secondo i tuoi valori oggi?"
+
+
+msgid "What gave your day meaning?"
+msgstr "Cosa ha dato significato alla tua giornata?"
+
+
+msgid "How did you make a difference today?"
+msgstr "Come hai fatto la differenza oggi?"
+
+
+msgid "What principle guided your decisions today?"
+msgstr "Quale principio ha guidato le tue decisioni oggi?"
+
+
+msgid "How did you honor what's important to you today?"
+msgstr "Come hai onorato ciò che è importante per te oggi?"
+
+
+msgid "What memory from the past came to mind today?"
+msgstr "Quale ricordo del passato ti è venuto in mente oggi?"
+
+
+msgid "What from today will you want to remember in the future?"
+msgstr "Cosa di oggi vorrai ricordare in futuro?"
+
+
+msgid "How did your past experience help you today?"
+msgstr "Come ti ha aiutato la tua esperienza passata oggi?"
+
+
+msgid "What tradition or ritual did you practice today?"
+msgstr "Quale tradizione o rituale hai praticato oggi?"
+
+
+msgid "What reminded you of your childhood today?"
+msgstr "Cosa ti ha ricordato la tua infanzia oggi?"
+
+
+msgid "What dream did you think about today?"
+msgstr "A quale sogno hai pensato oggi?"
+
+
+msgid "How did you work toward your future goals today?"
+msgstr "Come hai lavorato verso i tuoi obiettivi futuri oggi?"
+
+
+msgid "What possibility excited you today?"
+msgstr "Quale possibilità ti ha entusiasmato oggi?"
+
+
+msgid "What vision for your life became clearer today?"
+msgstr "Quale visione per la tua vita è diventata più chiara oggi?"
+
+
+msgid "What hope do you have for tomorrow?"
+msgstr "Quale speranza hai per domani?"
+
+
+msgid "What obstacle did you face and how did you handle it?"
+msgstr "Quale ostacolo hai affrontato e come lo hai gestito?"
+
+
+msgid "What helped you persevere through a difficult moment today?"
+msgstr "Cosa ti ha aiutato a perseverare in un momento difficile oggi?"
+
+
+msgid "How did you show courage today?"
+msgstr "Come hai mostrato coraggio oggi?"
+
+
+msgid "What strength did you discover in yourself today?"
+msgstr "Quale forza hai scoperto in te stesso oggi?"
+
+
+msgid "How did you bounce back from a setback today?"
+msgstr "Come ti sei ripreso da una battuta d'arresto oggi?"
+
+
+msgid "What gave you a sense of wonder today?"
+msgstr "Cosa ti ha dato un senso di meraviglia oggi?"
+
+
+msgid "How did you connect with something larger than yourself today?"
+msgstr "Come ti sei connesso con qualcosa di più grande di te oggi?"
+
+
+msgid "What question about life crossed your mind today?"
+msgstr "Quale domanda sulla vita ti è passata per la mente oggi?"
+
+
+msgid "What moment felt sacred or special today?"
+msgstr "Quale momento ti è sembrato sacro o speciale oggi?"
+
+
+msgid "How did you find meaning in ordinary moments today?"
+msgstr "Come hai trovato significato nei momenti ordinari oggi?"
+
+
+msgid "What changed in your perspective today?"
+msgstr "Cosa è cambiato nella tua prospettiva oggi?"
+
+
+msgid "How are you different today than you were yesterday?"
+msgstr "In che modo sei diverso oggi rispetto a ieri?"
+
+
+msgid "What pattern in your behavior did you notice today?"
+msgstr "Quale schema nel tuo comportamento hai notato oggi?"
+
+
+msgid "What feedback did you receive and how did you respond?"
+msgstr "Quale feedback hai ricevuto e come hai risposto?"
+
+
+msgid "What comfort zone did you step outside of today?"
+msgstr "Da quale zona di comfort sei uscito oggi?"
+
+
+msgid "What did you want to say but didn't today?"
+msgstr "Cosa volevi dire ma non hai detto oggi?"
+
+
+msgid "How did you express yourself authentically today?"
+msgstr "Come ti sei espresso autenticamente oggi?"
+
+
+msgid "What conversation do you wish you could have had today?"
+msgstr "Quale conversazione avresti voluto avere oggi?"
+
+
+msgid "How did you listen deeply to someone today?"
+msgstr "Come hai ascoltato profondamente qualcuno oggi?"
+
+
+msgid "What truth about yourself did you acknowledge today?"
+msgstr "Quale verità su te stesso hai riconosciuto oggi?"
+
+
+msgid "How did your environment affect your mood today?"
+msgstr "Come ha influenzato il tuo umore l'ambiente oggi?"
+
+
+msgid "What space brought you comfort today?"
+msgstr "Quale spazio ti ha portato conforto oggi?"
+
+
+msgid "How did nature impact you today?"
+msgstr "Come ti ha influenzato la natura oggi?"
+
+
+msgid "What in your surroundings would you like to change?"
+msgstr "Cosa del tuo ambiente vorresti cambiare?"
+
+
+msgid "Where did you feel most like yourself today?"
+msgstr "Dove ti sei sentito più te stesso oggi?"
+
+
+msgid "How did you spend your free time today?"
+msgstr "Come hai trascorso il tuo tempo libero oggi?"
+
+
+msgid "What moment felt rushed and what felt unhurried today?"
+msgstr "Quale momento ti è sembrato affrettato e quale tranquillo oggi?"
+
+
+msgid "How did you balance work and rest today?"
+msgstr "Come hai bilanciato lavoro e riposo oggi?"
+
+
+msgid "What rhythm felt natural to you today?"
+msgstr "Quale ritmo ti è sembrato naturale oggi?"
+
+
+msgid "When did time seem to stand still or fly by today?"
+msgstr "Quando il tempo è sembrato fermarsi o volare oggi?"
+
+
+msgid "What did your intuition tell you today?"
+msgstr "Cosa ti ha detto la tua intuizione oggi?"
+
+
+msgid "What wisdom did you gain from today's experiences?"
+msgstr "Quale saggezza hai ottenuto dalle esperienze di oggi?"
+
+
+msgid "What pattern did you recognize in your life today?"
+msgstr "Quale schema hai riconosciuto nella tua vita oggi?"
+
+
+msgid "What truth became clear to you today?"
+msgstr "Quale verità ti è diventata chiara oggi?"
+
+
+msgid "What insight surprised you today?"
+msgstr "Quale intuizione ti ha sorpreso oggi?"
+
+
+msgid "Happy"
+msgstr "Felice"
+
+
+msgid "Sad"
+msgstr "Triste"
+
+
+msgid "Angry"
+msgstr "Arrabbiato"
+
+
+msgid "Fear"
+msgstr "Paura"
+
+
+msgid "Surprise"
+msgstr "Sorpresa"
+
+
+msgid "Disgust"
+msgstr "Disgusto"
+
+
+msgid "Profile menu"
+msgstr "Menu profilo"
+
+
+msgid "How do you feel today?"
+msgstr "Come ti senti oggi?"
+
+
+msgid "Select the emoji that best represents how you feel today:"
+msgstr "Seleziona l'emoticon che rappresenta meglio come ti senti oggi:"
+
+
+msgid "Avatar updated successfully!"
+msgstr "Avatar aggiornato con successo!"
+
+
+msgid "Phone updated successfully"
+msgstr "Telefono aggiornato con successo"
+
+
+msgid "Email updated successfully"
+msgstr "Email aggiornata con successo"
+
+
+msgid "Passwords do not match"
+msgstr "Le password non coincidono"
+
+
+msgid "Password must be at least 6 characters"
+msgstr "La password deve essere di almeno 6 caratteri"
+
+
+msgid "Diary password must be at least 8 characters"
+msgstr "La password del diario deve avere almeno 8 caratteri"
+
+
+msgid "Diary password updated successfully"
+msgstr "Password del diario aggiornata con successo"
+
+
+msgid "Current diary password"
+msgstr "Password attuale del diario"
+
+
+msgid "New diary password (min 8 characters)"
+msgstr "Nuova password del diario (min 8 caratteri)"
+
+
+msgid "Confirm diary password"
+msgstr "Conferma password del diario"
+
+
+msgid "Set password"
+msgstr "Imposta password"
+
+
+msgid "Diary entries are encrypted per account. Keep this password safe: without it you cannot recover past notes."
+msgstr "Le voci del diario sono cifrate per account. Conserva questa password con cura: senza di essa non potrai recuperare le note precedenti."
+
+
+msgid "Provide both title and message"
+msgstr "Inserisci sia il titolo sia il contenuto"
+
+
+msgid "Question {current} of {total}"
+msgstr "Domanda {current} di {total}"
+
+
+msgid "Please write an answer or skip the question"
+msgstr "Scrivi una risposta oppure salta la domanda"
+
+
+msgid "Unlock your diary before saving an entry"
+msgstr "Sblocca il tuo diario prima di salvare una voce"
+
+
+msgid "Diary entry saved!"
+msgstr "Voce del diario salvata!"
+
+
+msgid "Enter your diary password to continue"
+msgstr "Inserisci la password del diario per continuare"
+
+
+msgid "Unlock diary"
+msgstr "Sblocca diario"
+
+
+msgid "Unlocking..."
+msgstr "Sblocco in corso..."
+
+
+msgid "Unlock"
+msgstr "Sblocca"
+
+
+msgid "Lock diary again"
+msgstr "Blocca di nuovo il diario"
+
+
+msgid "Enter your diary password to unlock entries."
+msgstr "Inserisci la password del diario per sbloccare le voci."
+
+
+msgid "Protect your diary first"
+msgstr "Proteggi prima il tuo diario"
+
+
+msgid "Set a dedicated diary password in the profile settings to unlock, read and write your journal."
+msgstr "Imposta una password dedicata al diario nelle impostazioni del profilo per sbloccarlo, leggerlo e scriverlo."
+
+
+msgid "Go to settings"
+msgstr "Vai alle impostazioni"
+
+
+msgid "The diary is not shared. Ask the user to change visibility to \"Everyone\" if needed."
+msgstr "Il diario non è condiviso. Chiedi all’utente di impostare la visibilità su \"Tutti\" se necessario."
+
+
+msgid "Refresh data"
+msgstr "Aggiorna dati"
+
+
+msgid "Send a private message"
+msgstr "Invia un messaggio privato"
+
+
+msgid "Diary visibility"
+msgstr "Visibilità diario"
+
+
+msgid "Send a message to every user"
+msgstr "Manda un messaggio a tutti gli utenti registrati"
+
+
+msgid "Broadcast to all accounts"
+msgstr "Messaggio a tutti gli account"
+
+
+msgid "Message content"
+msgstr "Contenuto del messaggio"
+
+
+msgid "Loading user details..."
+msgstr "Caricamento dettagli utente..."
+
+
+msgid "Select an account to inspect details."
+msgstr "Seleziona un account per visualizzare i dettagli."
+
+
+msgid "Pick an account from the list to open the detail panel."
+msgstr "Scegli un account dall’elenco per aprire il pannello dei dettagli."
+
+
+msgid "Account actions"
+msgstr "Azioni account"
+
+
+msgid "Role"
+msgstr "Ruolo"
+
+
+msgid "Administrator"
+msgstr "Amministratore"
+
+
+msgid "Professional"
+msgstr "Professionista"
+
+
+msgid "Client"
+msgstr "Cliente"
+
+
+msgid "New password"
+msgstr "Nuova password"
+
+
+msgid "Reset"
+msgstr "Reimposta"
+
+
+msgid "The new password must be at least 8 characters long"
+msgstr "La nuova password deve avere almeno 8 caratteri"
+
+
+msgid "Are you sure you want to delete this user? This action cannot be undone."
+msgstr "Sei sicuro di voler eliminare questo utente? L’azione è irreversibile."
+
+
+msgid "User removed"
+msgstr "Utente eliminato"
+
+
+msgid "Broadcast delivered to every user"
+msgstr "Messaggio inviato a tutti gli utenti"
+
+
+msgid "Blog articles"
+msgstr "Articoli del blog"
+
+
+msgid "Create article"
+msgstr "Crea articolo"
+
+
+msgid "Close editor"
+msgstr "Chiudi editor"
+
+
+msgid "Title"
+msgstr "Titolo"
+
+
+msgid "Slug"
+msgstr "Slug"
+
+
+msgid "Summary"
+msgstr "Sommario"
+
+
+msgid "Content"
+msgstr "Contenuto"
+
+
+msgid "Publish immediately"
+msgstr "Pubblica subito"
+
+
+msgid "Article title and content are required"
+msgstr "Titolo e contenuto dell’articolo sono obbligatori"
+
+
+msgid "Article saved"
+msgstr "Articolo salvato"
+
+
+msgid "Save"
+msgstr "Salva"
+
+
+msgid "No articles yet. Create one above."
+msgstr "Ancora nessun articolo. Creane uno qui sopra."
+
+
+msgid "Published"
+msgstr "Pubblicato"
+
+
+msgid "Draft"
+msgstr "Bozza"
+
+
+msgid "Edit"
+msgstr "Modifica"
+
+
+msgid "Delete"
+msgstr "Elimina"
+
+
+msgid "Are you sure you want to delete this article?"
+msgstr "Vuoi davvero eliminare questo articolo?"
+
+
+msgid "Saving..."
+msgstr "Salvataggio in corso..."
+
+
+msgid "Latest insights from the community"
+msgstr "Ultimi approfondimenti dalla community"
+
+
+msgid "Explore articles curated by the administrative team to support your wellbeing journey."
+msgstr "Esplora gli articoli curati dal team amministrativo per supportare il tuo percorso di benessere."
+
+
+msgid "The content database is not configured. Administrators can set DATABASE_URL to enable blog articles."
+msgstr "Il database dei contenuti non è configurato. Gli amministratori possono impostare DATABASE_URL per abilitare gli articoli del blog."
+
+
+msgid "No articles have been published yet. Check back soon!"
+msgstr "Non ci sono ancora articoli pubblicati. Torna presto!"
+
+
+msgid "Read article"
+msgstr "Leggi articolo"
+
+
+msgid "Published article"
+msgstr "Articolo pubblicato"
+
+
+msgid "The requested article is no longer available."
+msgstr "L’articolo richiesto non è più disponibile."
+
+
+msgid "This article cannot be loaded because the database connection is unavailable. Configure DATABASE_URL and redeploy to restore blog content."
+msgstr "Impossibile caricare questo articolo perché la connessione al database non è disponibile. Configura DATABASE_URL e ridistribuisci per ripristinare i contenuti del blog."
+
+
+msgid "Open messages"
+msgstr "Apri messaggi"
+
+
+msgid "You have one unread message"
+msgstr "Hai un messaggio non letto"
+
+
+msgid "You have {count} unread messages"
+msgstr "Hai {count} messaggi non letti"
+
+
+msgid "{count, plural, one {You have # unread message} other {You have # unread messages}}"
+msgstr "{count, plural, one {Hai # messaggio non letto} other {Hai # messaggi non letti}}"
+
+
+msgid "All caught up!"
+msgstr "Sei aggiornato!"

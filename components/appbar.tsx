@@ -1,26 +1,25 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans } from '@/lib/i18n'
+import { Trans } from '@lingui/macro'
 import ProfileMenu from '@/components/profile-menu'
 import { useAuth } from '@/lib/auth-context'
-
-const baseLinks = [
-        { id: 'Story', href: '/story' },
-        { id: 'Recipes', href: '/recipes' },
-]
-
-const adminLink = { id: 'Admin Panel', href: '/admin' }
 
 const Appbar = () => {
        const router = useRouter()
        const { user } = useAuth()
 
        const links = useMemo(() => {
+               const base = [
+                       { href: '/story', label: <Trans>Story</Trans> },
+                       { href: '/recipes', label: <Trans>Recipes</Trans> },
+               ]
+
                if (user?.role === 'ADMIN' || user?.isAdmin) {
-                       return [...baseLinks, adminLink]
+                       base.push({ href: '/admin', label: <Trans>Admin Panel</Trans> })
                }
-               return baseLinks
+
+               return base
        }, [user?.role, user?.isAdmin])
 
 	return (
@@ -34,9 +33,9 @@ const Appbar = () => {
 					<nav className='flex items-center space-x-6'>
 						<div className='hidden sm:block'>
 							<div className='flex items-center space-x-6'>
-                                                                {links.map(({ id, href }) => (
+                                                {links.map(({ label, href }) => (
                                                                         <Link
-                                                                               key={id}
+                                                                               key={href}
                                                                                href={href}
                                                                                className={`text-sm ${
                                                                                router.pathname === href
@@ -44,7 +43,7 @@ const Appbar = () => {
                                                                                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50'
                                                                                }`}
                                                                         >
-                                                                               <Trans id={id} />
+                                                                               {label}
                                                                         </Link>
                                                                 ))}
                                                         </div>

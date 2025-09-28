@@ -1,12 +1,13 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Trans } from '@/lib/i18n'
+import { t } from '@lingui/macro'
+import { useLingui } from '@lingui/react'
 import { useAuth } from '@/lib/auth-context'
 
 const baseLinks = [
         {
-                id: 'Home',
+                label: t`Home`,
                 href: '/',
                 icon: (
 			<svg
@@ -22,9 +23,9 @@ const baseLinks = [
 				/>
 			</svg>
 		),
-	},
+        },
         {
-                id: 'Story',
+                label: t`Story`,
                 href: '/story',
                 icon: (
 			<svg
@@ -40,9 +41,9 @@ const baseLinks = [
 				/>
 			</svg>
 		),
-	},
+        },
         {
-                id: 'Recipes',
+                label: t`Recipes`,
                 href: '/recipes',
                 icon: (
 			<svg
@@ -62,7 +63,7 @@ const baseLinks = [
 ]
 
 const adminLink = {
-        id: 'Admin Panel',
+        label: t`Admin Panel`,
         href: '/admin',
         icon: (
 		<svg
@@ -84,6 +85,7 @@ const adminLink = {
 const BottomNav = () => {
 	const router = useRouter()
 	const { user } = useAuth()
+        const { i18n } = useLingui()
 
 	const links = useMemo(() => {
 		const isAdmin = user?.role === 'ADMIN' || user?.isAdmin
@@ -94,10 +96,10 @@ const BottomNav = () => {
 		<div className='sm:hidden'>
 			<nav className='fixed bottom-0 w-full border-t bg-zinc-100 pb-safe dark:border-zinc-800 dark:bg-zinc-900'>
 				<div className='mx-auto flex h-16 max-w-md items-center justify-around px-6'>
-                                        {links.map(({ href, id, icon }) => (
-                                                <Link
-                                                        key={id}
-                                                        href={href}
+				{links.map(({ href, label, icon }) => (
+					<Link
+						key={href}
+						href={href}
                                                         className={`flex h-full w-full flex-col items-center justify-center space-y-1 ${
                                                                 router.pathname === href
 									? 'text-indigo-500 dark:text-indigo-400'
@@ -105,11 +107,9 @@ const BottomNav = () => {
 							}`}
 						>
 							{icon}
-                                                        <span className='text-xs text-zinc-600 dark:text-zinc-400'>
-                                                                <Trans id={id} />
-                                                        </span>
-                                                </Link>
-                                        ))}
+						<span className='text-xs text-zinc-600 dark:text-zinc-400'>{i18n._(label)}</span>
+					</Link>
+				))}
 				</div>
 			</nav>
 		</div>

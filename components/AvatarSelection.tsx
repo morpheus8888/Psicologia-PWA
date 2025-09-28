@@ -1,10 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Trans, useLingui } from '@/lib/i18n'
+import { Trans } from '@lingui/macro'
+import { useLingui } from '@lingui/react'
 
 import UserAvatar from '@/components/user-avatar'
 import { avatarOptions, avatarIds } from '@/lib/avatar-options'
+import { animalMessages, AnimalMessageKey } from '@/lib/i18n/animals'
 
 interface AvatarSelectionProps {
   currentAvatar: string
@@ -29,11 +31,11 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
     <div className='space-y-6'>
       <header className='space-y-2 text-center'>
         <h2 className='text-xl font-semibold text-zinc-900 dark:text-zinc-100'>
-          <Trans id='Scegli il tuo animale' />
+          <Trans>Scegli il tuo animale</Trans>
         </h2>
         <p className='text-sm text-zinc-600 dark:text-zinc-400'>
-          <Trans id='Animale selezionato:' />{' '}
-          <strong>{i18n._(selectedAnimal)}</strong>
+          <Trans>Animale selezionato:</Trans>{' '}
+          <strong>{i18n._(animalMessages[selectedAnimal as AnimalMessageKey])}</strong>
         </p>
       </header>
 
@@ -52,7 +54,9 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
               type='button'
             >
               <UserAvatar animal={id} size='md' />
-              <span className='text-sm font-medium text-zinc-700 dark:text-zinc-100'>{i18n._(id)}</span>
+              <span className='text-sm font-medium text-zinc-700 dark:text-zinc-100'>
+                {i18n._(animalMessages[id as AnimalMessageKey])}
+              </span>
             </button>
           )
         })}
@@ -65,7 +69,7 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
           className='rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-800 dark:border-zinc-700 dark:text-zinc-300'
           type='button'
         >
-          <Trans id='Annulla' />
+          <Trans>Annulla</Trans>
         </button>
         <button
           onClick={handleSaveClick}
@@ -73,7 +77,7 @@ export default function AvatarSelection({ currentAvatar, onSave, onCancel }: Ava
           className='rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:opacity-60'
           type='button'
         >
-          {isSaving ? <Trans id='Salvando...' /> : <Trans id='Salva Avatar' />}
+          {isSaving ? <Trans>Salvando...</Trans> : <Trans>Salva Avatar</Trans>}
         </button>
       </div>
     </div>
