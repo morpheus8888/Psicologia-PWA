@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 import { useRouter } from 'next/router'
-import { i18n } from '@lingui/core'
+import { i18n, defineMessage, MessageDescriptor } from '@lingui/core'
 import { I18nProvider as LinguiProvider } from '@lingui/react'
 import { messages as enCatalog } from '@/locales/en/messages'
 import { messages as itCatalog } from '@/locales/it/messages'
@@ -138,4 +138,10 @@ export const useLocale = () => {
   return ctx
 }
 
+type TranslateValues = Parameters<typeof i18n._>[1]
+
+export const translate = (message: MessageDescriptor | string, values?: TranslateValues) =>
+  typeof message === 'string' ? i18n._(message, values) : i18n._(message, values)
+
 export { Trans, useLingui } from '@lingui/react'
+export { defineMessage }

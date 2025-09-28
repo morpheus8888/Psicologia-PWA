@@ -1,14 +1,13 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { t } from '@lingui/macro'
-import { useLingui } from '@lingui/react'
+import { useLingui, defineMessage } from '@/lib/i18n'
 import { useAuth } from '@/lib/auth-context'
 
 const baseLinks = [
-        {
-                label: t`Home`,
-                href: '/',
+	{
+		label: defineMessage({ id: 'Home' }),
+		href: '/',
                 icon: (
 			<svg
 				viewBox='0 0 15 15'
@@ -24,9 +23,9 @@ const baseLinks = [
 			</svg>
 		),
         },
-        {
-                label: t`Story`,
-                href: '/story',
+	{
+		label: defineMessage({ id: 'Story' }),
+		href: '/story',
                 icon: (
 			<svg
 				viewBox='0 0 15 15'
@@ -42,9 +41,9 @@ const baseLinks = [
 			</svg>
 		),
         },
-        {
-                label: t`Recipes`,
-                href: '/recipes',
+	{
+		label: defineMessage({ id: 'Recipes' }),
+		href: '/recipes',
                 icon: (
 			<svg
 				viewBox='0 0 15 15'
@@ -63,7 +62,7 @@ const baseLinks = [
 ]
 
 const adminLink = {
-        label: t`Admin Panel`,
+	label: defineMessage({ id: 'Admin Panel' }),
         href: '/admin',
         icon: (
 		<svg

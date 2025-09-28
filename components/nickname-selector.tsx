@@ -1,5 +1,4 @@
-import { Trans } from '@lingui/macro'
-import { useLingui } from '@lingui/react'
+import { Trans, useLingui } from '@/lib/i18n'
 
 import UserAvatar from '@/components/user-avatar'
 import { avatarOptions, avatarIds } from '@/lib/avatar-options'
@@ -18,7 +17,7 @@ export default function NicknameSelector({ selectedAnimal, onAnimalSelect, class
   return (
     <div className={`nickname-selector ${className}`}>
       <h3 className="text-lg font-semibold mb-4 text-center text-zinc-800 dark:text-zinc-200">
-        <Trans>Scegli il tuo animale</Trans>
+        <Trans id='Scegli il tuo animale' />
       </h3>
       <div className="grid grid-cols-5 gap-3 max-w-md mx-auto">
         {avatarOptions.map(({ id }) => (
@@ -34,7 +33,7 @@ export default function NicknameSelector({ selectedAnimal, onAnimalSelect, class
         ))}
       </div>
       <p className="text-center mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-        <Trans>Animale selezionato:</Trans>{' '}
+        <Trans id='Animale selezionato:' />{' '}
         <strong>{i18n._(animalMessages[safeSelected as AnimalMessageKey])}</strong>
       </p>
     </div>

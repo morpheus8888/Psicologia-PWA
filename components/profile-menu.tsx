@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import { Trans, t } from '@lingui/macro'
-import { useLingui } from '@lingui/react'
+import { Trans, useLingui, defineMessage } from '@/lib/i18n'
 import LanguageToggle from '@/components/language-toggle'
 import ThemeToggle from '@/components/theme-toggle'
 import { useAuth } from '@/lib/auth-context'
 import UserAvatar from '@/components/user-avatar'
+
+const profileMenuLabel = defineMessage({ id: 'Profile menu' })
 
 const iconClass = 'mr-2 h-4 w-4 opacity-70 group-hover:opacity-100'
 
@@ -15,7 +16,7 @@ const ProfileMenu = () => {
   const { i18n } = useLingui()
   const isAdmin = !!user && (user.role === 'ADMIN' || user.isAdmin)
 
-  const ariaLabel = i18n._(t`Profile menu`)
+  const ariaLabel = i18n._(profileMenuLabel)
   const ariaLabelText = typeof ariaLabel === 'string' ? ariaLabel : 'Profile menu'
 
   const toggle = () => setOpen((o) => !o)
@@ -61,7 +62,7 @@ const ProfileMenu = () => {
                       <path d='M5 20a7 7 0 1114 0H5z' stroke='currentColor' />
                       <circle cx='12' cy='7' r='3' stroke='currentColor' />
                     </svg>
-                    <Trans>Profile</Trans>
+                    <Trans id='Profile' />
                   </Link>
                 </li>
                 <li>
@@ -69,7 +70,7 @@ const ProfileMenu = () => {
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                       <path d='M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09A1.65 1.65 0 0010 3.09V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51h.09a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z' stroke='currentColor' />
                     </svg>
-                    <Trans>Settings</Trans>
+                    <Trans id='Settings' />
                   </Link>
                 </li>
                 <li>
@@ -77,7 +78,7 @@ const ProfileMenu = () => {
                     <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                       <path d='M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z' stroke='currentColor' />
                     </svg>
-                    <Trans>Diary</Trans>
+                    <Trans id='Diary' />
                   </Link>
                 </li>
                 <li>
@@ -86,7 +87,7 @@ const ProfileMenu = () => {
                       <path d='M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' stroke='currentColor' />
                     </svg>
                     <span className='flex items-center gap-2'>
-                      <Trans>Messages</Trans>
+                      <Trans id='Messages' />
                       {unreadCount > 0 && (
                         <span className='rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white'>
                           {unreadCount > 99 ? '99+' : unreadCount}
@@ -101,7 +102,7 @@ const ProfileMenu = () => {
                       <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className={iconClass}>
                         <path d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' stroke='currentColor' />
                       </svg>
-                      <Trans>Admin Panel</Trans>
+                      <Trans id='Admin Panel' />
                     </Link>
                   </li>
                 )}
@@ -111,7 +112,7 @@ const ProfileMenu = () => {
                       <path d='M16 17l5-5m0 0l-5-5m5 5H9' stroke='currentColor' />
                       <path d='M13 22H5a2 2 0 01-2-2V4a2 2 0 012-2h8' stroke='currentColor' />
                     </svg>
-                    <Trans>Logout</Trans>
+                    <Trans id='Logout' />
                   </button>
                 </li>
               </>
@@ -131,7 +132,7 @@ const ProfileMenu = () => {
                     <path d='M8 7l-5 5m0 0l5 5m-5-5h12' stroke='currentColor' />
                     <path d='M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-2' stroke='currentColor' />
                   </svg>
-                  <Trans>Login</Trans>
+                  <Trans id='Login' />
                 </Link>
               </li>
             )}

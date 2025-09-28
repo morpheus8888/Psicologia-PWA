@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { Trans } from '@lingui/macro'
+import { Trans } from '@/lib/i18n'
 
 interface Props {
   onChange?: () => void
@@ -50,7 +50,7 @@ const ThemeToggle = ({ onChange }: Props) => {
             />
           </svg>
           <span className='sr-only'>
-            <Trans>Light mode</Trans>
+            <Trans id='Light mode' />
           </span>
         </span>
         <span className='off flex items-center justify-center'>
@@ -69,7 +69,7 @@ const ThemeToggle = ({ onChange }: Props) => {
             />
           </svg>
           <span className='sr-only'>
-            <Trans>Dark mode</Trans>
+            <Trans id='Dark mode' />
           </span>
         </span>
       </div>

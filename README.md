@@ -68,6 +68,7 @@ Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che ut
 - Per usare il toggle lingua importa `useLingui`/`Trans` da `@/lib/i18n`.
 - Le route Next.js mantengono il locale sincronizzato con il contesto, quindi il deploy su Vercel funziona senza passaggi extra.
 - La configurazione di Lingui è in `lingui.config.js` (file JavaScript per evitare errori TypeScript durante i build su Vercel).
+- Per le stringhe dinamiche usa `defineMessage` + `i18n._(...)` oppure `<Trans id='...' />`; non è più necessario (né supportato) `@lingui/macro`.
 
 ## Deployment su Vercel
 

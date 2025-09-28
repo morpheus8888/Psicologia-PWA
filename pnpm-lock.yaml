@@ -11,9 +11,6 @@ importers:
       '@lingui/core':
         specifier: ^5.3.2
         version: 5.3.2
-      '@lingui/macro':
-        specifier: ^5.3.2
-        version: 5.3.2(react@18.2.0)
       '@lingui/react':
         specifier: ^5.3.2
         version: 5.3.2(react@18.2.0)
@@ -753,19 +750,6 @@ packages:
         optional: true
       babel-plugin-macros:
         optional: true
-
-  '@lingui/macro@5.3.2':
-    resolution: {integrity: sha512-K+G24xhbWFaYVxJRz+I8qXUISfXJ+T9BN+b9RMR+0pwsIshK4TWJNti8WiG8cnPxQmMeQ2waZqCJUPVObGbGvw==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      '@lingui/babel-plugin-lingui-macro': 5.3.2
-      babel-plugin-macros: 2 || 3
-    peerDependenciesMeta:
-      '@lingui/babel-plugin-lingui-macro':
-        optional: true
-      babel-plugin-macros:
-        optional: true
-
   '@lingui/message-utils@5.3.2':
     resolution: {integrity: sha512-YUBrXApa3kxcL9oimJdw7oiAJ2ESkI24uyTMaRp9XYNaWgWqpEgoxC5bDN2Fwnk5THFjUp/l64kAD5LJGQhJxQ==}
     engines: {node: '>=20.0.0'}
@@ -4018,14 +4002,6 @@ snapshots:
       '@babel/runtime': 7.23.1
       '@lingui/message-utils': 5.3.2
       unraw: 3.0.0
-
-  '@lingui/macro@5.3.2(react@18.2.0)':
-    dependencies:
-      '@lingui/core': 5.3.2
-      '@lingui/react': 5.3.2(react@18.2.0)
-    transitivePeerDependencies:
-      - react
-
   '@lingui/message-utils@5.3.2':
     dependencies:
       '@messageformat/parser': 5.1.1
