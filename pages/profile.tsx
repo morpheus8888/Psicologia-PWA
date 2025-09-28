@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import { Trans, useTranslations } from '@/lib/i18n'
+import { Trans, useTranslations, defineMessage } from '@/lib/i18n'
 import { resolveAnimalMessage, type AnimalMessageKey } from '@/lib/i18n/animals'
 
 import Page from '@/components/page'
@@ -11,15 +11,29 @@ import NicknameSelector from '@/components/nickname-selector'
 import { useAuth, DiaryVisibility } from '@/lib/auth-context'
 
 const tabs = [
-  { id: 'profile', label: 'Profile' },
-  { id: 'settings', label: 'Settings' },
+  { id: 'profile', label: defineMessage('Profile') },
+  { id: 'settings', label: defineMessage('Settings') },
 ] as const
 
-const DiaryVisibilityOptions: Array<{ value: DiaryVisibility; label: string; description: string }> = [
-  { value: 'PRIVATE', label: 'Only me', description: 'Diary entries stay encrypted and are accessible only to you.' },
-  { value: 'PUBLIC', label: 'Everyone', description: 'Entries marked public can be viewed by administrators and appear in compliance reporting.' },
-  { value: 'PROFESSIONALS', label: 'Professionals only', description: 'Licensed professionals attached to your account can review your diary.' },
-]
+const diaryVisibilityOptions = [
+  {
+    value: 'PRIVATE',
+    label: defineMessage('Only me'),
+    description: defineMessage('Diary entries stay encrypted and are accessible only to you.'),
+  },
+  {
+    value: 'PUBLIC',
+    label: defineMessage('Everyone'),
+    description: defineMessage(
+      'Entries marked public can be viewed by administrators and appear in compliance reporting.'
+    ),
+  },
+  {
+    value: 'PROFESSIONALS',
+    label: defineMessage('Professionals only'),
+    description: defineMessage('Licensed professionals attached to your account can review your diary.'),
+  },
+] as const
 
 const Profile = () => {
   const { user, token, isLoggedIn, updateUser } = useAuth()
@@ -296,7 +310,7 @@ const Profile = () => {
                     : 'text-zinc-600 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100'
                 }`}
               >
-                <Trans id={tab.label} />
+                {t(tab.label)}
               </button>
             ))}
           </div>
@@ -510,7 +524,7 @@ const Profile = () => {
               </p>
 
               <div className='mt-4 space-y-3'>
-                {DiaryVisibilityOptions.map((option) => (
+                {diaryVisibilityOptions.map((option) => (
                   <label
                     key={option.value}
                     className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors ${
@@ -531,10 +545,10 @@ const Profile = () => {
                       />
                       <div>
                         <p className='font-medium text-zinc-700 dark:text-zinc-200'>
-                          <Trans id={option.label} />
+                          {t(option.label)}
                         </p>
                         <p className='text-xs text-zinc-500 dark:text-zinc-400'>
-                          <Trans id={option.description} />
+                          {t(option.description)}
                         </p>
                       </div>
                     </div>

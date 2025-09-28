@@ -8,8 +8,9 @@
 - Data and schema live in `prisma/`; global assets sit in `public/` and `styles/`.
 
 ## Internationalization Duties
-- Never ship raw strings: use `useTranslations().t(...)` or `<Trans id='…' />`.
-- Replace any hard-coded wording or locale logic you touch; align dependent modules before merging.
+- Never ship raw strings: use `useTranslations().t(...)`, `<Trans id='…' />`, or `defineMessage(...)`.
+- When persisting ids in arrays/options, type them as `MessageKey` or `MessageDescriptor` (e.g., `defineMessage('Profile')`) so TypeScript catches mismatches.
+- Replace any hard-coded wording or locale logic you touch; align dependent modules before merging and update both catalogs immediately.
 - Prefer `Intl.DateTimeFormat`/`Intl.NumberFormat` with `i18n.locale` for dates, numbers, weekday labels, and placeholders.
 - Validate both locales via the language toggle or `/path?locale=en` before you sign off.
 
