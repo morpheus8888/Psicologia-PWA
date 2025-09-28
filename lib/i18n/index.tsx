@@ -105,11 +105,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const catalog = catalogs[target]
-      if (!i18n.availableLocales.includes(target)) {
-        i18n.load(target, catalog)
-      } else if (!i18n.messages?.[target]) {
-        i18n.load(target, catalog)
-      }
+      i18n.load(target, catalog)
 
       i18n.activate(target)
       setLoading(true)

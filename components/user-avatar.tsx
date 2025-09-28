@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 import { getAvatarGradient, isValidAvatar } from '@/lib/avatar-options'
 
 interface UserAvatarProps {
@@ -12,10 +14,10 @@ const sizeClasses: Record<NonNullable<UserAvatarProps['size']>, string> = {
   lg: 'h-28 w-28',
 }
 
-const imageScale: Record<NonNullable<UserAvatarProps['size']>, string> = {
-  sm: 'h-10 w-10',
-  md: 'h-14 w-14',
-  lg: 'h-20 w-20',
+const imageDimensions: Record<NonNullable<UserAvatarProps['size']>, number> = {
+  sm: 40,
+  md: 56,
+  lg: 80,
 }
 
 export default function UserAvatar({ animal, size = 'md', className = '' }: UserAvatarProps) {
@@ -35,11 +37,12 @@ export default function UserAvatar({ animal, size = 'md', className = '' }: User
   return (
     <span className={containerClass}>
       <span className='absolute inset-0 rounded-full bg-white/70 dark:bg-zinc-900/70 mix-blend-overlay' aria-hidden='true' />
-      <img
+      <Image
         src={`/images/animals/${avatarId}.svg`}
         alt={`Avatar ${avatarId}`}
-        className={`relative z-10 object-contain drop-shadow-lg ${imageScale[size]}`}
-        loading='lazy'
+        width={imageDimensions[size]}
+        height={imageDimensions[size]}
+        className='relative z-10 object-contain drop-shadow-lg'
       />
     </span>
   )

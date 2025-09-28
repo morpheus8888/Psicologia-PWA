@@ -6,4 +6,12 @@ module.exports = {
     locales: ['it', 'en'],
     defaultLocale: 'it',
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
 }
