@@ -26,11 +26,10 @@ b) Imposta almeno:
 ```
 DATABASE_URL="postgres://user:password@host:port/db"
 JWT_SECRET="string casuale lunga e complessa"
-DIARY_MASTER_KEY="chiave alfanumerica di almeno 32 caratteri"
 ```
 
 > ⚠️ **Obbligatorio:** `JWT_SECRET` deve essere valorizzata sia in locale sia sui progetti Vercel, altrimenti le API rifiutano login/aggiornamenti profilo.
-> 🔐 **Sicurezza diario:** `DIARY_MASTER_KEY` viene usata per derivare le chiavi di cifratura dei diari utente. Genera una stringa robusta di almeno 32 caratteri, conservala al sicuro e non condividerla.
+> 🔐 **Sicurezza diario:** le voci sono cifrate end-to-end con la password del diario impostata dall’utente. Il server conserva solo il ciphertext; se la password viene persa non è possibile recuperare i dati. Durante la fase di migrazione di vecchie voci è possibile lasciare configurato `DIARY_MASTER_KEY` per consentire al sistema di riconvertirle automaticamente, poi va rimosso.
 
 > 📝 **Preview senza DB:** Se `DATABASE_URL` non è impostata (es. su preview Vercel), l'applicazione resta navigabile ma il blog mostra un avviso e nessun articolo. Imposta la variabile prima di rilasciare ambienti destinati agli utenti.
 
@@ -75,10 +74,9 @@ Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che ut
 > Nota: prima di intervenire sui deploy consulta sempre i file nella cartella `vercel/` (es. `vercel/vercel-docs.md`, `vercel/vercel-rest-api.md`). Manteniamoli sincronizzati con ogni cambiamento rilevante.
 
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
-2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` (che include le migrazioni) e `scripts/run-migrations.js` come post-build (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
+2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, la catena `npm run postinstall` → `npm run prebuild` → `npm run build` (ossia `prisma generate` → `prisma migrate deploy` → `next build`).
    - ⚠️ Ricordati di aggiornare sempre `pnpm-lock.yaml` con `pnpm install --lockfile-only` ogni volta che modifichi le dipendenze, altrimenti la build fallisce.
-3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL`, `JWT_SECRET` **e** `DIARY_MASTER_KEY`.
-   - Usa la **stessa** `DIARY_MASTER_KEY` su tutti gli ambienti (locale, Preview, Production); se manca o cambia valore le API del diario restituiscono 500 `DIARY_MASTER_KEY non configurata sul server`.
+3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`. Mantieni temporaneamente `DIARY_MASTER_KEY` solo se devi migrare diari creati con la versione precedente.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.
 
 ## Tipologie di account
@@ -90,8 +88,10 @@ Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che ut
 
 ## Diario e privacy
 - Ogni utente deve impostare una **password del diario** (sezione `Profilo → Impostazioni`). Senza quella password non è possibile leggere o scrivere nuove voci.
-- Le voci vengono cifrate per-account usando `DIARY_MASTER_KEY` come chiave primaria + una chiave derivata per utente.
-- La visibilità può essere `Solo io`, `Solo professionisti`, `Tutti`. Solo in modalità `Tutti` gli amministratori possono consultare i diari, sempre in versione depurata/HTML sanitizzato.
+- Le voci vengono cifrate lato client usando la password del diario; il server memorizza unicamente il ciphertext.
+- La visibilità può essere `Solo io`, `Solo professionisti`, `Tutti` e controlla soltanto dove viene mostrata l'esistenza delle voci; il contenuto rimane leggibile esclusivamente dall'utente in possesso della password del diario.
+- Le voci create prima di questa modalità vengono migrate automaticamente alla prima apertura se `DIARY_MASTER_KEY` è ancora impostata; in caso contrario verranno segnalate all'utente e resteranno irrecuperabili finché non verranno risalvate manualmente con la nuova cifratura.
+- Quando la visibilità è `Tutti`, l'utente può condividere singole voci dal diario: il client invia una copia sanificata in chiaro che viene salvata separatamente e può essere ritirata in qualunque momento senza toccare il contenuto cifrato originale.
 - La password del diario non viene mai salvata in chiaro: la verifica avviene tramite hash + salt dedicati (PBKDF scrypt) memorizzati nel profilo.
 
 ## Blog amministrativo

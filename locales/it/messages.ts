@@ -331,7 +331,21 @@ export const messages = {
   'You have one unread message': 'Hai un messaggio non letto',
   'You have {count} unread messages': 'Hai {count} messaggi non letti',
   '{count, plural, one {You have # unread message} other {You have # unread messages}}': '{count, plural, one {Hai # messaggio non letto} other {Hai # messaggi non letti}}',
-  'All caught up!': 'Sei aggiornato!'
+  'All caught up!': 'Sei aggiornato!',
+  'Diary entry upgraded to the latest encryption.': 'Voce di diario aggiornata alla nuova cifratura.',
+  'This diary entry was saved with an older encryption method and cannot be decrypted until it is resaved.': 'Questa voce è stata salvata con un metodo di cifratura precedente e non può essere decifrata finché non viene risalvata.',
+  'Unable to decrypt this entry. Unlock the diary again and retry.': 'Impossibile decifrare questa voce. Sblocca nuovamente il diario e riprova.',
+  'Encryption setup is incomplete for this diary.': 'La configurazione di cifratura del diario non è completa.',
+  'Unable to encrypt the diary entry. Unlock the diary again.': 'Impossibile cifrare la voce del diario. Sblocca nuovamente il diario.',
+  'Share entry publicly': 'Condividi pubblicamente la voce',
+  'Stop sharing entry': 'Interrompi condivisione della voce',
+  'Sharing entry...': 'Condivisione in corso...',
+  'Removing share...': 'Rimozione della condivisione...',
+  'This entry is currently shared with everyone.': 'Questa voce è attualmente condivisa con tutti.',
+  'Diary entry is now publicly visible.': 'La voce del diario è ora visibile pubblicamente.',
+  'Diary entry sharing disabled.': 'Condivisione della voce disattivata.',
+  'Unable to share this entry right now.': 'Impossibile condividere questa voce in questo momento.',
+  'No shared diary entries yet.': 'Nessuna voce condivisa al momento.'
 } as const satisfies Record<MessageKey, string>
 
 export default messages

@@ -3,19 +3,40 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { Trans, useTranslations } from '@/lib/i18n'
 import type { MessageKey } from '@/locales/en/messages'
+import sanitizeHtml from 'sanitize-html'
 
 import Page from '@/components/page'
 import Section from '@/components/section'
 import { useAuth } from '@/lib/auth-context'
 import { getQuestionsForDate } from '@/lib/diary-questions'
+import {
+	decryptDiaryContent,
+	deriveEncryptionKey,
+	encryptDiaryContent,
+} from '@/lib/client/diary-crypto'
 
 const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false })
 
+const diarySanitizeOptions: sanitizeHtml.IOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    img: ['src', 'alt'],
+  },
+  allowedSchemes: ['data', 'http', 'https', 'mailto'],
+}
+
+const sanitizeDiaryContent = (value: string) => sanitizeHtml(value, diarySanitizeOptions)
+
 interface DiaryEntry {
   id: string
-  freeText: string | null
+  content: string | null
   mood: string | null
   date: string
+  ciphertext: string | null
+  requiresMigration: boolean
+  legacyPlaintextUnavailable?: boolean
+  publicContent: string | null
 }
 
 const emotions: Array<{ emoji: string; label: MessageKey }> = [
@@ -46,6 +67,11 @@ const Diary = () => {
   const [entryMoods, setEntryMoods] = useState<Record<string, string | null>>({})
   const [viewingEntry, setViewingEntry] = useState<DiaryEntry | null>(null)
   const [saving, setSaving] = useState(false)
+  const [encryptionSalt, setEncryptionSalt] = useState<string | null>(null)
+  const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null)
+  const [migrationBanner, setMigrationBanner] = useState<string | null>(null)
+  const [sharingEntry, setSharingEntry] = useState(false)
+  const [removingShare, setRemovingShare] = useState(false)
 
   const [diaryPassword, setDiaryPassword] = useState('')
   const [passwordValidated, setPasswordValidated] = useState(false)
@@ -122,9 +148,16 @@ const Diary = () => {
       throw new Error(data.error || t('Unable to unlock diary with the provided password'))
     }
 
-    const data = await res.json()
+    const data = (await res.json()) as {
+      dates: string[]
+      moods?: Record<string, string | null>
+      encryptionSalt?: string | null
+    }
     setEntryDates(data.dates)
     setEntryMoods(data.moods || {})
+    if (data.encryptionSalt) {
+      setEncryptionSalt(data.encryptionSalt)
+    }
     return data
   }
 
@@ -139,18 +172,139 @@ const Diary = () => {
           'x-diary-password': password,
         },
       })
-      if (res.ok) {
-        const data = await res.json()
-        setViewingEntry(data.entry)
-        if (data.entry?.freeText) {
-          setFreeText(data.entry.freeText)
-        }
-      } else {
+
+      if (!res.ok) {
         setViewingEntry(null)
+        setFreeText('')
+        return
       }
+
+      const data = (await res.json()) as {
+        entry: {
+          id: string
+          date: string
+          mood: string | null
+          ciphertext: string | null
+          legacyPlaintext: string | null
+          requiresMigration: boolean
+          publicText: string | null
+        } | null
+      }
+
+      if (!data.entry) {
+        setViewingEntry(null)
+        setFreeText('')
+        return
+      }
+
+      let resolvedContent: string | null = null
+      let storedCiphertext: string | null = data.entry.ciphertext
+      let requiresMigration = data.entry.requiresMigration
+      let legacyUnavailable = false
+      let migrated = false
+      let decryptionProblem = false
+
+      const sharedContent = data.entry.publicText ?? null
+
+      let workingKey = encryptionKey
+
+      const ensureKey = async () => {
+        if (workingKey) return workingKey
+        if (!encryptionSalt) return null
+        try {
+          const derived = await deriveEncryptionKey(password, encryptionSalt)
+          setEncryptionKey(derived)
+          workingKey = derived
+          return derived
+        } catch (deriveError) {
+          console.error('Unable to derive encryption key for diary entry', deriveError)
+          return null
+        }
+      }
+
+      if (!resolvedContent && sharedContent) {
+        resolvedContent = sharedContent
+      }
+
+      if (data.entry.ciphertext) {
+        const key = await ensureKey()
+        if (!key) {
+          decryptionProblem = true
+        } else {
+          try {
+            const decrypted = await decryptDiaryContent(key, data.entry.ciphertext)
+            resolvedContent = sanitizeDiaryContent(decrypted)
+          } catch (decryptError) {
+            console.error('Failed to decrypt diary entry', decryptError)
+            decryptionProblem = true
+          }
+        }
+      } else if (data.entry.requiresMigration) {
+        if (data.entry.legacyPlaintext) {
+          const sanitizedLegacy = sanitizeDiaryContent(data.entry.legacyPlaintext)
+          resolvedContent = sanitizedLegacy
+          const key = await ensureKey()
+          if (key) {
+            try {
+              const newCipher = await encryptDiaryContent(key, sanitizedLegacy)
+              const migrateRes = await fetch('/api/diary/save', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  date: dateStr,
+                  ciphertext: newCipher,
+                  mood: data.entry.mood || null,
+                  diaryPassword: password,
+                }),
+              })
+              if (migrateRes.ok) {
+                storedCiphertext = newCipher
+                requiresMigration = false
+                migrated = true
+              } else {
+                console.error('Failed to migrate diary entry', await migrateRes.text())
+              }
+            } catch (migrationError) {
+              console.error('Error during diary migration', migrationError)
+            }
+          } else {
+            legacyUnavailable = true
+          }
+        } else {
+          legacyUnavailable = true
+        }
+      }
+
+      if (migrated) {
+        setMigrationBanner(t('Diary entry upgraded to the latest encryption.'))
+      } else if (requiresMigration && legacyUnavailable) {
+        setMigrationBanner(
+          t('This diary entry was saved with an older encryption method and cannot be decrypted until it is resaved.')
+        )
+      } else if (decryptionProblem) {
+        setMigrationBanner(t('Unable to decrypt this entry. Unlock the diary again and retry.'))
+      } else {
+        setMigrationBanner(null)
+      }
+
+      setViewingEntry({
+        id: data.entry.id,
+        date: data.entry.date,
+        mood: data.entry.mood,
+        content: resolvedContent,
+        ciphertext: storedCiphertext,
+        requiresMigration,
+        legacyPlaintextUnavailable: legacyUnavailable,
+        publicContent: sharedContent,
+      })
+      setFreeText(resolvedContent || '')
     } catch (error) {
       console.error('Error loading diary entry:', error)
       setViewingEntry(null)
+      setFreeText('')
     }
   }
 
@@ -164,7 +318,12 @@ const Diary = () => {
 
     setIsVerifyingPassword(true)
     try {
-      await fetchEntryDates(password)
+      const data = await fetchEntryDates(password)
+      if (!data.encryptionSalt) {
+        throw new Error(t('Encryption setup is incomplete for this diary.'))
+      }
+      const key = await deriveEncryptionKey(password, data.encryptionSalt)
+      setEncryptionKey(key)
       sessionStorage.setItem('diaryPassword', password)
       setDiaryPassword(password)
       setPasswordValidated(true)
@@ -181,6 +340,8 @@ const Diary = () => {
       } else {
         setPasswordModalOpen(true)
       }
+      setEncryptionKey(null)
+      setEncryptionSalt(null)
       return false
     } finally {
       setIsVerifyingPassword(false)
@@ -202,6 +363,9 @@ const Diary = () => {
     setPasswordValidated(false)
     setViewingEntry(null)
     setPasswordModalOpen(true)
+    setEncryptionKey(null)
+    setEncryptionSalt(null)
+    setMigrationBanner(null)
   }
 
   const startWriting = () => {
@@ -254,7 +418,7 @@ const Diary = () => {
     setIsEditing(true)
     setIsWriting(false)
     setShowMoodSelector(false)
-    setFreeText(viewingEntry.freeText || '')
+    setFreeText(viewingEntry.content || '')
   }
 
   const saveEntry = async (mood?: string) => {
@@ -264,26 +428,26 @@ const Diary = () => {
       return
     }
 
+    if (!encryptionKey) {
+      alert(t('Unable to encrypt the diary entry. Unlock the diary again.'))
+      return
+    }
+
     setSaving(true)
     try {
-      let entryBody: { date: string; freeText: string; mood: string | null }
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      const resolvedMood = mood || selectedMood || null
 
-      if (isEditing) {
-        entryBody = {
-          date: selectedDate.toISOString().split('T')[0],
-          freeText,
-          mood: mood || selectedMood || null,
-        }
-      } else {
-        const combinedText = Object.entries(answers)
-          .map(([, answer]) => answer)
-          .join('\n\n')
-        entryBody = {
-          date: selectedDate.toISOString().split('T')[0],
-          freeText: combinedText,
-          mood: mood || selectedMood || null,
-        }
-      }
+      const rawContent = isEditing
+        ? freeText
+        : Object.entries(answers)
+            .map(([, answer]) => answer)
+            .join('\n\n')
+
+      const sanitizedContent = rawContent.trim().length > 0 ? sanitizeDiaryContent(rawContent) : ''
+      const ciphertext = sanitizedContent
+        ? await encryptDiaryContent(encryptionKey, sanitizedContent)
+        : null
 
       const res = await fetch('/api/diary/save', {
         method: 'POST',
@@ -291,14 +455,32 @@ const Diary = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...entryBody, diaryPassword }),
+        body: JSON.stringify({
+          date: dateStr,
+          ciphertext,
+          mood: resolvedMood,
+          diaryPassword,
+        }),
       })
 
       if (res.ok) {
+        const data = await res.json()
         setIsWriting(false)
         setIsEditing(false)
         setShowMoodSelector(false)
         await fetchEntryDates(diaryPassword)
+        const displayContent = sanitizedContent || ''
+        setViewingEntry({
+          id: data.entry.id,
+          date: data.entry.date,
+          mood: data.entry.mood,
+          content: displayContent || null,
+          ciphertext: data.entry.ciphertext,
+          requiresMigration: false,
+          publicContent: viewingEntry?.publicContent ?? null,
+        })
+        setFreeText(displayContent)
+        setSelectedMood(resolvedMood || '')
         await fetchEntry(selectedDate, diaryPassword)
         alert(t('Diary entry saved!'))
       } else {
@@ -313,6 +495,106 @@ const Diary = () => {
       alert('Errore di connessione')
     }
     setSaving(false)
+  }
+
+  const selectedDateStr = useMemo(
+    () => selectedDate.toISOString().split('T')[0],
+    [selectedDate]
+  )
+
+  const shareDiaryEntry = async () => {
+    if (!token || !passwordValidated || !diaryPassword) {
+      setPasswordModalOpen(true)
+      alert(t('Unlock your diary before saving an entry'))
+      return
+    }
+
+    if (!viewingEntry || !viewingEntry.content || viewingEntry.content.trim().length === 0) {
+      alert(t('Unable to share this entry right now.'))
+      return
+    }
+
+    setSharingEntry(true)
+    try {
+      const res = await fetch('/api/diary/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: selectedDateStr,
+          content: viewingEntry.content,
+          diaryPassword,
+        }),
+      })
+
+      if (res.ok) {
+        const data = (await res.json()) as {
+          entry: { id: string; publicText: string | null }
+        }
+        setViewingEntry((prev) =>
+          prev
+            ? {
+                ...prev,
+                publicContent: data.entry.publicText ?? prev.publicContent,
+              }
+            : prev
+        )
+        setMigrationBanner(null)
+        alert(t('Diary entry is now publicly visible.'))
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || t('Unable to share this entry right now.'))
+      }
+    } catch (error) {
+      console.error('Error sharing diary entry:', error)
+      alert('Errore di connessione')
+    }
+    setSharingEntry(false)
+  }
+
+  const stopSharingDiaryEntry = async () => {
+    if (!token || !passwordValidated || !diaryPassword) {
+      setPasswordModalOpen(true)
+      alert(t('Unlock your diary before saving an entry'))
+      return
+    }
+
+    setRemovingShare(true)
+    try {
+      const res = await fetch('/api/diary/share', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: selectedDateStr,
+          diaryPassword,
+        }),
+      })
+
+      if (res.ok) {
+        setViewingEntry((prev) =>
+          prev
+            ? {
+                ...prev,
+                publicContent: null,
+              }
+            : prev
+        )
+        setMigrationBanner(null)
+        alert(t('Diary entry sharing disabled.'))
+      } else {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || t('Unable to share this entry right now.'))
+      }
+    } catch (error) {
+      console.error('Error removing shared diary entry:', error)
+      alert('Errore di connessione')
+    }
+    setRemovingShare(false)
   }
 
   const generateCalendar = () => {
@@ -481,6 +763,37 @@ const Diary = () => {
               )}
 
               <div className='rounded-lg bg-white p-5 shadow dark:bg-zinc-800'>
+                {migrationBanner && (
+                  <div className='mb-4 rounded-lg border border-amber-400 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-200'>
+                    {migrationBanner}
+                  </div>
+                )}
+                {user.diaryVisibility === 'PUBLIC' && viewingEntry && viewingEntry.content && (
+                  <div className='mb-4 flex flex-wrap items-center justify-between gap-2'>
+                    <div className='text-xs text-emerald-600 dark:text-emerald-300'>
+                      {viewingEntry.publicContent ? <Trans id='This entry is currently shared with everyone.' /> : null}
+                    </div>
+                    <div className='flex gap-2'>
+                      {viewingEntry.publicContent ? (
+                        <button
+                          onClick={stopSharingDiaryEntry}
+                          disabled={removingShare || saving}
+                          className='rounded border border-rose-400 px-3 py-1 text-xs font-medium text-rose-500 hover:bg-rose-500 hover:text-white disabled:opacity-50'
+                        >
+                          {removingShare ? <Trans id='Removing share...' /> : <Trans id='Stop sharing entry' />}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={shareDiaryEntry}
+                          disabled={sharingEntry || saving}
+                          className='rounded border border-indigo-400 px-3 py-1 text-xs font-medium text-indigo-500 hover:bg-indigo-500 hover:text-white disabled:opacity-50'
+                        >
+                          {sharingEntry ? <Trans id='Sharing entry...' /> : <Trans id='Share entry publicly' />}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {isWriting ? (
                   <div>
                     <h3 className='mb-4 text-xl font-semibold text-zinc-800 dark:text-zinc-200'>
@@ -601,8 +914,11 @@ const Diary = () => {
                         </div>
                       )}
                     </div>
-                    {viewingEntry.freeText ? (
-                      <div className='prose prose-zinc max-w-none dark:prose-invert' dangerouslySetInnerHTML={{ __html: viewingEntry.freeText }} />
+                    {viewingEntry.content ? (
+                      <div
+                        className='prose prose-zinc max-w-none dark:prose-invert'
+                        dangerouslySetInnerHTML={{ __html: viewingEntry.content }}
+                      />
                     ) : (
                       <p className='text-sm text-zinc-500 dark:text-zinc-400'>
                         <Trans id='No entry for this date' />

@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
-import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
-import { decryptDiaryText, verifyDiaryPassword } from '@/lib/diary-encryption'
+import { decryptLegacyDiaryText, hasLegacyDiaryMasterKey, verifyDiaryPassword } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -65,32 +64,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     })
 
-    const decryptedText = entry?.freeText ? decryptDiaryText(decoded.sub, entry.freeText) : null
+    if (!entry) {
+      return res.status(200).json({ entry: null })
+    }
 
-    const sanitizedEntry = entry
-      ? {
-          ...entry,
-          freeText: decryptedText
-            ? sanitizeHtml(decryptedText, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
-                allowedAttributes: {
-                  ...sanitizeHtml.defaults.allowedAttributes,
-                  img: ['src', 'alt'],
-                },
-                allowedSchemes: ['data', 'http', 'https', 'mailto'],
-              })
-            : null,
-        }
-      : null
+    const rawPayload = entry.freeText
+    let ciphertext: string | null = null
+    let legacyPlaintext: string | null = null
+    let requiresMigration = false
 
-    res.status(200).json({ entry: sanitizedEntry })
+    if (rawPayload?.startsWith('v2:')) {
+      ciphertext = rawPayload.slice(3)
+    } else if (rawPayload) {
+      requiresMigration = true
+      if (hasLegacyDiaryMasterKey()) {
+        legacyPlaintext = decryptLegacyDiaryText(decoded.sub, rawPayload)
+      }
+    }
+
+    res.status(200).json({
+      entry: {
+        id: entry.id,
+        date: entry.date.toISOString(),
+        mood: entry.mood,
+        ciphertext,
+        legacyPlaintext,
+        requiresMigration,
+        publicText: entry.publicText,
+      },
+    })
   } catch (error) {
     console.error('Error loading diary entry:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
-    }
-    if (error instanceof Error && error.message.includes('DIARY_MASTER_KEY')) {
-      return res.status(500).json({ error: 'DIARY_MASTER_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il caricamento della voce' })
   }

@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
-import sanitizeHtml from 'sanitize-html'
 import { prisma } from '@/lib/prisma'
 import { getJwtSecret } from '@/lib/jwt'
-import { encryptDiaryText, verifyDiaryPassword } from '@/lib/diary-encryption'
+import { verifyDiaryPassword } from '@/lib/diary-encryption'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -19,9 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const secret = getJwtSecret()
     const decoded = jwt.verify(token, secret) as { sub: string }
 
-    const { date, freeText, mood, diaryPassword } = req.body as {
+    const { date, ciphertext, mood, diaryPassword } = req.body as {
       date?: string
-      freeText?: string
+      ciphertext?: string
       mood?: string
       diaryPassword?: string
     }
@@ -60,24 +59,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Password diario non corretta' })
     }
 
-    const sanitizedFreeText = freeText && freeText.trim().length > 0
-      ? sanitizeHtml(freeText, {
-          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'img']),
-          allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            img: ['src', 'alt'],
-          },
-          allowedSchemes: ['data', 'http', 'https', 'mailto'],
-        })
-      : null
+    const hasCiphertext = typeof ciphertext === 'string' && ciphertext.trim().length > 0
 
-    if (!sanitizedFreeText && (!mood || mood.trim() === '')) {
+    if (!hasCiphertext && (!mood || mood.trim() === '')) {
       return res.status(400).json({ error: 'Contenuto o umore richiesto' })
     }
 
-    const encryptedText = sanitizedFreeText
-      ? encryptDiaryText(decoded.sub, sanitizedFreeText)
-      : null
+    if (hasCiphertext && !/^[-A-Za-z0-9+/=]+$/.test((ciphertext as string).trim())) {
+      return res.status(400).json({ error: 'Ciphertext non valido' })
+    }
 
     const entry = await prisma.diaryEntry.upsert({
       where: {
@@ -86,28 +76,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           date: entryDate
         }
       },
-      update: { freeText: encryptedText, mood: mood || null },
+      update: {
+        freeText: hasCiphertext ? `v2:${(ciphertext as string).trim()}` : null,
+        mood: mood || null,
+      },
       create: {
         userId: decoded.sub,
         date: entryDate,
-        freeText: encryptedText,
+        freeText: hasCiphertext ? `v2:${(ciphertext as string).trim()}` : null,
         mood: mood || null,
       }
     })
 
     res.status(200).json({
       entry: {
-        ...entry,
-        freeText: sanitizedFreeText,
-      }
+        id: entry.id,
+        date: entry.date.toISOString(),
+        mood: entry.mood,
+        ciphertext: hasCiphertext ? (ciphertext as string).trim() : null,
+      },
     })
   } catch (error) {
     console.error('Error saving diary entry:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       return res.status(500).json({ error: 'JWT secret is not configured on the server' })
-    }
-    if (error instanceof Error && error.message.includes('DIARY_MASTER_KEY')) {
-      return res.status(500).json({ error: 'DIARY_MASTER_KEY non configurata sul server' })
     }
     res.status(500).json({ error: 'Errore durante il salvataggio della voce' })
   }

@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return acc
     }, {} as Record<string, string | null>)
     
-    res.status(200).json({ dates, moods })
+    res.status(200).json({ dates, moods, encryptionSalt: user.diaryPasswordSalt })
   } catch (error) {
     console.error('Error loading diary dates:', error)
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {

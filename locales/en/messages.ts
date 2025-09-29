@@ -328,7 +328,21 @@ export const messages = {
   'You have one unread message': 'You have one unread message',
   'You have {count} unread messages': 'You have {count} unread messages',
   '{count, plural, one {You have # unread message} other {You have # unread messages}}': '{count, plural, one {You have # unread message} other {You have # unread messages}}',
-  'All caught up!': 'All caught up!'
+  'All caught up!': 'All caught up!',
+  'Diary entry upgraded to the latest encryption.': 'Diary entry upgraded to the latest encryption.',
+  'This diary entry was saved with an older encryption method and cannot be decrypted until it is resaved.': 'This diary entry was saved with an older encryption method and cannot be decrypted until it is resaved.',
+  'Unable to decrypt this entry. Unlock the diary again and retry.': 'Unable to decrypt this entry. Unlock the diary again and retry.',
+  'Encryption setup is incomplete for this diary.': 'Encryption setup is incomplete for this diary.',
+  'Unable to encrypt the diary entry. Unlock the diary again.': 'Unable to encrypt the diary entry. Unlock the diary again.',
+  'Share entry publicly': 'Share entry publicly',
+  'Stop sharing entry': 'Stop sharing entry',
+  'Sharing entry...': 'Sharing entry...',
+  'Removing share...': 'Removing share...',
+  'This entry is currently shared with everyone.': 'This entry is currently shared with everyone.',
+  'Diary entry is now publicly visible.': 'Diary entry is now publicly visible.',
+  'Diary entry sharing disabled.': 'Diary entry sharing disabled.',
+  'Unable to share this entry right now.': 'Unable to share this entry right now.',
+  'No shared diary entries yet.': 'No shared diary entries yet.'
 } as const
 
 export type Messages = typeof messages

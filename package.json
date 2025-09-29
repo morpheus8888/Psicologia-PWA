@@ -4,11 +4,11 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && node scripts/run-migrations.js && next build",
-    "vercel-post-build": "node scripts/run-migrations.js",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "prebuild": "prisma migrate deploy"
   },
   "dependencies": {
     "@lingui/core": "^5.3.2",

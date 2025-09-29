@@ -41,6 +41,19 @@
 - Record any clarifications or updates back into `vercel/` docs to keep the repository authoritative.
 
 ## Security & Configuration
-- Keep secrets (`DATABASE_URL`, `JWT_SECRET`, `DIARY_MASTER_KEY`) out of Git; use `.env` and Vercel project settings.
+- Keep secrets (`DATABASE_URL`, `JWT_SECRET`) out of Git; use `.env` and Vercel project settings. `DIARY_MASTER_KEY` is deprecated and va usata solo per migrazioni legacy, poi rimossa.
 - Always consult the README for operational/env requirements and update it if your changes alter the setup. If you cannot propagate a required env var to Vercel yourself (missing credentials/network), stop and request maintainer assistance instead of assuming the deploy is ready.
 - Run `scripts/run-migrations.js` only against backed-up databases.
+- **Deployment & migrations checklist (mandatory unless user instructs otherwise):**
+  1. Local change → run `npx prisma migrate dev --name <migration-name>` to create a versioned migration.
+  2. Verify locally with `npm run lint`, `npm run build`, and manual DB smoke tests.
+  3. Commit the migration files (`prisma/migrations/**`) and updated schema.
+  4. Ensure Vercel environment variables map correctly: `DATABASE_URL` per environment, `JWT_SECRET`, più eventuali chiavi aggiuntive citate nel README (es. `DIARY_MASTER_KEY` solo per migrazione legacy dei diari, poi da eliminare).
+  5. Push to GitHub; Vercel’s build pipeline runs in order: `npm install` → `npm run postinstall` (→ `prisma generate`) → `npm run prebuild` (→ `prisma migrate deploy`) → `npm run build`. No GitHub Action or API token is needed.
+  6. Deployment expectations:
+     - `prisma migrate deploy` applies only committed migrations and is idempotent; if they are already applied, it becomes a no-op while keeping Prisma’s locking.
+     - Missing `DATABASE_URL` (or other required env) must fail the build. Preview and Production must point to separate databases to avoid cross-environment writes.
+     - Build logs must clearly list: env prerequisites checked, migrations found/applied (names only), final success/failure status.
+  7. After deploy, validate the target environment (preview/prod) through smoke tests; for production DB changes, confirm metrics/logs.
+  8. Rollback procedure: revert the offending commit, restore the database from the latest backup, trigger a redeploy, then prepare a corrective migration.
+- Diary sharing: only encrypted content is canonical; if you introduce features that expose diary text, make sure they operate on the dedicated `publicText` copy (created per-entry when users explicitly share) and never on the ciphertext.

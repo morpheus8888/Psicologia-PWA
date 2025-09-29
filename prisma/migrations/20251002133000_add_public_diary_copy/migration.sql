@@ -1,0 +1,3 @@
+ALTER TABLE "DiaryEntry"
+  ADD COLUMN IF NOT EXISTS "publicText" TEXT,
+  ADD COLUMN IF NOT EXISTS "publicSharedAt" TIMESTAMP(3);

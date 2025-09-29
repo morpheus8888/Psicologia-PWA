@@ -27,6 +27,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Visibilità non valida' })
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: { id: decoded.sub },
+      select: {
+        diaryVisibility: true,
+        diaryPasswordHash: true,
+      },
+    })
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'Utente non trovato' })
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: decoded.sub },
       data: { diaryVisibility: visibility },
@@ -41,6 +53,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         diaryPasswordHash: true,
       }
     })
+
+    if (visibility !== 'PUBLIC' && existingUser.diaryVisibility === 'PUBLIC') {
+      await prisma.diaryEntry.updateMany({
+        where: { userId: decoded.sub },
+        data: {
+          publicText: null,
+          publicSharedAt: null,
+        },
+      })
+    }
 
     const { diaryPasswordHash, ...safeUser } = updatedUser
 

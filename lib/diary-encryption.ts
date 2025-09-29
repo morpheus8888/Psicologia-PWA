@@ -1,35 +1,20 @@
 import crypto from 'crypto'
 
-const MASTER_SECRET = process.env.DIARY_MASTER_KEY || process.env.DIARY_ENCRYPTION_KEY
+const LEGACY_MASTER_SECRET = process.env.DIARY_MASTER_KEY || process.env.DIARY_ENCRYPTION_KEY || null
 
-if (!MASTER_SECRET) {
-  console.warn('[DiaryEncryption] Missing DIARY_MASTER_KEY (or legacy DIARY_ENCRYPTION_KEY); set it to guarantee encrypted storage.')
-}
-
-const getMasterKey = () => {
-  if (!MASTER_SECRET) {
-    throw new Error('DIARY_MASTER_KEY env var is required for diary encryption')
+const getLegacyMasterKey = () => {
+  if (!LEGACY_MASTER_SECRET) {
+    throw new Error('Legacy diary master key missing')
   }
-  // Normalizziamo la lunghezza a 32 byte tramite SHA-256
-  return crypto.createHash('sha256').update(MASTER_SECRET).digest()
+  return crypto.createHash('sha256').update(LEGACY_MASTER_SECRET).digest()
 }
 
-export const deriveUserKey = (userId: string) => {
-  const masterKey = getMasterKey()
-  return crypto.createHmac('sha256', masterKey).update(userId).digest()
-}
+export const hasLegacyDiaryMasterKey = () => LEGACY_MASTER_SECRET !== null
 
-const encryptWithKey = (key: Buffer, plaintext: string) => {
-  const iv = crypto.randomBytes(12)
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
-  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
-  const authTag = cipher.getAuthTag()
-  return Buffer.concat([iv, authTag, encrypted]).toString('base64')
-}
-
-const decryptWithKey = (key: Buffer, payload?: string | null) => {
+export const decryptLegacyDiaryText = (userId: string, payload?: string | null) => {
   if (!payload) return null
   try {
+    const key = crypto.createHmac('sha256', getLegacyMasterKey()).update(userId).digest()
     const buffer = Buffer.from(payload, 'base64')
     const iv = buffer.subarray(0, 12)
     const authTag = buffer.subarray(12, 28)
@@ -41,15 +26,6 @@ const decryptWithKey = (key: Buffer, payload?: string | null) => {
   } catch (error) {
     return null
   }
-}
-
-export const encryptDiaryText = (userId: string, plaintext: string) => {
-  const key = deriveUserKey(userId)
-  return encryptWithKey(key, plaintext)
-}
-
-export const decryptDiaryText = (userId: string, payload?: string | null) => {
-  return decryptWithKey(deriveUserKey(userId), payload)
 }
 
 export const createDiaryPasswordRecord = async (password: string) => {
@@ -90,6 +66,3 @@ export const hashDiaryPasswordWithSalt = async (password: string, saltBase64: st
   })
   return crypto.createHash('sha256').update(derived).digest('hex')
 }
-
-export const decryptDiaryTextWithKey = (key: Buffer, payload?: string | null) => decryptWithKey(key, payload)
-export const encryptDiaryTextWithKey = (key: Buffer, plaintext: string) => encryptWithKey(key, plaintext)

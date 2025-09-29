@@ -59,7 +59,7 @@ const AdminPanel = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [selectedUserDetails, setSelectedUserDetails] = useState<UserDetails | null>(null)
   const [userDetailsLoading, setUserDetailsLoading] = useState(false)
-  const [diaryCache, setDiaryCache] = useState<Record<string, Array<{ id: string; date: string; mood: string | null; freeText: string | null }>>>({})
+  const [diaryCache, setDiaryCache] = useState<Record<string, Array<{ id: string; date: string; mood: string | null; publicText: string | null; publicSharedAt: string | null }>>>({})
   const [loadingDiaryFor, setLoadingDiaryFor] = useState<string | null>(null)
 
   const [broadcastOpen, setBroadcastOpen] = useState(false)
@@ -670,7 +670,7 @@ const UserDetailPanel = ({
   setMessageDraft: React.Dispatch<React.SetStateAction<{ title: string; content: string; sending: boolean }>>
   passwordDraft: { newPassword: string; saving: boolean }
   setPasswordDraft: React.Dispatch<React.SetStateAction<{ newPassword: string; saving: boolean }>>
-  diaryEntries: Array<{ id: string; date: string; mood: string | null; freeText: string | null }>
+  diaryEntries: Array<{ id: string; date: string; mood: string | null; publicText: string | null; publicSharedAt: string | null }>
   onReloadUsers: () => Promise<void>
   onReloadDetails: () => Promise<void>
   onLoadDiary: () => Promise<void>
@@ -854,8 +854,11 @@ const UserDetailPanel = ({
                       <span>{new Date(entry.date).toLocaleDateString()}</span>
                       {entry.mood && <span>{entry.mood}</span>}
                     </div>
-                    {entry.freeText ? (
-                      <div className='prose prose-sm max-w-none text-zinc-700 dark:prose-invert dark:text-zinc-100' dangerouslySetInnerHTML={{ __html: entry.freeText }} />
+                    {entry.publicText ? (
+                      <div
+                        className='prose prose-sm max-w-none text-zinc-700 dark:prose-invert dark:text-zinc-100'
+                        dangerouslySetInnerHTML={{ __html: entry.publicText }}
+                      />
                     ) : (
                       <p className='text-xs text-zinc-500 dark:text-zinc-300'>
                         <Trans id='No text provided' />
@@ -866,7 +869,7 @@ const UserDetailPanel = ({
               </ul>
             ) : (
               <p className='text-sm text-zinc-500 dark:text-zinc-400'>
-                <Trans id='No diary entries' />
+                <Trans id='No shared diary entries yet.' />
               </p>
             )}
           </div>
