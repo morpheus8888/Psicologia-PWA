@@ -77,7 +77,8 @@ Il supporto IT/EN è gestito da un provider custom (`lib/i18n/index.tsx`) che ut
 1. Collega la repo GitHub `morpheus8888/Psicologia-PWA` a Vercel.
 2. Vercel esegue automaticamente `pnpm install --frozen-lockfile`, `npm run build` (che include le migrazioni) e `scripts/run-migrations.js` come post-build (workflow ufficiale documentato su <https://vercel.com/docs/deployments/configure-a-build>).
    - ⚠️ Ricordati di aggiornare sempre `pnpm-lock.yaml` con `pnpm install --lockfile-only` ogni volta che modifichi le dipendenze, altrimenti la build fallisce.
-3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL` e `JWT_SECRET`.
+3. Configura nel progetto Vercel le environment variables (Production, Preview e Development) per `DATABASE_URL`, `JWT_SECRET` **e** `DIARY_MASTER_KEY`.
+   - Usa la **stessa** `DIARY_MASTER_KEY` su tutti gli ambienti (locale, Preview, Production); se manca o cambia valore le API del diario restituiscono 500 `DIARY_MASTER_KEY non configurata sul server`.
 4. Ogni push su `main` (o branch configurato) attiva il deploy automatico; le pull request generano build di preview.
 
 ## Tipologie di account

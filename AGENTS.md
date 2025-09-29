@@ -42,4 +42,5 @@
 
 ## Security & Configuration
 - Keep secrets (`DATABASE_URL`, `JWT_SECRET`, `DIARY_MASTER_KEY`) out of Git; use `.env` and Vercel project settings.
+- Always consult the README for operational/env requirements and update it if your changes alter the setup. If you cannot propagate a required env var to Vercel yourself (missing credentials/network), stop and request maintainer assistance instead of assuming the deploy is ready.
 - Run `scripts/run-migrations.js` only against backed-up databases.
