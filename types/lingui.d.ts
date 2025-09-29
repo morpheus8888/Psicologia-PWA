@@ -5,3 +5,11 @@ declare module '@/locales/*/messages' {
   }
   export default catalog
 }
+
+declare module '@lingui/message-utils' {
+  export * from '@lingui/message-utils/dist/compileMessage'
+}
+
+declare module '@lingui/message-utils/compileMessage' {
+  export * from '@lingui/message-utils'
+}
